@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.1"
+	xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
+	<persistence-unit name="treasure.core"
+		transaction-type="JTA">
+		<jta-data-source>java:app/jdbc/Treasure</jta-data-source>
+		<properties>
+			<property name="javax.persistence.schema-generation-action" value="drop-and-create" />
+			<property name="javax.persistence.schema-generation-target" value="scripts" />
+			<property name="eclipselink.target-database" value="MySQL"/>
+			<property name="eclipselink.ddl-generation" value="drop-and-create-tables" />
+			<property name="eclipselink.create-ddl-jdbc-file-name" value="storage-create.sql"/>
+			<property name="eclipselink.drop-ddl-jdbc-file-name" value="storage-drop.sql"/>
+			<property name="eclipselink.ddl-generation.output-mode" value="scripts" />
+			<property name="eclipselink.deploy-on-startup" value="true" />
+			<property name="eclipselink.logging.level.sql" value="FINE"/>
+			<property name="eclipselink.logging.parameters" value="true"/>
+		</properties>
+	</persistence-unit>
+</persistence>
