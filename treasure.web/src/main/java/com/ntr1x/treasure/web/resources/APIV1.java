@@ -12,7 +12,7 @@ import io.swagger.annotations.Tag;
 	),
 	schemes = { SwaggerDefinition.Scheme.HTTP, SwaggerDefinition.Scheme.HTTPS },
 	tags = {
-		@Tag(name = "Media",    description = "Media catalog (goods, services)"),
+		@Tag(name = "Media",    description = "Media catalog (news, events)"),
 		@Tag(name = "Persons",  description = "Persons catalog (personalities)"),
 		@Tag(name = "Offers",   description = "Offers catalog (banners, offers)"),
         @Tag(name = "Entries",  description = "Entries catalog (goods, services)"),
