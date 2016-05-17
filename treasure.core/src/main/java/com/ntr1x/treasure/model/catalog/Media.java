@@ -68,6 +68,12 @@ public class Media implements Serializable {
     @Column(name = "Published", nullable = true)
     private LocalDateTime published;
 
+    @Column(name = "Url", nullable = true)
+    private String url;
+
+    @Column(name = "Tag", nullable = true)
+    private String tag;
+
 //    @XmlTransient
 //    @OneToOne(fetch = FetchType.EAGER, optional = true)
 //    @JoinColumn(name = "Upload", nullable = true, updatable = true)

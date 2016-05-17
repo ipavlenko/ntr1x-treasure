@@ -186,6 +186,8 @@ public class MediaResource {
             @FormDataParam("category") long category,
             @FormDataParam("title") String title,
             @FormDataParam("description") String description,
+            @FormDataParam("Url") String url,
+            @FormDataParam("Tag") String tag,
             @FormDataParam("preview") InputStream previewInput,
             @FormDataParam("preview") FormDataContentDisposition previewHeader
     ) {
@@ -195,7 +197,9 @@ public class MediaResource {
                 em.find(MediaCategory.class, category),
                 title,
                 description,
-                LocalDateTime.now()
+                LocalDateTime.now(),
+                url,
+                tag
         );
 
         em.persist(entity);
@@ -236,6 +240,8 @@ public class MediaResource {
         @FormDataParam("category") long category,
         @FormDataParam("title") String title,
         @FormDataParam("description") String description,
+        @FormDataParam("Url") String url,
+        @FormDataParam("Tag") String tag,
         @FormDataParam("preview") InputStream previewInput,
         @FormDataParam("preview") FormDataContentDisposition previewHeader
     ) {
@@ -246,7 +252,9 @@ public class MediaResource {
                 em.find(MediaCategory.class, category),
                 title,
                 description,
-                entity.getPublished()
+                entity.getPublished(),
+                url,
+                tag
         );
 
         em.merge(entity);
