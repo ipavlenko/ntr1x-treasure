@@ -1,0 +1,6 @@
+/home/pavlenko/workspace/treasure.web/src/main/java/com/ntr1x/treasure/web/AppConfig.java
+/home/pavlenko/workspace/treasure.web/src/main/java/com/ntr1x/treasure/web/App.java
+/home/pavlenko/workspace/treasure.web/src/main/java/com/ntr1x/treasure/web/resources/APIV1.java
+/home/pavlenko/workspace/treasure.web/src/main/java/com/ntr1x/treasure/web/resources/MediaResource.java
+/home/pavlenko/workspace/treasure.web/src/main/java/filters/CORSResponseFilter.java
+/home/pavlenko/workspace/treasure.web/src/main/java/filters/CORSRequestFilter.java

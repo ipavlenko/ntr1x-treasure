@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Implementation-Title: treasure.web
+Implementation-Version: 0.0.1-SNAPSHOT
+Built-By: pavlenko
+Implementation-Vendor-Id: com.ntr1x.treasure
+Build-Jdk: 1.8.0_101
+Implementation-URL: http://projects.spring.io/spring-boot/treasure.web
+ /
+Created-By: Maven Integration for Eclipse
+Implementation-Vendor: Pivotal Software, Inc.
+
