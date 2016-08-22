@@ -1,5 +1,6 @@
 package com.ntr1x.treasure.web.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -9,9 +10,11 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -28,5 +31,10 @@ public class Session extends Resource {
     @XmlInverseReference(mappedBy = "accounts")
     @ManyToOne
     @JoinColumn(name = "AccountId", nullable = false, updatable = false)
-    private Resource account;
+    private Account account;
+    
+    @XmlTransient
+    @Column(name = "Signature")
+    @ApiModelProperty(hidden = true)
+    private int signature;
 }

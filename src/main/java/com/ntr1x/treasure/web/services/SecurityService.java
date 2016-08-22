@@ -6,12 +6,15 @@ import java.util.Random;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Service;
 
 import com.google.common.hash.Hashing;
+import com.ntr1x.treasure.web.model.Account;
+import com.ntr1x.treasure.web.repository.GrantRepository;
 import com.ntr1x.treasure.web.utils.ConversionUtils;
 import com.ntr1x.treasure.web.utils.CryptoUtils;
 
@@ -20,6 +23,9 @@ public class SecurityService implements ISecurityService {
     
     @Inject
     private Config config;
+    
+    @Inject
+    private GrantRepository grants;
     
     private final Random random = new Random();
     
@@ -177,5 +183,16 @@ public class SecurityService implements ISecurityService {
     @Override
     public SecuritySession parseSession(String session) {
         return parseSession(decrypt(ConversionUtils.BASE62.decode(session)));
+    }
+    
+    @Transactional
+    @Override
+    public boolean isUserInRole(Account account, String resource, String action) {
+        
+        return grants.check(
+            account.getId(),
+            action,
+            resource
+        ) > 0;
     }
 }

@@ -36,7 +36,7 @@ import lombok.Setter;
 @Table(
 	name = "accounts",
 	indexes= {
-		@Index(columnList = "Name", unique = true),
+		@Index(columnList = "Email", unique = true),
 	}
 )
 @PrimaryKeyJoinColumn(name = "ResourceId", referencedColumnName = "Id")
@@ -46,8 +46,8 @@ import lombok.Setter;
 @Setter
 public class Account extends Resource {
 	
-	@Column(name = "Name")
-	private String Name;
+	@Column(name = "Email")
+	private String email;
 
 	@XmlTransient
 	@Column(name = "Random")

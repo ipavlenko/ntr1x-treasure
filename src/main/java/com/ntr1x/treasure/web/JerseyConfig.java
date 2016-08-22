@@ -9,6 +9,8 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.springframework.stereotype.Component;
 
 import com.ntr1x.treasure.web.converter.AppConverterProvider;
+import com.ntr1x.treasure.web.filters.AuthenticationFilter;
+import com.ntr1x.treasure.web.filters.AuthorizationFilter;
 import com.ntr1x.treasure.web.filters.CORSRequestFilter;
 import com.ntr1x.treasure.web.filters.CORSResponseFilter;
 
@@ -33,6 +35,9 @@ public class JerseyConfig extends ResourceConfig {
 		register(MoxyJsonFeature.class);
 		register(EntityFilteringFeature.class);
 		register(SecurityEntityFilteringFeature.class);
+		register(AuthenticationFilter.class);
+		register(AuthorizationFilter.class);
+        
 		
 		BeanConfig beanConfig = new BeanConfig();
 		beanConfig.setVersion("1.0.0");

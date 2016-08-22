@@ -11,8 +11,8 @@ import com.ntr1x.treasure.web.resources.PublicationResourceTest;
 @RunWith(Suite.class)
 @SuiteClasses({
 	AccountResourceTest.class,
-	PublicationResourceTest.class,
-	GoodResourceTest.class,
+//	PublicationResourceTest.class,
+//	GoodResourceTest.class,
 })
 public class ResourcesTestSuite {
 	

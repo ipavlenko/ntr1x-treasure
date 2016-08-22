@@ -2,6 +2,8 @@ package com.ntr1x.treasure.web.resources;
 
 import java.util.List;
 
+import javax.annotation.security.PermitAll;
+import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
@@ -32,6 +34,7 @@ import io.swagger.annotations.ApiParam;
 
 @Path("accounts")
 @Api("Accounts")
+@PermitAll
 @Component
 public class AccountResource {
 	
@@ -49,6 +52,9 @@ public class AccountResource {
 	
 	@GET
     @Produces(MediaType.APPLICATION_JSON)
+	@RolesAllowed({
+	    "res:///accounts:admin"
+	})
 	@Transactional
     public List<Account> list(
     		@QueryParam("page") @ApiParam(example = "0") int page,
@@ -60,6 +66,9 @@ public class AccountResource {
 	@GET
 	@Path("/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
+	@RolesAllowed({
+        "res:///accounts:admin"
+    })
 	@Transactional
     public Account select(@PathParam("id") long id) {
 		return accounts.findOne(id);
@@ -67,6 +76,9 @@ public class AccountResource {
 	
 	@GET
 	@Path("/{id}/full")
+	@RolesAllowed({
+        "res:///accounts:admin"
+    })
 	@CommentsView
 	@TagsView
 	@AttachmentsView
@@ -79,6 +91,9 @@ public class AccountResource {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+	@RolesAllowed({
+        "res:///accounts:admin"
+    })
 	@Transactional
     public Account create(Account account) {
 	
@@ -94,6 +109,9 @@ public class AccountResource {
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+	@RolesAllowed({
+        "res:///accounts:admin"
+    })
 	@Transactional
     public Account update(Account account) {
 		
@@ -109,6 +127,9 @@ public class AccountResource {
 	@DELETE
 	@Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
+	@RolesAllowed({
+        "res:///accounts:admin"
+    })
 	@Transactional
     public Account remove(@PathParam("id") long id) {
 		

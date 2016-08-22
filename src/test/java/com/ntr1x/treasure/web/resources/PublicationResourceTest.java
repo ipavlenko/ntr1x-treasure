@@ -55,7 +55,7 @@ public class PublicationResourceTest {
 	        Publication s = new Publication();
 	        s.setTitle("Demo Publication");
 	        s.setContent("Demo Publication Content");
-	        s.setAction(Action.CREATE);
+	        s.set_action(Action.CREATE);
 	        
 	        Publication r = target
 		    	.path("/publications")
@@ -66,7 +66,7 @@ public class PublicationResourceTest {
 	        Assert.assertNotNull(r.getId());
 	        Assert.assertEquals(s.getTitle(), r.getTitle());
 	        Assert.assertEquals(s.getContent(), r.getContent());
-	        Assert.assertNull(r.getAction());
+	        Assert.assertNull(r.get_action());
 		}
 		
 		{
@@ -88,13 +88,13 @@ public class PublicationResourceTest {
             
                 s.setTitle("Demo Publication With Tags");
                 s.setContent("Demo Publication Content");
-                s.setAction(Action.CREATE);
+                s.set_action(Action.CREATE);
                 
                 List<Tag> tags = new ArrayList<>();
                 
                 {
                     Tag tag = new Tag();
-                    tag.setAction(Action.CREATE);
+                    tag.set_action(Action.CREATE);
                     tag.setValue("Demo1");
                     tag.setRelate(s);
                     tags.add(tag);
@@ -102,7 +102,7 @@ public class PublicationResourceTest {
                 
                 {
                     Tag tag = new Tag();
-                    tag.setAction(Action.CREATE);
+                    tag.set_action(Action.CREATE);
                     tag.setValue("Demo2");
                     tag.setRelate(s);
                     tags.add(tag);
@@ -120,7 +120,7 @@ public class PublicationResourceTest {
             Assert.assertNotNull(r.getId());
             Assert.assertEquals(s.getTitle(), r.getTitle());
             Assert.assertEquals(s.getContent(), r.getContent());
-            Assert.assertNull(r.getAction());
+            Assert.assertNull(r.get_action());
             Assert.assertEquals(s.getTags().size(), s.getTags().size());
         }
     }

@@ -36,4 +36,7 @@ public class Grant extends Resource {
 	
 	@Column(name = "Pattern")
 	private String pattern;
+	
+	@Column(name = "Action")
+    private String action;
 }

@@ -52,9 +52,9 @@ public class AccountResourceTest {
 		Account user = null; {
 	        
 			Account s = new Account();
-	        s.setName("User");
+	        s.setEmail("email@example.com");
 	        s.setPassword("Password");
-	        s.setAction(Action.CREATE);
+	        s.set_action(Action.CREATE);
 	        
 	        Account r = target
 		    	.path("/accounts")
@@ -63,8 +63,8 @@ public class AccountResourceTest {
 		    ;
 	        
 	        Assert.assertNotNull(r.getId());
-	        Assert.assertEquals(s.getName(), r.getName());
-	        Assert.assertNull(r.getAction());
+	        Assert.assertEquals(s.getEmail(), r.getEmail());
+	        Assert.assertNull(r.get_action());
 	        Assert.assertNull(r.getPassword());
 	        Assert.assertNull(r.getPwdhash());
 		
@@ -105,7 +105,7 @@ public class AccountResourceTest {
 	        ;
 	        
 	        Assert.assertEquals(r.getId(), user.getId());
-	        Assert.assertNull(r.getAction());
+	        Assert.assertNull(r.get_action());
 	        Assert.assertNull(r.getPassword());
 	        Assert.assertNull(r.getPwdhash());
 		}

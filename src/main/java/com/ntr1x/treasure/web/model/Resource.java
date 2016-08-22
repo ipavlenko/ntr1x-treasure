@@ -59,7 +59,7 @@ public class Resource {
 	
 	@Transient
     @ApiModelProperty(hidden = true)
-    private Action action;
+    private Action _action;
 	
 	@TagsView
 	@XmlElement

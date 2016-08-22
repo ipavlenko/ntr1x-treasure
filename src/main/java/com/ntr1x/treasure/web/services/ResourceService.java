@@ -121,7 +121,7 @@ public class ResourceService {
                     Assert.isTrue(child instanceof Resource);
                     Resource r = (Resource) child;
                     
-                    switch (r.getAction()) {
+                    switch (r.get_action()) {
                     case CREATE:
                         create(parent, r, md.alias);
                         break;
