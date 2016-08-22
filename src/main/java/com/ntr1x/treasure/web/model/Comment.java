@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
+import javax.persistence.PrePersist;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -36,12 +37,12 @@ public class Comment extends Resource {
 	@XmlElement
 	@XmlInverseReference(mappedBy = "comments")
 	@ManyToOne
-	@JoinColumn(name = "RelateId", nullable = false)
+	@JoinColumn(name = "RelateId", nullable = false, updatable = false)
 	private Resource relate;
 	
 	@XmlElement
 	@ManyToOne
-	@JoinColumn(name = "AccountId", nullable = false)
+	@JoinColumn(name = "AccountId", nullable = false, updatable = false)
 	private Account account;
 	
 	@Lob
@@ -57,4 +58,9 @@ public class Comment extends Resource {
 		CommentsView.Factory.get(),
 		LikesView.Factory.get(),
 	};
+	
+	@PrePersist
+	public void onCreate() {
+	    
+	}
 }

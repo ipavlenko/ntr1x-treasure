@@ -1,5 +1,6 @@
 package com.ntr1x.treasure.web.resources;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.client.ClientBuilder;
@@ -20,6 +21,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import com.ntr1x.treasure.web.App;
 import com.ntr1x.treasure.web.model.Action;
 import com.ntr1x.treasure.web.model.Publication;
+import com.ntr1x.treasure.web.model.Tag;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = App.class, webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -78,5 +80,48 @@ public class PublicationResourceTest {
 	        
 	        Assert.assertEquals(response.size(), 1);
 		}
+		
+		{
+		    
+		    
+            Publication s = new Publication(); {
+            
+                s.setTitle("Demo Publication With Tags");
+                s.setContent("Demo Publication Content");
+                s.setAction(Action.CREATE);
+                
+                List<Tag> tags = new ArrayList<>();
+                
+                {
+                    Tag tag = new Tag();
+                    tag.setAction(Action.CREATE);
+                    tag.setValue("Demo1");
+                    tag.setRelate(s);
+                    tags.add(tag);
+                }
+                
+                {
+                    Tag tag = new Tag();
+                    tag.setAction(Action.CREATE);
+                    tag.setValue("Demo2");
+                    tag.setRelate(s);
+                    tags.add(tag);
+                }
+            
+                s.setTags(tags);
+            }
+            
+            Publication r = target
+                .path("/publications")
+                .request(MediaType.APPLICATION_JSON_TYPE)
+                .post(Entity.entity(s, MediaType.APPLICATION_JSON_TYPE), Publication.class)
+            ;
+            
+            Assert.assertNotNull(r.getId());
+            Assert.assertEquals(s.getTitle(), r.getTitle());
+            Assert.assertEquals(s.getContent(), r.getContent());
+            Assert.assertNull(r.getAction());
+            Assert.assertEquals(s.getTags().size(), s.getTags().size());
+        }
     }
 }

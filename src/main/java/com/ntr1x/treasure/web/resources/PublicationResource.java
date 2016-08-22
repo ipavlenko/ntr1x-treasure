@@ -84,7 +84,7 @@ public class PublicationResource {
 //	})
 	public Publication create(Publication post) {
 
-		Publication p = service.create(post, (r) -> String.format("/publications/%d", r.getId()), (r) -> r.getId() == null);
+		Publication p = (Publication) service.create(null, post, "publications");
 		em.clear();
 		return publications.findOne(p.getId());
 	}
@@ -98,7 +98,7 @@ public class PublicationResource {
 //	})
 	public Publication update(Publication post) {
 		
-		Publication p = service.update(post, (r) -> r.getId() != null);
+		Publication p = (Publication) service.update(post);
 		em.clear();
 		return publications.findOne(p.getId());
 	}
@@ -113,7 +113,7 @@ public class PublicationResource {
 	public Publication remove(@PathParam("id") long id) {
 		
 		Publication p = publications.findOne(id);
-		service.remove(p, (r) -> r.getId() != null);
+		service.remove(p);
 		em.clear();
 		return p;
 	}

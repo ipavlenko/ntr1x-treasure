@@ -31,7 +31,7 @@ public class Good extends Resource {
 	@XmlElement
 	@XmlInverseReference(mappedBy = "goods")
 	@ManyToOne
-	@JoinColumn(name = "RelateId", nullable = false)
+	@JoinColumn(name = "RelateId", nullable = false, updatable = false)
 	private Resource relate;
 	
 	@Column(name = "Title")

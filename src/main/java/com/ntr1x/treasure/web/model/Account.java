@@ -25,8 +25,8 @@ import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 import org.glassfish.hk2.api.AnnotationLiteral;
 import org.glassfish.jersey.message.filtering.EntityFiltering;
 
-import com.ntr1x.treasure.web.reflection.ManagedProperty;
-import com.ntr1x.treasure.web.reflection.ManagedProperty.Type;
+import com.ntr1x.treasure.web.reflection.ResourceProperty;
+import com.ntr1x.treasure.web.reflection.ResourceProperty.Type;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -61,7 +61,7 @@ public class Account extends Resource {
 	
 	@Transient
 	@ApiModelProperty(hidden = true)
-    @ManagedProperty(create = Type.IGNORE, update = Type.IGNORE)
+    @ResourceProperty(create = Type.IGNORE, update = Type.IGNORE)
 	private String password;
 	
 	@SessionsView
@@ -70,8 +70,17 @@ public class Account extends Resource {
 	@OneToMany(mappedBy = "account")
 	@CascadeOnDelete
 	@ApiModelProperty(hidden = true)
-    @ManagedProperty(create = Type.IGNORE, update = Type.IGNORE)
+    @ResourceProperty(create = Type.IGNORE, update = Type.IGNORE)
 	private List<Session> sessions;
+	
+	@GrantsView
+    @XmlElement
+    @XmlInverseReference(mappedBy = "account")
+    @OneToMany(mappedBy = "account")
+    @CascadeOnDelete
+    @ApiModelProperty(hidden = true)
+    @ResourceProperty(create = Type.IGNORE, update = Type.IGNORE)
+    private List<Grant> grants;
 	
 	@Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD})
 	@Retention(RetentionPolicy.RUNTIME)
@@ -88,4 +97,20 @@ public class Account extends Resource {
 			}
 		}
 	}
+	
+    @Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD})
+    @Retention(RetentionPolicy.RUNTIME)
+    @Documented
+    @EntityFiltering
+    public static @interface GrantsView {
+        
+        public static class Factory extends AnnotationLiteral<GrantsView> implements GrantsView {
+            
+            private static final long serialVersionUID = -1701397280023104688L;
+
+            public static GrantsView get() {
+                return new Factory();
+            }
+        }
+    }
 }

@@ -58,7 +58,7 @@ public class JpaConfig extends JpaBaseConfiguration {
     	map.put(PersistenceUnitProperties.DROP_JDBC_DDL_FILE, "storage-drop.sql");
     	map.put(PersistenceUnitProperties.DDL_GENERATION_MODE, generationMode);
     	map.put(PersistenceUnitProperties.CACHE_SHARED_DEFAULT, "false");
-    	
+    	map.put(PersistenceUnitProperties.PERSISTENCE_CONTEXT_COMMIT_WITHOUT_PERSIST_RULES, "false");
     	
         return map;
     }

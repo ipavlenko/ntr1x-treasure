@@ -1,8 +1,6 @@
 package com.ntr1x.treasure.web.resources;
 
-import java.nio.charset.Charset;
 import java.util.List;
-import java.util.Random;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -21,12 +19,12 @@ import javax.ws.rs.core.MediaType;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
-import com.google.common.hash.Hashing;
 import com.ntr1x.treasure.web.model.Account;
 import com.ntr1x.treasure.web.model.Resource.AttachmentsView;
 import com.ntr1x.treasure.web.model.Resource.CommentsView;
 import com.ntr1x.treasure.web.model.Resource.TagsView;
 import com.ntr1x.treasure.web.repository.AccountRepository;
+import com.ntr1x.treasure.web.services.ISecurityService;
 import com.ntr1x.treasure.web.services.ResourceService;
 
 import io.swagger.annotations.Api;
@@ -46,7 +44,8 @@ public class AccountResource {
 	@Inject
 	private AccountRepository accounts;
 	
-	private Random random = new Random();
+	@Inject
+	private ISecurityService security;
 	
 	@GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -81,19 +80,13 @@ public class AccountResource {
 	@Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
 	@Transactional
-    public Account create(Account post) {
+    public Account create(Account account) {
 	
-		post.setRandom(random.nextInt());
-		post.setPwdhash(
-			Hashing.md5()
-				.newHasher()
-				.putLong(post.getRandom())
-				.putString(post.getPassword(), Charset.forName("UTF-8"))
-				.hash()
-				.toString()
-		);
+	    int random = security.randomInt();
+	    account.setRandom(random);
+	    account.setPwdhash(security.hashPassword(random, account.getPassword()));
 		
-		Account p = service.create(post, (r) -> String.format("/accounts/%d", r.getId()), (r) -> r.getId() == null);
+		Account p = (Account) service.create(null, account, "accounts");
 		em.clear();
 		return accounts.findOne(p.getId());
     }
@@ -102,19 +95,13 @@ public class AccountResource {
 	@Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
 	@Transactional
-    public Account update(Account post) {
+    public Account update(Account account) {
 		
-		post.setRandom(random.nextInt());
-		post.setPwdhash(
-			Hashing.md5()
-				.newHasher()
-				.putLong(post.getRandom())
-				.putString(post.getPassword(), Charset.forName("UTF-8"))
-				.hash()
-				.toString()
-		);
+	    int random = security.randomInt();
+	    account.setRandom(random);
+	    account.setPwdhash(security.hashPassword(random, account.getPassword()));
 		
-		Account p = service.update(post, (r) -> r.getId() != null);
+		Account p = (Account) service.update(account);
 		em.clear();
 		return accounts.findOne(p.getId());
     }
@@ -126,7 +113,7 @@ public class AccountResource {
     public Account remove(@PathParam("id") long id) {
 		
 		Account p = accounts.findOne(id);
-		service.remove(p, (r) -> r.getId() != null);
+		service.remove(p);
 		em.clear();
 		return p;
     }

@@ -17,6 +17,7 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -27,8 +28,8 @@ import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 import org.glassfish.hk2.api.AnnotationLiteral;
 import org.glassfish.jersey.message.filtering.EntityFiltering;
 
-import com.ntr1x.treasure.web.reflection.ManagedProperty;
-import com.ntr1x.treasure.web.reflection.ManagedProperty.Type;
+import com.ntr1x.treasure.web.reflection.ResourceProperty;
+import com.ntr1x.treasure.web.reflection.ResourceProperty.Type;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -42,19 +43,23 @@ import lombok.Setter;
 @Setter
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Resource extends Managed {
+public class Resource {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "Id")
 	@ApiModelProperty(readOnly = true)
-	@ManagedProperty(create = Type.IGNORE, update = Type.IGNORE)
+	@ResourceProperty(create = Type.IGNORE, update = Type.IGNORE)
 	private Long id;
 
 	@Column(name = "Alias")
 	@ApiModelProperty(readOnly = true)
-	@ManagedProperty(create = Type.IGNORE, update = Type.IGNORE)
+	@ResourceProperty(create = Type.IGNORE, update = Type.IGNORE)
 	private String alias;
+	
+	@Transient
+    @ApiModelProperty(hidden = true)
+    private Action action;
 	
 	@TagsView
 	@XmlElement
@@ -62,7 +67,7 @@ public class Resource extends Managed {
 	@OneToMany(mappedBy = "relate")
 	@CascadeOnDelete
 	@ApiModelProperty(hidden = true)
-	@ManagedProperty(create = Type.CASCADE, update = Type.CASCADE)
+	@ResourceProperty(create = Type.CASCADE, update = Type.CASCADE)
 	private List<Tag> tags;
 	
 	@CommentsView
@@ -71,7 +76,7 @@ public class Resource extends Managed {
 	@OneToMany(mappedBy = "relate")
 	@CascadeOnDelete
 	@ApiModelProperty(hidden = true)
-	@ManagedProperty(create = Type.CASCADE, update = Type.CASCADE)
+	@ResourceProperty(create = Type.CASCADE, update = Type.CASCADE)
     private List<Comment> comments;
 	
 	@GoodsView
@@ -80,7 +85,7 @@ public class Resource extends Managed {
 	@OneToMany(mappedBy = "relate")
 	@CascadeOnDelete
 	@ApiModelProperty(hidden = true)
-	@ManagedProperty(create = Type.CASCADE, update = Type.CASCADE)
+	@ResourceProperty(create = Type.CASCADE, update = Type.CASCADE)
     private List<Good> goods;
 	
 	@AttachmentsView
@@ -89,7 +94,7 @@ public class Resource extends Managed {
 	@OneToMany(mappedBy = "relate")
 	@CascadeOnDelete
 	@ApiModelProperty(hidden = true)
-	@ManagedProperty(create = Type.CASCADE, update = Type.CASCADE)
+	@ResourceProperty(create = Type.CASCADE, update = Type.CASCADE)
     private List<Attachment> attachments;
 	
 	@CategoriesView
@@ -98,7 +103,7 @@ public class Resource extends Managed {
 	@OneToMany(mappedBy = "relate")
 	@CascadeOnDelete
 	@ApiModelProperty(hidden = true)
-	@ManagedProperty(create = Type.CASCADE, update = Type.CASCADE)
+	@ResourceProperty(create = Type.CASCADE, update = Type.CASCADE)
     private List<ResourceCategory> categories;
 	
 	@SubcategoriesView
@@ -107,7 +112,7 @@ public class Resource extends Managed {
 	@OneToMany(mappedBy = "relate")
 	@CascadeOnDelete
 	@ApiModelProperty(hidden = true)
-	@ManagedProperty(create = Type.CASCADE, update = Type.CASCADE)
+	@ResourceProperty(create = Type.CASCADE, update = Type.CASCADE)
     private List<Category> subcategories;
 	
 	@LikesView
@@ -116,7 +121,7 @@ public class Resource extends Managed {
 	@OneToMany(mappedBy = "relate")
 	@CascadeOnDelete
 	@ApiModelProperty(hidden = true)
-	@ManagedProperty(create = Type.CASCADE, update = Type.CASCADE)
+	@ResourceProperty(create = Type.CASCADE, update = Type.CASCADE)
     private List<Like> likes;
 	
 	@Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD})

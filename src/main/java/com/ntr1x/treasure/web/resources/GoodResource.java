@@ -76,7 +76,7 @@ public class GoodResource {
 	@Transactional
     public Good create(Good good) {
 	
-		Good g = service.create(good, (r) -> String.format("/goods/%s", r.getId()), (r) -> r.getId() == null);
+		Good g = (Good) service.create(null, good, "goods");
 		em.clear();
 		return goods.findOne(g.getId());
     }
@@ -87,7 +87,7 @@ public class GoodResource {
 	@Transactional
     public Good update(Good good) {
 		
-		Good g = service.update(good, (r) -> r.getId() == null);
+		Good g = (Good) service.update(good);
 		em.clear();
 		return goods.findOne(g.getId());
     }
@@ -99,7 +99,7 @@ public class GoodResource {
     public Good remove(@PathParam("id") long id) {
 		
 		Good g = goods.findOne(id);
-		service.remove(g, (r) -> r.getId() != null);
+		service.remove(g);
 		em.clear();
 		return g;
     }
