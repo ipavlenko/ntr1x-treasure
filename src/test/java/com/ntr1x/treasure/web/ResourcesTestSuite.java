@@ -5,8 +5,6 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 import com.ntr1x.treasure.web.resources.AccountResourceTest;
-import com.ntr1x.treasure.web.resources.GoodResourceTest;
-import com.ntr1x.treasure.web.resources.PublicationResourceTest;
 
 @RunWith(Suite.class)
 @SuiteClasses({
@@ -15,5 +13,5 @@ import com.ntr1x.treasure.web.resources.PublicationResourceTest;
 //	GoodResourceTest.class,
 })
 public class ResourcesTestSuite {
-	
+    
 }

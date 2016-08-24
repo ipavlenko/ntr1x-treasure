@@ -85,7 +85,8 @@ public class AccountResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Transactional
     public Account selectFull(@PathParam("id") long id) {
-		return accounts.findOne(id);
+		Account account = accounts.findOne(id);
+		return account;
     }
 	
 	@POST

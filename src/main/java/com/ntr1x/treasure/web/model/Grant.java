@@ -12,6 +12,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -30,6 +32,7 @@ import lombok.Setter;
 public class Grant extends Resource {
 	
 	@XmlElement
+    @XmlInverseReference(mappedBy = "grants")
 	@ManyToOne
 	@JoinColumn(name = "AccountId", nullable = false, updatable = false)
 	private Account account;

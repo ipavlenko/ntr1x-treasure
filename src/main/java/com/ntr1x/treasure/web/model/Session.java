@@ -28,7 +28,7 @@ import lombok.Setter;
 public class Session extends Resource {
     
     @XmlElement
-    @XmlInverseReference(mappedBy = "accounts")
+    @XmlInverseReference(mappedBy = "sessions")
     @ManyToOne
     @JoinColumn(name = "AccountId", nullable = false, updatable = false)
     private Account account;

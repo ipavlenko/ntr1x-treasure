@@ -1,18 +1,10 @@
 package com.ntr1x.treasure.web.filters;
 
 import java.io.Serializable;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
 import java.security.Principal;
 
 import javax.annotation.Priority;
-import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import javax.inject.Qualifier;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
@@ -41,15 +33,12 @@ import lombok.extern.slf4j.Slf4j;
 @Priority(Priorities.AUTHENTICATION)
 public class AuthenticationFilter implements ContainerRequestFilter {
 
-	@PersistenceContext
-	private EntityManager em;
-
 	@Inject
 	private HttpServletRequest request;
 
 	@Inject
 	private ISecurityService security;
-//
+	
 	@Inject
     private SessionRepository sessions;
 	
@@ -106,12 +95,20 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 		}
 	}
 
-	@Qualifier
-	@Retention(RetentionPolicy.RUNTIME)
-	@Target({ ElementType.TYPE, ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER })
-	public @interface RequestAttribute {}
+	@Configuration
+    public static class PrincipalFactory {
 
-	@RequestScoped
+        @Inject
+        private HttpServletRequest request;
+
+        @Bean
+        @Scope(value = "request", proxyMode = ScopedProxyMode.TARGET_CLASS)
+        public AccountPrincipal produce() {
+
+            return (AccountPrincipal) request.getAttribute(AccountPrincipal.class.getName());
+        }
+    }
+	
 	@Configuration
 	public static class SessionFactory {
 
@@ -127,7 +124,6 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 		}
 	}
 
-	@RequestScoped
 	@Configuration
 	public static class AccountFactory {
 

@@ -22,6 +22,7 @@ import io.swagger.models.auth.In;
 		@Tag(name = "Publications", description = "News, events, blogs, etc."),
 		@Tag(name = "Goods",        description = "Goods, services, offers, etc."),
 		@Tag(name = "Accounts",     description = "Users & Profiles."),
+		@Tag(name = "Setup",        description = "Application Setup."),
 	}
 )
 public class APIV1 implements ReaderListener {

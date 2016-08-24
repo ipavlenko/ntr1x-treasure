@@ -48,7 +48,7 @@ public class PublicationResourceTest {
 	        	.get(new GenericType<List<Publication>>() {})
 	        ;
 	        
-	        Assert.assertEquals(response.size(), 0);        
+	        Assert.assertEquals(response.size(), 0);
 		}
 	    
 		{
