@@ -20,12 +20,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(
-	name = "publications",
-	indexes= {
-		@Index(columnList="Published"),
-	}
-)
+@Table(name = "publications", indexes= { @Index(columnList="Published") })
 @PrimaryKeyJoinColumn(name = "ResourceId", referencedColumnName = "Id")
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)

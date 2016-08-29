@@ -51,7 +51,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 
 			String value = rc.getHeaderString("Authorization");
 
-			if (value != null){
+			if (value != null) {
 			    
 				ISecurityService.SecuritySession parsed = security.parseSession(value);
 

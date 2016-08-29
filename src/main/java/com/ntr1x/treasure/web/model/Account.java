@@ -13,7 +13,6 @@ import javax.persistence.Index;
 import javax.persistence.OneToMany;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -58,11 +57,6 @@ public class Account extends Resource {
 	@Column(name = "Pwdhash")
 	@ApiModelProperty(hidden = true)
 	private String pwdhash;
-	
-	@Transient
-	@ApiModelProperty(hidden = true)
-    @ResourceProperty(create = Type.IGNORE, update = Type.IGNORE)
-	private String password;
 	
 	@SessionsView
 	@XmlElement

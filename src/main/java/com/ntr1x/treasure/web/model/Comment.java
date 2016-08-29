@@ -1,6 +1,5 @@
 package com.ntr1x.treasure.web.model;
 
-import java.lang.annotation.Annotation;
 import java.time.LocalDateTime;
 
 import javax.persistence.Column;
@@ -8,7 +7,6 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
-import javax.persistence.PrePersist;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -53,14 +51,4 @@ public class Comment extends Resource {
 	@XmlJavaTypeAdapter(LocalDateTimeConverter.class)
 	@ApiModelProperty(example="1970-01-01T00:00:00")
 	private LocalDateTime published;
-	
-	public static final Annotation[] VIEWS = {
-		CommentsView.Factory.get(),
-		LikesView.Factory.get(),
-	};
-	
-	@PrePersist
-	public void onCreate() {
-	    
-	}
 }

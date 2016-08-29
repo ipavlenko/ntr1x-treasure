@@ -28,7 +28,7 @@ public class AuthorizationFilter implements ContainerRequestFilter {
 	
 	@Override
 	public void filter(ContainerRequestContext rc) {
-		
+	    
 	    rc.setSecurityContext(
 		    new SecurityContextInstance(
 		        security,

@@ -191,8 +191,8 @@ public class SecurityService implements ISecurityService {
         
         return grants.check(
             account.getId(),
-            action,
-            resource
+            resource,
+            action
         ) > 0;
     }
 }

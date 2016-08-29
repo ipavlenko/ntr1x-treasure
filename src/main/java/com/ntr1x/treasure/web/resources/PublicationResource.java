@@ -17,16 +17,21 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.support.TransactionSynchronizationAdapter;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
+import com.ntr1x.treasure.web.converter.AppConverterProvider.LocalDateTimeConverter;
+import com.ntr1x.treasure.web.events.ResourceEvent;
+import com.ntr1x.treasure.web.model.Action;
 import com.ntr1x.treasure.web.model.Publication;
-import com.ntr1x.treasure.web.model.Resource.AttachmentsView;
-import com.ntr1x.treasure.web.model.Resource.CommentsView;
-import com.ntr1x.treasure.web.model.Resource.TagsView;
 import com.ntr1x.treasure.web.repository.PublicationRepository;
-import com.ntr1x.treasure.web.services.ResourceService;
+import com.ntr1x.treasure.web.services.IPublisherSevice;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
@@ -41,10 +46,10 @@ public class PublicationResource {
 	private EntityManager em;
 	
 	@Inject
-	private ResourceService service;
+	private PublicationRepository publications;
 	
 	@Inject
-	private PublicationRepository publications;
+	private IPublisherSevice publisher;
 	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
@@ -53,7 +58,7 @@ public class PublicationResource {
 			@QueryParam("page") @ApiParam(example = "0") int page,
 			@QueryParam("size") @ApiParam(example = "10") int size
 	) {
-		return publications.findAll(new PageRequest(0, size)).getContent();
+	    return publications.findAll(new PageRequest(0, size)).getContent();
 	}
 	
 	@GET
@@ -61,60 +66,113 @@ public class PublicationResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Transactional
 	public Publication select(@PathParam("id") long id) {
-		return publications.findOne(id);
-	}
-	
-	@GET
-	@Path("/{id}/full")
-	@CommentsView
-	@TagsView
-	@AttachmentsView
-	@Produces(MediaType.APPLICATION_JSON)
-	@Transactional
-	public Publication selectFull(@PathParam("id") long id) {
-		return publications.findOne(id);
+	    
+	    return publications.findOne(id);
 	}
 	
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Transactional
-//	@RolesAllowed({
-//		"/companies:admin"
-//	})
-	public Publication create(Publication post) {
+	@RolesAllowed({ "/publications:admin" })
+	public Publication create(PublicationCreate publication) {
 
-		Publication p = (Publication) service.create(null, post, "publications");
-		em.clear();
-		return publications.findOne(p.getId());
+	    Publication persisted = new Publication(); {
+	        
+	        persisted.setTitle(publication.title);
+	        persisted.setPromo(publication.promo);
+	        persisted.setContent(publication.content);
+            
+	        em.persist(persisted);
+	        em.flush();
+	    }
+	    
+	    TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+	        
+	        @Override
+	        public void afterCommit() {
+	            
+	            publisher.publishEvent(new ResourceEvent.CREATED(persisted));
+	        }
+	    });
+		
+		return persisted;
 	}
 	
 	@PUT
+	@Path("/{id}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Transactional
-//	@RolesAllowed({
-//		"/companies/{post.id}:admin"
-//	})
-	public Publication update(Publication post) {
+	@RolesAllowed({ "/publications/{id}:admin" })
+	public Publication update(@PathParam("id") long id, PublicationUpdate publication) {
+	    
+		Publication persisted = em.find(Publication.class, id); {
+		    
+		    persisted.setTitle(publication.title);
+		    persisted.setPromo(publication.promo);
+		    persisted.setContent(publication.content);
+		    
+		    em.merge(persisted);
+		    em.flush();
+		}
 		
-		Publication p = (Publication) service.update(post);
-		em.clear();
-		return publications.findOne(p.getId());
+		return persisted;
 	}
 	
 	@DELETE
 	@Path("/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Transactional
-	@RolesAllowed({
-		"/companies/{post.id}:admin"
-	})
+	@RolesAllowed({ "/publications/{id}:admin" })
 	public Publication remove(@PathParam("id") long id) {
 		
-		Publication p = publications.findOne(id);
-		service.remove(p);
-		em.clear();
-		return p;
+		Publication persisted = em.find(Publication.class, id); {
+		    
+		    em.remove(persisted);
+	        em.flush();
+		}
+		
+		return persisted;
 	}
+	
+	@XmlRootElement
+    public static class PublicationCreate {
+        
+        public String title;
+        public String promo;
+        public String content;
+        
+        @XmlJavaTypeAdapter(LocalDateTimeConverter.class)
+        public String published;
+        
+        @XmlElement
+        public List<Tag> tags;
+        
+        public static class Tag {
+            
+            public String value;
+        }
+    }
+    
+    @XmlRootElement
+    public static class PublicationUpdate {
+        
+        public String title;
+        public String promo;
+        public String content;
+        
+        @XmlJavaTypeAdapter(LocalDateTimeConverter.class)
+        public String published;
+        
+        @XmlElement
+        public List<Tag> tags;
+        
+        public static class Tag {
+            
+            public Long id;
+            public String value;
+            public Action _action;
+        }
+    }
 }

@@ -12,6 +12,27 @@ import com.ntr1x.treasure.web.model.Resource;
 
 public class ResourceUtils {
     
+    public static String alias(Resource parent, String locator, Resource resource) {
+        
+        return parent != null
+            ? String.format("%s/%s/%d", parent.getAlias(), locator, resource.getId())
+            : String.format("/%s/%d", locator, resource.getId())
+        ;
+    }
+    
+    public static <T extends Resource> T copyPropeties(
+            ManagedDescriptor[] properties,
+            T source,
+            T target
+    ) {
+        for (ManagedDescriptor p : properties) {
+            Object value = p.get.apply(source);
+            p.set.accept(target, value);
+        }
+        
+        return target;
+    }
+    
     public static <T extends Resource> ManagedDescriptor[] values(
             T managed,
             ResourceProperty.Type create,
@@ -61,50 +82,4 @@ public class ResourceUtils {
         
         return values.toArray(new ManagedDescriptor[0]);
     }
-    
-//    public static <T extends Managed> void copyProperties(T source, T dest, ManagedDescriptor[] properties) {
-//        
-//        try {
-//            
-//            for (ManagedDescriptor p : properties) {
-//                
-//                PropertyDescriptor s = BeanUtils.getPropertyDescriptor(source.getClass(), p.name);
-//                PropertyDescriptor d = BeanUtils.getPropertyDescriptor(dest.getClass(), p.name);
-//                
-//                Object value = s.getReadMethod().invoke(source);
-//                d.getWriteMethod().invoke(dest, value);
-//            }
-//            
-//        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-//            
-//            throw new IllegalArgumentException(e);
-//        }
-//    }
-
-//    public static <T extends Managed> void cascadeProperties(T source, T dest, ManagedDescriptor[] properties, Consumer<T> visitor) {
-//        
-//        try {
-//            
-//            for (ManagedDescriptor p : properties) {
-//                
-//                PropertyDescriptor s = BeanUtils.getPropertyDescriptor(source.getClass(), p.name);
-//                PropertyDescriptor d = BeanUtils.getPropertyDescriptor(dest.getClass(), p.name);
-//                
-//                Object value = s.getReadMethod().invoke(source);
-//                
-//                if (value != null) {
-//                    
-//                    for (Object item : (Iterable<?>) value) {
-//                        
-//                        visitor.accept((T) item);
-//                        
-//                    }
-//                }
-//            }
-//            
-//        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-//            
-//            throw new IllegalArgumentException(e);
-//        }
-//    }
 }

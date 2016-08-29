@@ -9,17 +9,16 @@ import com.ntr1x.treasure.web.model.Grant;
 public interface GrantRepository extends JpaRepository<Grant, Long> {
     
     @Query(
-        " SELECT COUNT(r.id)"
+        " SELECT COUNT(g.id)"
       + " FROM"
-      + "     Grant g,"
-      + "     Resource r"
+      + "     Grant g"
       + " WHERE g.action = :action"
       + "   AND g.account.id = :account"
-      + "   AND LOCATE(:resource, g.pattern) = 1"
+      + "   AND LOCATE(g.pattern, :resource) = 1"
     )
     int check(
         @Param("account") long account,
-        @Param("action") String action,
-        @Param("resource") String resource
+        @Param("resource") String resource,
+        @Param("action") String action
     );
 }

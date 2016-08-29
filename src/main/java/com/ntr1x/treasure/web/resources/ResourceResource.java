@@ -15,13 +15,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
 import com.ntr1x.treasure.web.model.Resource;
-import com.ntr1x.treasure.web.model.Resource.AttachmentsView;
-import com.ntr1x.treasure.web.model.Resource.CategoriesView;
-import com.ntr1x.treasure.web.model.Resource.CommentsView;
-import com.ntr1x.treasure.web.model.Resource.GoodsView;
-import com.ntr1x.treasure.web.model.Resource.LikesView;
-import com.ntr1x.treasure.web.model.Resource.SubcategoriesView;
-import com.ntr1x.treasure.web.model.Resource.TagsView;
 import com.ntr1x.treasure.web.repository.ResourceRepository;
 
 import io.swagger.annotations.Api;
@@ -54,7 +47,7 @@ public class ResourceResource {
 	@Path("/i/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Transactional
-    public Resource select(@PathParam("id") long id) {
+    public Resource select(@PathParam("id") long id, @QueryParam("select") String select) {
 		return repository.findOne(id);
     }
 	
@@ -63,36 +56,6 @@ public class ResourceResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Transactional
     public Resource select(@PathParam("alias") String alias) {
-		return repository.findByAlias(alias);
-    }
-	
-	@GET
-	@Path("/i/{id}/full")
-	@CommentsView
-	@GoodsView
-	@TagsView
-	@AttachmentsView
-	@CategoriesView
-	@SubcategoriesView
-	@LikesView
-	@Produces(MediaType.APPLICATION_JSON)
-	@Transactional
-    public Resource selectFull(@PathParam("id") long id) {
-		return repository.findOne(id);
-    }
-	
-	@GET
-	@Path("/n/{id}/full")
-	@CommentsView
-	@GoodsView
-	@TagsView
-	@AttachmentsView
-	@CategoriesView
-	@SubcategoriesView
-	@LikesView
-	@Produces(MediaType.APPLICATION_JSON)
-	@Transactional
-    public Resource selectFull(@PathParam("alias") String alias) {
 		return repository.findByAlias(alias);
     }
 }
