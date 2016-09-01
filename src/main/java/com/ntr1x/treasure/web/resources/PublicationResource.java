@@ -128,12 +128,7 @@ public class PublicationResource {
 		    persisted.setPromo(publication.promo);
 		    persisted.setContent(publication.content);
 		    
-		    em.persist(persisted);
-            em.flush();
-            
-            persisted.setAlias(ResourceUtils.alias(null, "publications", persisted));
-            
-            em.merge(persisted);
+		    em.merge(persisted);
             em.flush();
 		}
 		

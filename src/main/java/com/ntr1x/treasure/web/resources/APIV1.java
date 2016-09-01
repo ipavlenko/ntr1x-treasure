@@ -20,6 +20,7 @@ import io.swagger.models.auth.In;
 	    @Tag(name = "Security",     description = "Registration & Authorization"),
 		@Tag(name = "Resources",    description = "Universal access to the application data"),
 		@Tag(name = "Publications", description = "News, events, blogs, etc."),
+		@Tag(name = "Categories",   description = "Resource catgories"),
 		@Tag(name = "Accounts",     description = "Users & Profiles"),
 //		@Tag(name = "Goods",        description = "Goods, services, offers, etc."),
 	}

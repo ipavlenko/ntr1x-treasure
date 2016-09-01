@@ -121,14 +121,14 @@ public class ResourceEndpointTest {
         WebSocketConnectionManager connectionManager = new WebSocketConnectionManager(
             client,
             handler,
-            String.format("ws://localhost:%d/socket", port)
+            String.format("ws://localhost:%d/socket/resources", port)
         );
         
         connectionManager.start();
         
         try {
             
-            if (!latch.await(500, TimeUnit.SECONDS)) {
+            if (!latch.await(10, TimeUnit.SECONDS)) {
                 Assert.fail("Socket connection timeout");
             }
             

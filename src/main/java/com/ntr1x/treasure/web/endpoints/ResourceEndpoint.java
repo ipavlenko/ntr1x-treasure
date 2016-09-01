@@ -18,7 +18,7 @@ import com.ntr1x.treasure.web.services.ISubscriptionService.SubscriptionMessage;
 
 @Component
 @Scope("singleton")
-@ServerEndpoint(value = "/socket", configurator = EndpointConfigurator.class)
+@ServerEndpoint(value = "/socket/resources", configurator = EndpointConfigurator.class)
 public class ResourceEndpoint {
     
     @Inject

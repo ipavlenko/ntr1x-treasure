@@ -8,14 +8,18 @@ import java.lang.annotation.Target;
 import java.util.List;
 
 import javax.enterprise.util.AnnotationLiteral;
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -53,6 +57,12 @@ public class Resource {
 	@Column(name = "Alias")
 	@ApiModelProperty(readOnly = true)
 	private String alias;
+	
+	@ElementCollection(fetch = FetchType.EAGER)
+	@CollectionTable(name="aspects", joinColumns = { @JoinColumn(name = "RelateId") })
+	@Column(name="Aspect")
+	@CascadeOnDelete
+	private List<String> aspects;
 	
 	@ResourceRelation
 	@XmlElement

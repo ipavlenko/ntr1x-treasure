@@ -29,7 +29,7 @@ public class Category extends Resource {
 	@XmlElement
 	@XmlInverseReference(mappedBy = "subcategories")
 	@ManyToOne
-	@JoinColumn(name = "RelateId", nullable = false, updatable = false)
+	@JoinColumn(name = "RelateId", nullable = true, updatable = false)
 	private Resource relate;
 	
 	@Column(name = "Title")
