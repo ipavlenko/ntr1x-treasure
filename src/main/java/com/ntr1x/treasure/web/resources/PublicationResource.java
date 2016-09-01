@@ -57,6 +57,7 @@ public class PublicationResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Transactional
 	public List<Publication> list(
+	        @QueryParam("category") List<Long> categories,
 			@QueryParam("page") @ApiParam(example = "0") int page,
 			@QueryParam("size") @ApiParam(example = "10") int size
 	) {
@@ -168,6 +169,16 @@ public class PublicationResource {
             
             public String value;
         }
+        
+        public static class Category {
+
+            public Long category;
+        }
+        
+        public static class Attachment {
+            
+            public Long upload;
+        }
     }
     
     @XmlRootElement
@@ -182,11 +193,31 @@ public class PublicationResource {
         
         @XmlElement
         public List<Tag> tags;
+
+        @XmlElement
+        public List<Category> categories;
+        
+        @XmlElement
+        public List<Attachment> attachments;
         
         public static class Tag {
             
             public Long id;
             public String value;
+            public Action _action;
+        }
+        
+        public static class Category {
+            
+            public Long id;
+            public Long category;
+            public Action _action;
+        }
+        
+        public static class Attachment {
+            
+            public Long id;
+            public Long upload;
             public Action _action;
         }
     }
