@@ -58,7 +58,8 @@ public class Resource {
 	@ApiModelProperty(readOnly = true)
 	private String alias;
 	
-	@ElementCollection(fetch = FetchType.EAGER)
+	@ResourceRelation
+	@ElementCollection(fetch = FetchType.LAZY)
 	@CollectionTable(name="aspects", joinColumns = { @JoinColumn(name = "RelateId") })
 	@Column(name="Aspect")
 	@CascadeOnDelete

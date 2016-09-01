@@ -33,7 +33,10 @@ import com.ntr1x.treasure.web.reflection.ResourceUtils;
 import com.ntr1x.treasure.web.repository.CategoryRepository;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiParam;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 @Path("categories")
 @Api("Categories")
@@ -52,11 +55,11 @@ public class CategoryResource {
     @Transactional
     public List<Category> list(
             @QueryParam("aspect") String aspect,
-            @QueryParam("parent") Long parent,
+            @QueryParam("relate") Long relate,
             @QueryParam("page") @ApiParam(example = "0") int page,
             @QueryParam("size") @ApiParam(example = "10") int size
     ) {
-        return categories.findAll(new PageRequest(0, size)).getContent();
+        return categories.findByRelateAndAspect(relate, aspect, new PageRequest(0, size)).getContent();
     }
     
     @GET
@@ -77,6 +80,11 @@ public class CategoryResource {
 
         Category persisted = new Category(); {
             
+            persisted.setRelate(
+                category.relate == null
+                    ? null
+                    : em.find(Category.class, category.relate)
+            );
             persisted.setTitle(category.title);
             persisted.setDescription(category.description);
             persisted.setAspects(Arrays.asList(category.aspects));
@@ -257,13 +265,17 @@ public class CategoryResource {
     @XmlRootElement
     public static class CategoryCreate {
         
+        public Long relate;
         public String title;
         public String description;
         public String[] aspects;
         
+        @ApiModelProperty(hidden = true)
         @XmlElement
-        public List<Subcategory> subcategories;
+        public Subcategory[] subcategories;
         
+        @AllArgsConstructor
+        @RequiredArgsConstructor
         public static class Subcategory {
             
             public String title;
@@ -271,7 +283,7 @@ public class CategoryResource {
             public String[] aspects;
             
             @XmlElement
-            public List<Subcategory> subcategories;
+            public Subcategory[] subcategories;
         }
     }
     
@@ -282,9 +294,12 @@ public class CategoryResource {
         public String description;
         public String[] aspects;
         
+        @ApiModelProperty(hidden = true)
         @XmlElement
-        public List<Subcategory> subcategories;
+        public Subcategory[] subcategories;
         
+        @AllArgsConstructor
+        @RequiredArgsConstructor
         public static class Subcategory {
             
             public Long id;
@@ -294,7 +309,7 @@ public class CategoryResource {
             public Action _action;
             
             @XmlElement
-            public List<Subcategory> subcategories;
+            public Subcategory[] subcategories;
         }
     }
 }

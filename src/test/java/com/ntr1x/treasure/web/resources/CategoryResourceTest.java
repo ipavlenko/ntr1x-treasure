@@ -50,7 +50,7 @@ public class CategoryResourceTest {
     }
     
     @Test
-    public void test() {
+    public void testCreate() {
         
         profiler.withDisabledSecurity(() -> {
             
@@ -68,19 +68,131 @@ public class CategoryResourceTest {
                 ;
                 
                 Assert.assertNotNull(r.getId());
-                Assert.assertNotNull(r.getAspects());
-                Assert.assertTrue(r.getAspects().contains("directory"));
             }
             
-            List<Category> response = target
-                .path("/categories")
-                .queryParam("page", 0)
-                .queryParam("size", 10)
-                .request()
-                .get(new GenericType<List<Category>>() {})
-            ;
+            for (String title : new String[] { "Первая специализация", "Вторая специализация", "Третья специализация" }) {
+                
+                CategoryCreate s = new CategoryCreate(); {
+                    s.title = title;
+                    s.aspects = new String[] { "specialization" };
+                    s.subcategories = new CategoryCreate.Subcategory[] {
+                        new CategoryCreate.Subcategory(String.format("Первая локализация (%s)", title), null, new String[] { "localization" }, null),
+                        new CategoryCreate.Subcategory(String.format("Вторая локализация (%s)", title), null, new String[] { "localization" }, null),
+                        new CategoryCreate.Subcategory(String.format("Третья локализация (%s)", title), null, new String[] { "localization" }, null),
+                    };
+                }
+                
+                Category r = target
+                    .path("/categories")
+                    .request(MediaType.APPLICATION_JSON_TYPE)
+                    .post(Entity.entity(s, MediaType.APPLICATION_JSON_TYPE), Category.class)
+                ;
+                
+                Assert.assertNotNull(r.getId());
+            }
             
-            Assert.assertEquals(response.size(), 4);
+        });
+    }
+    
+    @Test
+    public void testList() {
+        
+        profiler.withDisabledSecurity(() -> {
+            
+            {
+                List<Category> response = target
+                    .path("/categories")
+                    .queryParam("page", 0)
+                    .queryParam("size", 10)
+                    .request()
+                    .get(new GenericType<List<Category>>() {})
+                ;
+                
+                Assert.assertEquals(10, response.size());
+            }
+            
+            {
+                List<Category> response = target
+                    .path("/categories")
+                    .queryParam("page", 0)
+                    .queryParam("size", 100)
+                    .request()
+                    .get(new GenericType<List<Category>>() {})
+                ;
+                
+                Assert.assertEquals(16, response.size());
+            }
+            
+            {
+                List<Category> response = target
+                    .path("/categories")
+                    .queryParam("page", 0)
+                    .queryParam("size", 2)
+                    .request()
+                    .get(new GenericType<List<Category>>() {})
+                ;
+                
+                Assert.assertEquals(2, response.size());
+            }
+            
+            {
+                List<Category> response = target
+                    .path("/categories")
+                    .queryParam("aspect", "directory")
+                    .queryParam("page", 0)
+                    .queryParam("size", 10)
+                    .request()
+                    .get(new GenericType<List<Category>>() {})
+                ;
+                
+                Assert.assertEquals(4, response.size());
+            }
+            
+            List<Category> specializations = null; {
+                
+                List<Category> response = target
+                    .path("/categories")
+                    .queryParam("aspect", "specialization")
+                    .queryParam("page", 0)
+                    .queryParam("size", 10)
+                    .request()
+                    .get(new GenericType<List<Category>>() {})
+                ;
+                
+                Assert.assertEquals(3, response.size());
+                
+                specializations = response;
+            }
+            
+            {
+                List<Category> response = target
+                    .path("/categories")
+                    .queryParam("aspect", "localization")
+                    .queryParam("page", 0)
+                    .queryParam("size", 10)
+                    .request()
+                    .get(new GenericType<List<Category>>() {})
+                ;
+                
+                Assert.assertEquals(9, response.size());
+            }
+            
+            {
+                Category specialization = specializations.get(0);
+                
+                List<Category> response = target
+                    .path("/categories")
+                    .queryParam("aspect", "localization")
+                    .queryParam("relate", specialization.getId())
+                    .queryParam("page", 0)
+                    .queryParam("size", 10)
+                    .request()
+                    .get(new GenericType<List<Category>>() {})
+                ;
+                
+                Assert.assertEquals(3, response.size());
+            }
+            
         });
     }
 }
