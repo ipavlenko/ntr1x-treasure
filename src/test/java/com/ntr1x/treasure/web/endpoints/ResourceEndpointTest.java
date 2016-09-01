@@ -1,4 +1,4 @@
-package com.ntr1x.treasure.web.socket;
+package com.ntr1x.treasure.web.endpoints;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -19,6 +19,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -26,22 +27,27 @@ import org.springframework.web.socket.client.WebSocketConnectionManager;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ntr1x.treasure.web.App;
 import com.ntr1x.treasure.web.model.Publication;
 import com.ntr1x.treasure.web.resources.PublicationResource.PublicationCreate;
 import com.ntr1x.treasure.web.services.IProfilerService;
+import com.ntr1x.treasure.web.services.ISubscriptionService.SubscriptionMessage;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = App.class, webEnvironment = WebEnvironment.RANDOM_PORT)
 @TestPropertySource(locations="classpath:application-test.properties")
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class ResourceSocketTest {
+public class ResourceEndpointTest {
 
     @LocalServerPort
     private int port;
     
     @Inject
     private IProfilerService profiler;
+    
+    @Inject
+    private ObjectMapper mapper;
     
     @Test
     public void init() {
@@ -51,7 +57,7 @@ public class ResourceSocketTest {
             .target(String.format("http://localhost:%d", this.port))
         ;
         
-        CountDownLatch latch = new CountDownLatch(2);
+        CountDownLatch latch = new CountDownLatch(3);
         
         StandardWebSocketClient client = new StandardWebSocketClient();
         
@@ -61,6 +67,17 @@ public class ResourceSocketTest {
             public void afterConnectionEstablished(WebSocketSession session) throws Exception {
                 
                 latch.countDown();
+                
+                session.sendMessage(
+                    new TextMessage(
+                        mapper.writeValueAsString(
+                            new SubscriptionMessage(
+                                SubscriptionMessage.Type.SUBSCRIBE,
+                                "^/publications/?.*"
+                            )
+                        )
+                    )
+                );
                 
                 profiler.withDisabledSecurity(() -> {
                     
@@ -111,7 +128,7 @@ public class ResourceSocketTest {
         
         try {
             
-            if (!latch.await(50, TimeUnit.SECONDS)) {
+            if (!latch.await(500, TimeUnit.SECONDS)) {
                 Assert.fail("Socket connection timeout");
             }
             

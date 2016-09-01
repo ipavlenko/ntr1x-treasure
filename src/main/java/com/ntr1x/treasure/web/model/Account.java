@@ -1,10 +1,5 @@
 package com.ntr1x.treasure.web.model;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -21,11 +16,6 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import org.eclipse.persistence.annotations.CascadeOnDelete;
 import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
-import org.glassfish.hk2.api.AnnotationLiteral;
-import org.glassfish.jersey.message.filtering.EntityFiltering;
-
-import com.ntr1x.treasure.web.reflection.ResourceProperty;
-import com.ntr1x.treasure.web.reflection.ResourceProperty.Type;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -58,53 +48,19 @@ public class Account extends Resource {
 	@ApiModelProperty(hidden = true)
 	private String pwdhash;
 	
-	@SessionsView
+	@ResourceRelation
 	@XmlElement
 	@XmlInverseReference(mappedBy = "account")
 	@OneToMany(mappedBy = "account")
 	@CascadeOnDelete
 	@ApiModelProperty(hidden = true)
-    @ResourceProperty(create = Type.IGNORE, update = Type.IGNORE)
 	private List<Session> sessions;
 	
-	@GrantsView
+	@ResourceRelation
     @XmlElement
     @XmlInverseReference(mappedBy = "account")
     @OneToMany(mappedBy = "account")
     @CascadeOnDelete
     @ApiModelProperty(hidden = true)
-    @ResourceProperty(create = Type.IGNORE, update = Type.IGNORE)
     private List<Grant> grants;
-	
-	@Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD})
-	@Retention(RetentionPolicy.RUNTIME)
-	@Documented
-	@EntityFiltering
-	public static @interface SessionsView {
-		
-		public static class Factory extends AnnotationLiteral<SessionsView> implements SessionsView {
-			
-			private static final long serialVersionUID = -971363300488244186L;
-
-			public static SessionsView get() {
-				return new Factory();
-			}
-		}
-	}
-	
-    @Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD})
-    @Retention(RetentionPolicy.RUNTIME)
-    @Documented
-    @EntityFiltering
-    public static @interface GrantsView {
-        
-        public static class Factory extends AnnotationLiteral<GrantsView> implements GrantsView {
-            
-            private static final long serialVersionUID = -1701397280023104688L;
-
-            public static GrantsView get() {
-                return new Factory();
-            }
-        }
-    }
 }

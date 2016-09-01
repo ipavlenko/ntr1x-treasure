@@ -1,11 +1,13 @@
 package com.ntr1x.treasure.web.services;
 
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.regex.Pattern;
 
+import javax.inject.Inject;
 import javax.websocket.Session;
 
 import org.springframework.context.annotation.Scope;
@@ -14,31 +16,31 @@ import org.springframework.stereotype.Service;
 
 import com.ntr1x.treasure.web.events.ResourceEvent;
 
+import lombok.RequiredArgsConstructor;
+import lombok.Synchronized;
+
 @Service
 @Scope("singleton")
 public class SubscriptionService implements ISubscriptionService {
 
     private ExecutorService executor = Executors.newSingleThreadExecutor();
     
-    private Set<Session> sessions = new HashSet<>();
+    private Map<Session, Subscription> subscriptions = new HashMap<>();
+    
+    @Inject
+    private ISerializationService serialization;
     
     @EventListener
     public void handle(ResourceEvent event) {
         
-        broadcast(
-            String.format(
-                "Event: %s/%d",
-                event.getSource().getClass().getSimpleName(),
-                event.getSource().getId()
-            )
-        );
+        broadcast(event.getSource());
     }
     
     @Override
     public void subscribe(Session session) {
         
         executor.submit(() -> {
-            sessions.add(session);
+            subscriptions.put(session, new Subscription(session));
         });
     }
 
@@ -46,28 +48,71 @@ public class SubscriptionService implements ISubscriptionService {
     public void unsubscribe(Session session) {
         
         executor.submit(() -> {
-            sessions.remove(session);
+            subscriptions.remove(session);
         });
     }
     
     @Override
-    public void broadcast(String message) {
+    public void broadcast(ResourceMessage message) {
         
         executor.submit(() -> {
             
-            for (Session session : sessions) {
+            for (Subscription subscription : subscriptions.values()) {
                 
-                try {
-                    
-                    session.getBasicRemote().sendText(
-                        message
-                    );
-                    
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
+                subscription.send(message);
             }
         });
+    }
+
+    @Override
+    public void handle(Session session, SubscriptionMessage message) {
+        
+        executor.submit(() -> {
+            
+            Subscription subscription = subscriptions.get(session);
+            if (subscription != null) {
+                subscription.handle(message);
+            }
+        });
+    }
+    
+    @RequiredArgsConstructor
+    private class Subscription {
+        
+        private final Session session;
+        private final Map<String, Pattern> patterns = new HashMap<>();
+        
+        @Synchronized
+        public void handle(SubscriptionMessage message) {
+            switch (message.type) {
+            case SUBSCRIBE:
+                patterns.put(message.pattern, Pattern.compile(message.pattern));
+                break;
+            case UNSUBSCRIBE:
+                patterns.remove(message.pattern);
+                break;
+            }
+        }
+        
+        @Synchronized
+        public void send(ResourceMessage message) {
+            
+            for (Pattern p : patterns.values()) {
+                
+                if (p.matcher(message.alias).matches()) {
+                    
+                    try {
+                        
+                        session.getBasicRemote().sendText(serialization.stringify(message.object, message.object.getClass()));
+                    
+                    } catch (IOException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                    
+                    break;
+                }
+            }
+        }
     }
 }

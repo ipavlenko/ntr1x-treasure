@@ -1,4 +1,4 @@
-package com.ntr1x.treasure.web.socket;
+package com.ntr1x.treasure.web.endpoints;
 
 import javax.websocket.server.ServerEndpointConfig;
 

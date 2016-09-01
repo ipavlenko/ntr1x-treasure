@@ -1,5 +1,6 @@
-package com.ntr1x.treasure.web.socket;
+package com.ntr1x.treasure.web.endpoints;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
@@ -11,7 +12,9 @@ import javax.websocket.server.ServerEndpoint;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import com.ntr1x.treasure.web.services.ISerializationService;
 import com.ntr1x.treasure.web.services.ISubscriptionService;
+import com.ntr1x.treasure.web.services.ISubscriptionService.SubscriptionMessage;
 
 @Component
 @Scope("singleton")
@@ -21,8 +24,15 @@ public class ResourceEndpoint {
     @Inject
     private ISubscriptionService subscriptions;
     
-    public ResourceEndpoint() {
-        System.out.println("Created");
+    @Inject
+    private ISerializationService serialization;
+    
+//    @Inject
+//    private ObjectProvider<ObjectGraph> provider;
+    
+    @PostConstruct
+    private void init() {
+//        System.out.println(provider);
     }
     
     @OnOpen
@@ -39,11 +49,13 @@ public class ResourceEndpoint {
 
     @OnMessage
     public void onMessage(Session session, String message) {
-        System.out.println("APP-Socket: Socket connection message");
+        
+        subscriptions.handle(session, serialization.parse(SubscriptionMessage.class, message, SubscriptionMessage.class));
     }
     
     @OnError
     public void onError(Session session, Throwable error) {
         System.out.println("APP-Socket: Socket connection error");
+        error.printStackTrace();
     }
 }

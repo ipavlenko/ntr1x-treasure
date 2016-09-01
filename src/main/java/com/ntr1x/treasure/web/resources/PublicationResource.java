@@ -30,8 +30,10 @@ import com.ntr1x.treasure.web.converter.AppConverterProvider.LocalDateTimeConver
 import com.ntr1x.treasure.web.events.ResourceEvent;
 import com.ntr1x.treasure.web.model.Action;
 import com.ntr1x.treasure.web.model.Publication;
+import com.ntr1x.treasure.web.reflection.ResourceUtils;
 import com.ntr1x.treasure.web.repository.PublicationRepository;
 import com.ntr1x.treasure.web.services.IPublisherSevice;
+import com.ntr1x.treasure.web.services.ISubscriptionService.ResourceMessage;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
@@ -85,6 +87,11 @@ public class PublicationResource {
             
 	        em.persist(persisted);
 	        em.flush();
+	        
+	        persisted.setAlias(ResourceUtils.alias(null, "publications", persisted));
+            
+            em.merge(persisted);
+            em.flush();
 	    }
 	    
 	    TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
@@ -92,7 +99,15 @@ public class PublicationResource {
 	        @Override
 	        public void afterCommit() {
 	            
-	            publisher.publishEvent(new ResourceEvent.CREATED(persisted));
+	            publisher.publishEvent(
+                    new ResourceEvent(
+                        new ResourceMessage(
+                            persisted.getAlias(),
+                            ResourceMessage.Type.CREATE,
+                            persisted
+                        )
+                    )
+                );
 	        }
 	    });
 		
@@ -113,8 +128,13 @@ public class PublicationResource {
 		    persisted.setPromo(publication.promo);
 		    persisted.setContent(publication.content);
 		    
-		    em.merge(persisted);
-		    em.flush();
+		    em.persist(persisted);
+            em.flush();
+            
+            persisted.setAlias(ResourceUtils.alias(null, "publications", persisted));
+            
+            em.merge(persisted);
+            em.flush();
 		}
 		
 		return persisted;

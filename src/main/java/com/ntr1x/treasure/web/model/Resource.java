@@ -25,10 +25,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.eclipse.persistence.annotations.CascadeOnDelete;
 import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
-import org.glassfish.jersey.message.filtering.EntityFiltering;
+
+import com.ntr1x.treasure.web.filtering.ResourceFiltering;
 
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
@@ -51,7 +54,7 @@ public class Resource {
 	@ApiModelProperty(readOnly = true)
 	private String alias;
 	
-	@ResourceRelations
+	@ResourceRelation
 	@XmlElement
 	@XmlInverseReference(mappedBy = "relate")
 	@OneToMany(mappedBy = "relate")
@@ -59,7 +62,7 @@ public class Resource {
 	@ApiModelProperty(hidden = true)
 	private List<Tag> tags;
 	
-	@ResourceRelations
+	@ResourceRelation
 	@XmlElement
 	@XmlInverseReference(mappedBy = "relate")
 	@OneToMany(mappedBy = "relate")
@@ -67,7 +70,7 @@ public class Resource {
 	@ApiModelProperty(hidden = true)
     private List<Comment> comments;
 	
-	@ResourceRelations
+	@ResourceRelation
 	@XmlElement
 	@XmlInverseReference(mappedBy = "relate")
 	@OneToMany(mappedBy = "relate")
@@ -75,7 +78,7 @@ public class Resource {
 	@ApiModelProperty(hidden = true)
     private List<Good> goods;
 	
-	@ResourceRelations
+	@ResourceRelation
 	@XmlElement
 	@XmlInverseReference(mappedBy = "relate")
 	@OneToMany(mappedBy = "relate")
@@ -83,7 +86,7 @@ public class Resource {
 	@ApiModelProperty(hidden = true)
     private List<Attachment> attachments;
 	
-	@ResourceRelations
+	@ResourceRelation
 	@XmlElement
 	@XmlInverseReference(mappedBy = "relate")
 	@OneToMany(mappedBy = "relate")
@@ -91,7 +94,7 @@ public class Resource {
 	@ApiModelProperty(hidden = true)
     private List<ResourceCategory> categories;
 	
-	@ResourceRelations
+	@ResourceRelation
 	@XmlElement
 	@XmlInverseReference(mappedBy = "relate")
 	@OneToMany(mappedBy = "relate")
@@ -99,7 +102,7 @@ public class Resource {
 	@ApiModelProperty(hidden = true)
     private List<Category> subcategories;
 	
-	@ResourceRelations
+	@ResourceRelation
 	@XmlElement
 	@XmlInverseReference(mappedBy = "relate")
 	@OneToMany(mappedBy = "relate")
@@ -110,16 +113,36 @@ public class Resource {
 	@Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD})
     @Retention(RetentionPolicy.RUNTIME)
     @Documented
-    @EntityFiltering
-    public static @interface ResourceRelations {
-        
-        public static class Factory extends AnnotationLiteral<ResourceRelations> implements ResourceRelations {
-            
-            private static final long serialVersionUID = 8232838804784177641L;
+    @ResourceFiltering
+    public static @interface ResourceProperty {
+	    
+        @NoArgsConstructor(access = AccessLevel.PRIVATE)
+	    public static class Factory extends AnnotationLiteral<ResourceProperty> implements ResourceProperty {
+	        
+            private static final long serialVersionUID = 681781097193743580L;
+	        
+            public static ResourceProperty get() {
+                
+                return new Factory();
+            }
+	    }
+    }
+	
+	@Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD})
+    @Retention(RetentionPolicy.RUNTIME)
+    @Documented
+    @ResourceFiltering
+    public static @interface ResourceRelation {
+	    
+	    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+        public static class Factory extends AnnotationLiteral<ResourceRelation> implements ResourceRelation {
+	        
+            private static final long serialVersionUID = 6273053186871368162L;
 
-            public static ResourceRelations get() {
+            public static ResourceRelation get() {
+                
                 return new Factory();
             }
         }
-    }
+	}
 }

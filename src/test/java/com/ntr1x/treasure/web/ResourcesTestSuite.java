@@ -4,11 +4,11 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
-import com.ntr1x.treasure.web.socket.ResourceSocketTest;
+import com.ntr1x.treasure.web.endpoints.ResourceEndpointTest;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-    ResourceSocketTest.class,
+    ResourceEndpointTest.class,
 //	AccountResourceTest.class,
 //	PublicationResourceTest.class,
 //	GoodResourceTest.class,
