@@ -2,6 +2,7 @@ package com.ntr1x.treasure.web.services;
 
 import java.util.function.Consumer;
 
+import javax.inject.Inject;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.HttpHeaders;
@@ -9,6 +10,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.springframework.stereotype.Service;
 
+import com.ntr1x.treasure.web.index.PublicationIndexRepository;
 import com.ntr1x.treasure.web.resources.SecurityResource.SigninRequest;
 import com.ntr1x.treasure.web.resources.SecurityResource.SigninResponse;
 import com.ntr1x.treasure.web.resources.SecurityResource.SignoutResponse;
@@ -20,6 +22,9 @@ public class ProfilerService implements IProfilerService {
 
     @Getter
     private boolean securityDisabled;
+    
+    @Inject
+    private PublicationIndexRepository publications;
 
     @Override
     public void withDisabledSecurity(Runnable runnable) {
@@ -84,5 +89,10 @@ public class ProfilerService implements IProfilerService {
                 }
             }
         }
+    }
+
+    @Override
+    public void clearSearchIndex() {
+        publications.deleteAll();
     }
 }

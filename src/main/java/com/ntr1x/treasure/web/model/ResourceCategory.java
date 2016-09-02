@@ -1,6 +1,5 @@
 package com.ntr1x.treasure.web.model;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -24,9 +23,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ResourceCategory extends Resource {
-    
-    @Column(name = "Purpose")
-    private String purpose;
 
 	@XmlElement
 	@XmlInverseReference(mappedBy = "categories")

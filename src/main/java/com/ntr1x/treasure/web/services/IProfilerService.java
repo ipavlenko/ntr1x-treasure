@@ -10,4 +10,6 @@ public interface IProfilerService {
     
     void withDisabledSecurity(Runnable runnable);
     void withCredentials(WebTarget target, String email, String password, Consumer<String> consumer);
+
+    void clearSearchIndex();
 }

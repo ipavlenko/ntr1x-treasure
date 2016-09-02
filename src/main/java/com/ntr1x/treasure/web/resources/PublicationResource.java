@@ -1,5 +1,7 @@
 package com.ntr1x.treasure.web.resources;
 
+import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.security.PermitAll;
@@ -28,8 +30,13 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 
 import com.ntr1x.treasure.web.converter.AppConverterProvider.LocalDateTimeConverter;
 import com.ntr1x.treasure.web.events.ResourceEvent;
+import com.ntr1x.treasure.web.index.PublicationIndex;
+import com.ntr1x.treasure.web.index.PublicationIndexRepository;
 import com.ntr1x.treasure.web.model.Action;
+import com.ntr1x.treasure.web.model.Category;
 import com.ntr1x.treasure.web.model.Publication;
+import com.ntr1x.treasure.web.model.ResourceCategory;
+import com.ntr1x.treasure.web.model.Tag;
 import com.ntr1x.treasure.web.reflection.ResourceUtils;
 import com.ntr1x.treasure.web.repository.PublicationRepository;
 import com.ntr1x.treasure.web.services.IPublisherSevice;
@@ -37,6 +44,8 @@ import com.ntr1x.treasure.web.services.ISubscriptionService.ResourceMessage;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 @Path("publications")
 @Api("Publications")
@@ -53,6 +62,9 @@ public class PublicationResource {
 	@Inject
 	private IPublisherSevice publisher;
 	
+	@Inject
+    private PublicationIndexRepository index;
+	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Transactional
@@ -65,7 +77,35 @@ public class PublicationResource {
 	}
 	
 	@GET
-	@Path("/{id}")
+	@Path("/query")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Transactional
+    public List<Publication> query(
+            @QueryParam("query") String query,
+            @QueryParam("category") List<Long> categories,
+            @QueryParam("page") @ApiParam(example = "0") int page,
+            @QueryParam("size") @ApiParam(example = "10") int size
+    ) {
+	    
+	    List<PublicationIndex> result = index.search(
+            query,
+            categories
+	    );
+	    
+	    Long[] identifiers = result
+            .stream()
+            .map(p -> p.resource)
+            .toArray(Long[]::new)
+        ;
+	    
+	    return identifiers.length > 0
+            ? publications.findByIdIn(identifiers)
+            : Collections.emptyList()
+        ;
+    }
+	
+	@GET
+	@Path("/i/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Transactional
 	public Publication select(@PathParam("id") long id) {
@@ -93,7 +133,47 @@ public class PublicationResource {
             
             em.merge(persisted);
             em.flush();
+            
+            if (publication.tags != null) {
+                for (PublicationCreate.Tag t : publication.tags) {
+                    
+                    Tag tag = new Tag(); {
+                        
+                        tag.setRelate(persisted);
+                        tag.setValue(t.value);
+                        
+                        em.persist(tag);
+                        em.flush();
+                        
+                        tag.setAlias(ResourceUtils.alias(persisted, "tags", tag));
+                        
+                        em.merge(persisted);
+                        em.flush();
+                    }
+                }
+            }
+            
+            if (publication.categories != null) {
+                for (PublicationCreate.Category c : publication.categories) {
+                    
+                    ResourceCategory category = new ResourceCategory(); {
+                        
+                        category.setRelate(persisted);
+                        category.setCategory(em.find(Category.class, c.category));
+                        
+                        em.persist(category);
+                        em.flush();
+                        
+                        category.setAlias(ResourceUtils.alias(persisted, "categories", category));
+                        
+                        em.merge(persisted);
+                        em.flush();
+                    }
+                }
+            }
 	    }
+	    
+	    em.refresh(persisted);
 	    
 	    TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
 	        
@@ -116,11 +196,11 @@ public class PublicationResource {
 	}
 	
 	@PUT
-	@Path("/{id}")
+	@Path("/i/{id}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Transactional
-	@RolesAllowed({ "/publications/{id}:admin" })
+	@RolesAllowed({ "/publications/i/{id}:admin" })
 	public Publication update(@PathParam("id") long id, PublicationUpdate publication) {
 	    
 		Publication persisted = em.find(Publication.class, id); {
@@ -137,7 +217,7 @@ public class PublicationResource {
 	}
 	
 	@DELETE
-	@Path("/{id}")
+	@Path("/i/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Transactional
 	@RolesAllowed({ "/publications/{id}:admin" })
@@ -153,6 +233,8 @@ public class PublicationResource {
 	}
 	
 	@XmlRootElement
+	@NoArgsConstructor
+	@AllArgsConstructor
     public static class PublicationCreate {
         
         public String title;
@@ -160,21 +242,33 @@ public class PublicationResource {
         public String content;
         
         @XmlJavaTypeAdapter(LocalDateTimeConverter.class)
-        public String published;
+        public LocalDateTime published;
         
         @XmlElement
-        public List<Tag> tags;
+        public Tag[] tags;
         
+        @XmlElement
+        public Category[] categories;
+        
+        @XmlElement
+        public Attachment[] attachments;
+        
+        @NoArgsConstructor
+        @AllArgsConstructor
         public static class Tag {
             
             public String value;
         }
         
+        @NoArgsConstructor
+        @AllArgsConstructor
         public static class Category {
 
             public Long category;
         }
         
+        @NoArgsConstructor
+        @AllArgsConstructor
         public static class Attachment {
             
             public Long upload;
@@ -182,6 +276,8 @@ public class PublicationResource {
     }
     
     @XmlRootElement
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class PublicationUpdate {
         
         public String title;
@@ -189,17 +285,19 @@ public class PublicationResource {
         public String content;
         
         @XmlJavaTypeAdapter(LocalDateTimeConverter.class)
-        public String published;
+        public LocalDateTime published;
         
         @XmlElement
-        public List<Tag> tags;
+        public Tag[] tags;
 
         @XmlElement
-        public List<Category> categories;
+        public Category[] categories;
         
         @XmlElement
-        public List<Attachment> attachments;
+        public Attachment[] attachments;
         
+        @NoArgsConstructor
+        @AllArgsConstructor
         public static class Tag {
             
             public Long id;
@@ -207,6 +305,8 @@ public class PublicationResource {
             public Action _action;
         }
         
+        @NoArgsConstructor
+        @AllArgsConstructor
         public static class Category {
             
             public Long id;
@@ -214,6 +314,8 @@ public class PublicationResource {
             public Action _action;
         }
         
+        @NoArgsConstructor
+        @AllArgsConstructor
         public static class Attachment {
             
             public Long id;
