@@ -31,8 +31,6 @@ public class PublicationIndexRepositoryImpl implements PublicationIndexRepositor
                     ? "*:*"
                     : String.format("title_txt_ru:%s promo_txt_ru:%s promo_txt_ru:%s", query, query, query)
             ))
-//            .addCriteria(new SimpleStringCriteria(String.format("promo_txt_ru:%s", query)))
-//            .addCriteria(new SimpleStringCriteria(String.format("content_txt_ru:%s", query)))
         ;
         
         return solr.queryForPage(q, PublicationIndex.class).getContent();
