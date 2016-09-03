@@ -31,7 +31,7 @@ public class PublicationIndexRepositoryImpl implements PublicationIndexRepositor
             .addCriteria(new SimpleStringCriteria(
                 s.isEmpty() || "*".equals(s)
                     ? "*:*"
-                    : String.format("title_txt_ru:\"%s\" promo_txt_ru:\"%s\" promo_txt_ru:\"%s\"", s, s, s)
+                    : String.format("title_txt_ru:\"%s\" promo_txt_ru:\"%s\" content_txt_ru:\"%s\"", s, s, s)
             ))
         ;
         
