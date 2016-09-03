@@ -9,6 +9,7 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
 import org.glassfish.jersey.server.spi.Container;
 import org.glassfish.jersey.server.spi.ContainerLifecycleListener;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
@@ -30,7 +31,13 @@ import io.swagger.jaxrs.listing.SwaggerSerializers;
 public class JerseyConfig extends ResourceConfig {
 
 	protected ServiceLocator serviceLocator;
+	
+	@Value("${app.host}")
+    private String host;
 
+	@Value("${app.schemes}")
+    private String[] schemes;
+	
 	@Bean
 	@Scope("singleton")
 	public ServiceLocatorProvider getServiceLocator() {
@@ -40,8 +47,7 @@ public class JerseyConfig extends ResourceConfig {
     public JerseyConfig() {
 		
 		packages("com.ntr1x.treasure.web.resources");
-
-//		register(RequestContextFilter.class);
+		
 		register(ApiListingResource.class);
 		register(SwaggerSerializers.class);
 		register(CORSRequestFilter.class);
@@ -72,8 +78,8 @@ public class JerseyConfig extends ResourceConfig {
 		
 		BeanConfig beanConfig = new BeanConfig();
 		beanConfig.setVersion("1.0.0");
-		beanConfig.setSchemes(new String[] { "http" });
-		beanConfig.setHost("localhost:8080");
+		beanConfig.setSchemes(schemes);
+		beanConfig.setHost(host);
 		beanConfig.setBasePath("");
 		beanConfig.setResourcePackage("com.ntr1x.treasure.web.resources");
 		beanConfig.setScan(true);

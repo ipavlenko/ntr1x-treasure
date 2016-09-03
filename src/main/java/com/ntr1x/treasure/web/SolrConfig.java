@@ -15,7 +15,7 @@ import org.springframework.data.solr.repository.config.EnableSolrRepositories;
 )
 public class SolrConfig {
 
-    @Value("${solr.url}")
+    @Value("${app.solr.url}")
     private String url;
     
     @Bean

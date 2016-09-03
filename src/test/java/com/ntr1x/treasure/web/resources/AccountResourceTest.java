@@ -31,7 +31,7 @@ import com.ntr1x.treasure.web.services.IProfilerService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = App.class, webEnvironment = WebEnvironment.RANDOM_PORT)
-@TestPropertySource(locations="classpath:application-test.properties")
+@TestPropertySource(locations = { "classpath:application.properties", "classpath:application-test.properties" })
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class AccountResourceTest {
 

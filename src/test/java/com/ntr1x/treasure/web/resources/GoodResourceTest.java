@@ -19,7 +19,7 @@
 //
 //@RunWith(SpringJUnit4ClassRunner.class)
 //@SpringBootTest(classes = App.class, webEnvironment = WebEnvironment.RANDOM_PORT)
-//@TestPropertySource(locations="classpath:application-test.properties")
+//@TestPropertySource(locations = { "classpath:application.properties", "classpath:application-test.properties" })
 //public class GoodResourceTest {
 //
 //	@LocalServerPort

@@ -3,7 +3,7 @@ CREATE TABLE accounts (ResourceId BIGINT NOT NULL, Email VARCHAR(255), Pwdhash V
 CREATE UNIQUE INDEX INDEX_accounts_Email ON accounts (Email)
 CREATE TABLE attachments (ResourceId BIGINT NOT NULL, Dir VARCHAR(255), Original VARCHAR(255), Path VARCHAR(255), RelateId BIGINT NOT NULL, PRIMARY KEY (ResourceId))
 CREATE UNIQUE INDEX INDEX_attachments_Dir_Path ON attachments (Dir, Path)
-CREATE TABLE categories (ResourceId BIGINT NOT NULL, Description LONGTEXT, Title VARCHAR(255), RelateId BIGINT NOT NULL, PRIMARY KEY (ResourceId))
+CREATE TABLE categories (ResourceId BIGINT NOT NULL, Description LONGTEXT, Title VARCHAR(255), RelateId BIGINT, PRIMARY KEY (ResourceId))
 CREATE TABLE comments (ResourceId BIGINT NOT NULL, Message LONGTEXT, Published DATETIME, AccountId BIGINT NOT NULL, RelateId BIGINT NOT NULL, PRIMARY KEY (ResourceId))
 CREATE TABLE goods (ResourceId BIGINT NOT NULL, Content LONGTEXT, Promo LONGTEXT, Title VARCHAR(255), RelateId BIGINT NOT NULL, PRIMARY KEY (ResourceId))
 CREATE TABLE grants (ResourceId BIGINT NOT NULL, Action VARCHAR(255), Pattern VARCHAR(255), AccountId BIGINT NOT NULL, PRIMARY KEY (ResourceId))
@@ -14,6 +14,7 @@ CREATE INDEX INDEX_publications_Published ON publications (Published)
 CREATE TABLE resources_categories (ResourceId BIGINT NOT NULL, CategoryId BIGINT NOT NULL, RelateId BIGINT NOT NULL, PRIMARY KEY (ResourceId))
 CREATE TABLE sessions (ResourceId BIGINT NOT NULL, Signature INTEGER, AccountId BIGINT NOT NULL, PRIMARY KEY (ResourceId))
 CREATE TABLE tags (ResourceId BIGINT NOT NULL, Value VARCHAR(255), RelateId BIGINT NOT NULL, PRIMARY KEY (ResourceId))
+CREATE TABLE aspects (RelateId BIGINT, Aspect VARCHAR(255))
 ALTER TABLE accounts ADD CONSTRAINT FK_accounts_ResourceId FOREIGN KEY (ResourceId) REFERENCES resources (Id)
 ALTER TABLE attachments ADD CONSTRAINT FK_attachments_ResourceId FOREIGN KEY (ResourceId) REFERENCES resources (Id)
 ALTER TABLE attachments ADD CONSTRAINT FK_attachments_RelateId FOREIGN KEY (RelateId) REFERENCES resources (Id)
@@ -37,3 +38,4 @@ ALTER TABLE sessions ADD CONSTRAINT FK_sessions_AccountId FOREIGN KEY (AccountId
 ALTER TABLE sessions ADD CONSTRAINT FK_sessions_ResourceId FOREIGN KEY (ResourceId) REFERENCES resources (Id)
 ALTER TABLE tags ADD CONSTRAINT FK_tags_ResourceId FOREIGN KEY (ResourceId) REFERENCES resources (Id)
 ALTER TABLE tags ADD CONSTRAINT FK_tags_RelateId FOREIGN KEY (RelateId) REFERENCES resources (Id) ON DELETE CASCADE
+ALTER TABLE aspects ADD CONSTRAINT FK_aspects_RelateId FOREIGN KEY (RelateId) REFERENCES resources (Id) ON DELETE CASCADE

@@ -21,6 +21,7 @@ ALTER TABLE sessions DROP FOREIGN KEY FK_sessions_AccountId
 ALTER TABLE sessions DROP FOREIGN KEY FK_sessions_ResourceId
 ALTER TABLE tags DROP FOREIGN KEY FK_tags_ResourceId
 ALTER TABLE tags DROP FOREIGN KEY FK_tags_RelateId
+ALTER TABLE aspects DROP FOREIGN KEY FK_aspects_RelateId
 DROP TABLE resources
 DROP INDEX INDEX_accounts_Email ON accounts
 DROP TABLE accounts
@@ -37,3 +38,4 @@ DROP TABLE publications
 DROP TABLE resources_categories
 DROP TABLE sessions
 DROP TABLE tags
+DROP TABLE aspects
