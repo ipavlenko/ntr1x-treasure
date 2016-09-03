@@ -1,7 +1,5 @@
 package com.ntr1x.treasure.web;
 
-import javax.inject.Inject;
-
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.message.filtering.EntityFilteringFeature;
@@ -16,7 +14,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.ntr1x.treasure.web.bootstrap.IBootstrap;
 import com.ntr1x.treasure.web.converter.AppConverterProvider;
 import com.ntr1x.treasure.web.filtering.ResourceFilteringFeature;
 import com.ntr1x.treasure.web.filters.AuthenticationFilter;
@@ -33,9 +30,6 @@ import io.swagger.jaxrs.listing.SwaggerSerializers;
 public class JerseyConfig extends ResourceConfig {
 
 	protected ServiceLocator serviceLocator;
-	
-	@Inject
-	private IBootstrap bootsrtap;
 
 	@Bean
 	@Scope("singleton")
@@ -66,10 +60,6 @@ public class JerseyConfig extends ResourceConfig {
 		    
             public void onStartup(Container container) {
                 serviceLocator = container.getApplicationHandler().getServiceLocator();
-                
-                new Thread(() -> {
-                    bootsrtap.bootstrap();
-                }).start();
             }
 
             public void onReload(Container container) {
