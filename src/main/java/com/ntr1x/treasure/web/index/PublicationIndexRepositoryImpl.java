@@ -24,12 +24,14 @@ public class PublicationIndexRepositoryImpl implements PublicationIndexRepositor
             fq.addCriteria(new SimpleStringCriteria(String.format("category_ls:%d", category)));
         }
         
+        String s = query == null ? "" : query.trim();
+        
         Query q = new SimpleQuery()
             .addFilterQuery(fq)
             .addCriteria(new SimpleStringCriteria(
-                query == null
+                s.isEmpty() || "*".equals(s)
                     ? "*:*"
-                    : String.format("title_txt_ru:%s promo_txt_ru:%s promo_txt_ru:%s", query, query, query)
+                    : String.format("title_txt_ru:\"%s\" promo_txt_ru:\"%s\" promo_txt_ru:\"%s\"", s, s, s)
             ))
         ;
         

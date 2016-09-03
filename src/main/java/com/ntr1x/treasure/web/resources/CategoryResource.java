@@ -75,7 +75,7 @@ public class CategoryResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Transactional
-    @RolesAllowed({ "/categories:admin" })
+    @RolesAllowed({ "res:///categories:admin" })
     public Category create(CategoryCreate category) {
 
         Category persisted = new Category(); {
@@ -144,7 +144,7 @@ public class CategoryResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Transactional
-    @RolesAllowed({ "/categories/{id}:admin" })
+    @RolesAllowed({ "res:///categories/{id}:admin" })
     public Category update(@PathParam("id") long id, CategoryUpdate category) {
         
         Category persisted = em.find(Category.class, id); {
@@ -250,7 +250,7 @@ public class CategoryResource {
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     @Transactional
-    @RolesAllowed({ "/categories/{id}:admin" })
+    @RolesAllowed({ "res:///categories/{id}:admin" })
     public Category remove(@PathParam("id") long id) {
         
         Category persisted = em.find(Category.class, id); {

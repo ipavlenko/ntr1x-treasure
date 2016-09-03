@@ -1,6 +1,5 @@
 package com.ntr1x.treasure.web;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.glassfish.hk2.api.ServiceLocator;
@@ -16,15 +15,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.springframework.web.filter.RequestContextFilter;
 
+import com.ntr1x.treasure.web.bootstrap.IBootstrap;
 import com.ntr1x.treasure.web.converter.AppConverterProvider;
 import com.ntr1x.treasure.web.filtering.ResourceFilteringFeature;
 import com.ntr1x.treasure.web.filters.AuthenticationFilter;
 import com.ntr1x.treasure.web.filters.AuthorizationFilter;
 import com.ntr1x.treasure.web.filters.CORSRequestFilter;
 import com.ntr1x.treasure.web.filters.CORSResponseFilter;
-import com.ntr1x.treasure.web.services.ISerializationService;
 
 import io.swagger.jaxrs.config.BeanConfig;
 import io.swagger.jaxrs.listing.ApiListingResource;
@@ -37,7 +35,7 @@ public class JerseyConfig extends ResourceConfig {
 	protected ServiceLocator serviceLocator;
 	
 	@Inject
-	private ISerializationService service;
+	private IBootstrap bootsrtap;
 
 	@Bean
 	@Scope("singleton")
@@ -49,7 +47,7 @@ public class JerseyConfig extends ResourceConfig {
 		
 		packages("com.ntr1x.treasure.web.resources");
 
-		register(RequestContextFilter.class);
+//		register(RequestContextFilter.class);
 		register(ApiListingResource.class);
 		register(SwaggerSerializers.class);
 		register(CORSRequestFilter.class);
@@ -68,6 +66,10 @@ public class JerseyConfig extends ResourceConfig {
 		    
             public void onStartup(Container container) {
                 serviceLocator = container.getApplicationHandler().getServiceLocator();
+                
+                new Thread(() -> {
+                    bootsrtap.bootstrap();
+                }).start();
             }
 
             public void onReload(Container container) {
@@ -86,11 +88,6 @@ public class JerseyConfig extends ResourceConfig {
 		beanConfig.setResourcePackage("com.ntr1x.treasure.web.resources");
 		beanConfig.setScan(true);
 	}
-    
-    @PostConstruct
-    public void init() {
-        System.out.println(service);
-    }
     
     public static class ServiceLocatorProvider {
         

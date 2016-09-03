@@ -117,7 +117,7 @@ public class PublicationResource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Transactional
-	@RolesAllowed({ "/publications:admin" })
+	@RolesAllowed({ "res:///publications:admin" })
 	public Publication create(PublicationCreate publication) {
 
 	    Publication persisted = new Publication(); {
@@ -200,7 +200,7 @@ public class PublicationResource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Transactional
-	@RolesAllowed({ "/publications/i/{id}:admin" })
+	@RolesAllowed({ "res:///publications/i/{id}:admin" })
 	public Publication update(@PathParam("id") long id, PublicationUpdate publication) {
 	    
 		Publication persisted = em.find(Publication.class, id); {
@@ -220,7 +220,7 @@ public class PublicationResource {
 	@Path("/i/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Transactional
-	@RolesAllowed({ "/publications/{id}:admin" })
+	@RolesAllowed({ "res:///publications/{id}:admin" })
 	public Publication remove(@PathParam("id") long id) {
 		
 		Publication persisted = em.find(Publication.class, id); {

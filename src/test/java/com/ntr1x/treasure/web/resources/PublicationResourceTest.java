@@ -271,6 +271,33 @@ public class PublicationResourceTest {
                 Assert.assertEquals(1, response.size());
             }
 	        
+	        {
+                List<Publication> response = target
+                    .path("/publications/query")
+                    .queryParam("query", "")
+                    .queryParam("category", c2.getId())
+                    .queryParam("page", 0)
+                    .queryParam("size", 10)
+                    .request()
+                    .get(new GenericType<List<Publication>>() {})
+                ;
+                
+                Assert.assertEquals(2, response.size());
+            }
+	        
+	        {
+                List<Publication> response = target
+                    .path("/publications/query")
+                    .queryParam("query", "*")
+                    .queryParam("category", c2.getId())
+                    .queryParam("page", 0)
+                    .queryParam("size", 10)
+                    .request()
+                    .get(new GenericType<List<Publication>>() {})
+                ;
+                
+                Assert.assertEquals(2, response.size());
+            }
 	    });
     }
 }
