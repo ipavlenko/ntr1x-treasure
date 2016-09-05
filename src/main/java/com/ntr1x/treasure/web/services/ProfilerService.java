@@ -11,9 +11,10 @@ import javax.ws.rs.core.MediaType;
 import org.springframework.stereotype.Service;
 
 import com.ntr1x.treasure.web.index.PublicationIndexRepository;
-import com.ntr1x.treasure.web.resources.SecurityResource.SigninRequest;
-import com.ntr1x.treasure.web.resources.SecurityResource.SigninResponse;
-import com.ntr1x.treasure.web.resources.SecurityResource.SignoutResponse;
+import com.ntr1x.treasure.web.resources.UsersResource.Signin;
+import com.ntr1x.treasure.web.resources.UsersResource.SigninResponse;
+import com.ntr1x.treasure.web.resources.UsersResource.Signout;
+import com.ntr1x.treasure.web.resources.UsersResource.SignoutResponse;
 
 import lombok.Getter;
 
@@ -21,7 +22,7 @@ import lombok.Getter;
 public class ProfilerService implements IProfilerService {
 
     @Getter
-    private boolean securityDisabled;
+    private boolean securityDisabled = true;
     
     @Inject
     private PublicationIndexRepository publications;
@@ -37,12 +38,12 @@ public class ProfilerService implements IProfilerService {
         }
     }
     
-    public String createSession(WebTarget target, String email, String password) {
+    private String createSession(WebTarget target, String email, String password) {
         
-        SigninRequest s = new SigninRequest(email, password);
+        Signin s = new Signin(email, password);
         
         SigninResponse r = target
-            .path("/security/signin")
+            .path("/ws/users/signin")
             .request(MediaType.APPLICATION_JSON_TYPE)
             .post(Entity.entity(s, MediaType.APPLICATION_JSON_TYPE), SigninResponse.class)
         ;
@@ -52,11 +53,13 @@ public class ProfilerService implements IProfilerService {
     
     private void removeSession(WebTarget target, String token) {
         
+        Signout s = new Signout();
+        
         target
             .path("/security/signout")
             .request(MediaType.APPLICATION_JSON_TYPE)
             .header(HttpHeaders.AUTHORIZATION, token)
-            .post(Entity.entity(null, MediaType.APPLICATION_JSON_TYPE), SignoutResponse.class)
+            .post(Entity.entity(s, MediaType.APPLICATION_JSON_TYPE), SignoutResponse.class)
         ;
     }
 

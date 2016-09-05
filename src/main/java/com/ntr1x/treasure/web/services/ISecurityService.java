@@ -1,6 +1,6 @@
 package com.ntr1x.treasure.web.services;
 
-import com.ntr1x.treasure.web.model.Account;
+import com.ntr1x.treasure.web.model.security.SecurityUser;
 
 import lombok.Data;
 
@@ -22,7 +22,7 @@ public interface ISecurityService {
     SecuritySession parseSession(byte[] bytes);
     SecuritySession parseSession(String session);
     
-    boolean isUserInRole(Account account, String resource, String action);
+    boolean isUserInRole(SecurityUser user, String resource, String action);
     
     @Data
     class SecurityToken {

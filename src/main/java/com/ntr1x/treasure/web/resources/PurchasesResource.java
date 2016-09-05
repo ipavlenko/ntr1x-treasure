@@ -1,0 +1,1384 @@
+package com.ntr1x.treasure.web.resources;
+
+import java.io.Serializable;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.inject.Inject;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
+import javax.transaction.Transactional;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import org.eclipse.persistence.jpa.JpaEntityManager;
+import org.eclipse.persistence.sessions.CopyGroup;
+import org.springframework.stereotype.Component;
+
+import com.ntr1x.treasure.web.CommonConfig;
+import com.ntr1x.treasure.web.model.assets.DocumentEntity;
+import com.ntr1x.treasure.web.model.attributes.AttributeEntity;
+import com.ntr1x.treasure.web.model.attributes.AttributeValue;
+import com.ntr1x.treasure.web.model.purchase.GoodCategory;
+import com.ntr1x.treasure.web.model.purchase.GoodEntity;
+import com.ntr1x.treasure.web.model.purchase.OrderEntity;
+import com.ntr1x.treasure.web.model.purchase.OrderEntryEntity;
+import com.ntr1x.treasure.web.model.purchase.ProviderEntity;
+import com.ntr1x.treasure.web.model.purchase.PurchaseEntity;
+import com.ntr1x.treasure.web.model.purchase.ResourceType;
+import com.ntr1x.treasure.web.model.security.SecuritySession;
+import com.ntr1x.treasure.web.model.security.SecurityUser;
+import com.ntr1x.treasure.web.repository.PurchaseEntityRepository;
+import com.ntr1x.treasure.web.utils.map.FilterValue;
+
+import io.swagger.annotations.Api;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+@Api("Purchases")
+@Component
+@Path("/ws/purchases")
+@Slf4j
+public class PurchasesResource {
+
+	@Inject
+	private SecuritySession session;
+	
+	@Inject
+	private PurchaseEntityRepository purchases;
+
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class LoadList {
+		private long count;
+		private int offset;
+		private int limit;
+	}
+
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class LoadListProvider {
+//		private long count;
+//		private int offset;
+//		private int limit;
+		private ProviderEntity.Status status;
+	}
+
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class LoadListPurchase {
+		private long count;
+		private int offset;
+		private int limit;
+		private PurchaseEntity.Status status;
+	}
+
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class Purchases {
+		private long count;
+		private int offset;
+		private int limit;
+		private List<PurchValueList> purchases;
+	}
+
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class Goods {
+		private long count;
+		private int offset;
+		private int limit;
+		private List<GoodEntity> goods;
+	}
+
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class Providers {
+//		private long count;
+//		private int offset;
+//		private int limit;
+		private List<ProviderEntity> providers;
+	}
+
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	@XmlRootElement
+	@XmlAccessorType(XmlAccessType.FIELD)
+	public static class AtrValueList implements Serializable{
+		private static final long serialVersionUID = -6410688391927286753L;
+		private AttributeEntity attribute;
+		private List<AttributeValue> values;
+	}
+
+	@NoArgsConstructor
+	@AllArgsConstructor
+	@XmlRootElement
+	public static class PurchaseStatusEdit{
+		public PurchaseEntity purchase;
+		public PurchaseEntity.Status[] availableStatuses;
+	}
+
+	@NoArgsConstructor
+	@AllArgsConstructor
+	@XmlRootElement
+	public static class PurchaseStatusEditDo{
+		public PurchaseEntity.Status status;
+	}
+
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	@XmlRootElement
+	@XmlAccessorType(XmlAccessType.FIELD)
+	public static class PurchValueList implements Serializable{
+		private static final long serialVersionUID = -6410688391927286753L;
+		private PurchaseEntity purchase;
+		private List<OrderEntity> orders;
+		private float total;
+		private int paidCnt;
+		private int confirmedCnt;
+		private int canceledCnt;
+		private float goodsCnt;
+	}
+
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	@XmlRootElement
+	@XmlAccessorType(XmlAccessType.FIELD)
+	public static class CatValueList implements Serializable{
+		private static final long serialVersionUID = -14038014837124724L;
+		private GoodCategory category;
+		private List<GoodCategory> childs;
+	}
+
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	@XmlRootElement
+	@XmlAccessorType(XmlAccessType.FIELD)
+	public static class FilterPurchases {
+		private long count;
+		private int offset;
+		private int limit;
+		private String query;
+		private long cpId;
+		private long pid = 0;
+		private List<String> settedCategories;
+		@XmlElement
+		private List<FilterValue> settedAttributes;
+	}
+
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+	@XmlRootElement
+	@XmlAccessorType(XmlAccessType.FIELD)
+	public static class Filtered {
+		private long count;
+		private int offset;
+		private int limit;
+		private String query;
+		private long cpId;
+		private List<String> settedCategories;
+		private Map<String, List<String>> settedAttributes = new HashMap<>();
+		private List<GoodEntity> goods;
+		private List<AtrValueList> attributes;
+		private List<CatValueList> categories;
+	}
+
+    @PersistenceContext
+    private EntityManager em;
+
+	@POST
+	@Path("/items")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Transactional()
+//	@Detailed
+	public Response listPurchases(
+			LoadListPurchase prm
+	){
+		try {
+			if (session != null){
+				CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+
+				CriteriaQuery criteriaQuery = criteriaBuilder.createQuery();
+				Root purchase = criteriaQuery.from(PurchaseEntity.class);
+
+				criteriaQuery.where(
+						criteriaBuilder.notEqual(purchase.get("resType"), ResourceType.ROOT_PURCHASE),
+						criteriaBuilder.equal(purchase.get("user").get("id"), session.getUser().getId())
+				);
+
+				if (prm.getStatus() != null){
+					criteriaQuery.where(
+							criteriaBuilder.equal(purchase.get("status"), prm.getStatus()),
+							criteriaBuilder.equal(purchase.get("user").get("id"), session.getUser().getId())
+							,criteriaBuilder.notEqual(purchase.get("resType"), ResourceType.ROOT_PURCHASE)
+					);
+				}
+
+				Query query = em.createQuery(criteriaQuery);
+				query.setMaxResults(prm.getLimit() == 0 ? CommonConfig.PAGE_ITEMS_LIMIT : prm.getLimit());
+				query.setFirstResult(prm.getOffset());
+
+				List<PurchaseEntity> result = query.getResultList();
+
+				criteriaQuery.select(criteriaBuilder.count(purchase));
+				query = em.createQuery(criteriaQuery);
+				long count = (Long)query.getSingleResult();
+
+				List<PurchValueList> purchases = new ArrayList<>();
+
+				for (PurchaseEntity p : result){
+					List<OrderEntity> orders = em.createNamedQuery("OrderEntity.accessibleSellerIdAndPurchaseId", OrderEntity.class)
+							.setParameter("id", session.getUser().getId())
+							.setParameter("pid", p.getId())
+							.getResultList();
+
+					PurchValueList pvl = new PurchValueList();
+					pvl.setOrders(orders);
+					pvl.setPurchase(p);
+
+					for (OrderEntity order : orders){
+						for (OrderEntryEntity entr : order.getEntries()){
+
+							pvl.setGoodsCnt(pvl.getGoodsCnt() + entr.getQuantity());
+							pvl.setTotal(pvl.getTotal() + (entr.getQuantity() * entr.getGood().getPrice()));
+
+							if (order.getStatus() == OrderEntity.Status.PAID){
+								pvl.setPaidCnt(pvl.getPaidCnt() + 1);
+							} else if (order.getStatus() == OrderEntity.Status.CONFIRMED){
+								pvl.setConfirmedCnt(pvl.getConfirmedCnt() + 1);
+							} else if (order.getStatus() == OrderEntity.Status.CANCELED){
+								pvl.setCanceledCnt(pvl.getCanceledCnt() + 1);
+							}
+						}
+					}
+
+					purchases.add(pvl);
+				}
+
+				return Response.ok(
+						new Purchases(
+								count,
+								prm.getOffset(),
+								prm.getLimit(),
+								purchases
+						)
+				).build();
+			}
+
+			return Response.status(Response.Status.UNAUTHORIZED).build();
+		} catch (Exception e){
+			log.error("{}", e);
+			throw e;
+		}
+	}
+
+	@POST
+	@Path("/{id}/goods/items")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Transactional()
+//	@Detailed
+	public Response listGoods(
+			LoadList prm,
+			@PathParam("id") long id
+	){
+
+		if (session != null){
+			CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+
+			CriteriaQuery criteriaQuery = criteriaBuilder.createQuery();
+			Root good = criteriaQuery.from(GoodEntity.class);
+
+			criteriaQuery.where(
+					criteriaBuilder.equal(good.get("purchase").get("user").get("id"), session.getUser().getId()),
+					criteriaBuilder.equal(good.get("purchase").get("id"), id)
+			);
+
+			Query query = em.createQuery(criteriaQuery);
+			query.setMaxResults(prm.getLimit() == 0 ? CommonConfig.PAGE_ITEMS_LIMIT : prm.getLimit());
+			query.setFirstResult(prm.getOffset());
+
+			List<GoodEntity> result = query.getResultList();
+
+			criteriaQuery.select(criteriaBuilder.count(good));
+			query = em.createQuery(criteriaQuery);
+			long count = (Long)query.getSingleResult();
+
+			return Response.ok(
+					new Goods(
+							count,
+							prm.getOffset(),
+							prm.getLimit(),
+							result
+					)
+			).build();
+		}
+
+		return Response.status(Response.Status.UNAUTHORIZED).build();
+	}
+
+	private static Map<String, List<String>> getArrValuesMap(List<FilterValue> lst){
+
+		Map<String, List<String>> settedAttributes = new HashMap<>();
+		if (lst != null){
+			for (FilterValue val : lst){
+				if (settedAttributes.get(val.getName()) != null){
+					settedAttributes.get(val.getName()).add(val.getValue());
+				} else {
+					settedAttributes.put(val.getName(), new ArrayList<>());
+					settedAttributes.get(val.getName()).add(val.getValue());
+				}
+			}
+		}
+		return settedAttributes;
+	}
+
+	@GET
+	@Path("/root/attribute/values")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Transactional()
+	//	@RolesAllowed("admin")
+	public List<AttributeValue> attributeValues() {
+		try {
+
+			List<AttributeValue> result = em.createNamedQuery("AttributeValue.accessibleOfResType", AttributeValue.class)
+					.setParameter("resType", ResourceType.ROOT_PURCHASE)
+					.getResultList();
+
+			return result;
+		} catch (Exception e){
+			throw e;
+		}
+	}
+
+	@POST
+	@Path("/root/attribute/update")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Transactional
+	//	@RolesAllowed("admin")
+	public Response updateAttribute(AttributeValue attribute) {
+
+		try {
+			if (attribute.getAction() != null){
+				switch(attribute.getAction()) {
+					case REMOVE: {
+						em.remove(em.find(AttributeEntity.class, attribute.getAttribute().getId()));
+						break;
+					}
+					case ADD: {
+						if (em.find(AttributeValue.class, attribute.getId()) != null || em.find(AttributeEntity.class, attribute.getAttribute().getId()) != null)
+							return Response.status(Response.Status.BAD_REQUEST).build();
+
+						em.persist(attribute.getAttribute());
+						em.flush();
+
+						List<PurchaseEntity> purchases = this.purchases.findAll();
+
+						for (PurchaseEntity purchase : purchases){
+
+							AttributeValue val = new AttributeValue();
+							val.setValue(attribute.getValue());
+							val.setRelate(purchase);
+							val.setAttribute(attribute.getAttribute());
+							purchase.getAttributes().add(val);
+//							em.merge(purchase.getAttributes());
+							em.merge(purchase);
+						}
+						break;
+					}
+					case UPDATE: {
+
+						PurchaseEntity basePurchase = purchases.findByResType(ResourceType.ROOT_PURCHASE);
+						AttributeValue val = basePurchase.getAttributes().stream().filter(p -> p.getId() == attribute.getId()).findFirst().get();
+
+						val.getAttribute().setName(attribute.getAttribute().getName());
+						val.getAttribute().setTitle(attribute.getAttribute().getTitle());
+						val.getAttribute().setOptions(attribute.getAttribute().getOptions());
+						val.getAttribute().setOrder(attribute.getAttribute().getOrder());
+						val.setValue(attribute.getValue());
+
+						em.merge(val);
+
+						break;
+					}
+				}
+				em.flush();
+
+				return Response.ok().build();
+			}
+			return Response.status(Response.Status.BAD_REQUEST).build();
+		} catch (Exception e){
+			log.error("{}", e);
+			throw e;
+		}
+	}
+
+	@POST
+	@Path("/filter/purchases")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Transactional
+	public Filtered doFilter(
+			FilterPurchases filter
+	) throws Exception{
+		try {
+			Map<String, List<String>> settedAttributes = getArrValuesMap(filter.getSettedAttributes());
+
+			int match = 0;
+
+			String query = ""
+					+ " DROP TEMPORARY TABLE IF EXISTS `temp_good`; "
+					+ " DROP TEMPORARY TABLE IF EXISTS `temp_selection_cnt`; "
+					+ " DROP TEMPORARY TABLE IF EXISTS `temp_selection`; "
+					+ " DROP TEMPORARY TABLE IF EXISTS `temp_category`; "
+					+ " DROP TEMPORARY TABLE IF EXISTS `temp_attribute_value`; "
+
+					+ " CREATE TEMPORARY TABLE `temp_good` AS ( "
+					+ "  SELECT "
+					+ "    u.Id, "
+					+ "    sum(u.`Matches`) `Matches` "
+					+ "  FROM ( "
+					+ "    SELECT "
+					+ "      av.RelatesId `Id`, "
+					+ "    count(*) `Matches` "
+					+ "    FROM core_attribute_value av ";
+
+			if (	settedAttributes.size() > 0
+					|| filter.getQuery() != null && filter.getQuery().length() > 0
+					|| (filter.getSettedCategories() != null && filter.getSettedCategories().size() > 0)
+					|| filter.getCpId() > 0){
+				query = String.format(" %s INNER JOIN core_attribute a ON (av.AttributeId = a.Id AND (1 = 0 ", query);
+			}
+			else {
+				query = String.format(" %s INNER JOIN core_attribute a ON (av.AttributeId = a.Id AND (1 = 1 ", query);
+			}
+
+			for (Map.Entry<String, List<String>> entry : settedAttributes.entrySet()){
+				query = String.format("%s OR (a.`Name` = ? AND av.`Value` = ?)", query);
+				match ++;
+			}
+
+			if (filter.getQuery() != null && filter.getQuery().length() > 0){
+				query = String.format(" %s OR (a.`Name` = 'title' AND av.`Value` LIKE (?)) ", query);
+				match ++;
+			}
+			query = String.format(" %s )) ", query);
+
+			if (filter.getPid() > 0){
+				query = String.format(" %s INNER JOIN core_good g ON (g.ResourceId = av.RelatesId AND (%s = g.PurchaseId) AND ('%s' = g.Status)) ", query, filter.getPid(), GoodEntity.Status.ACTIVE.name());
+			} else {
+				query = String.format(" %s INNER JOIN core_good g ON (g.ResourceId = av.RelatesId AND ('%s' = g.Status)) ", query, GoodEntity.Status.ACTIVE.name());
+			}
+
+			query = String.format(
+							" %s GROUP BY av.RelatesId "
+							+ "    UNION ALL"
+							+ "    SELECT "
+							+ "      gcm.GoodId `Id`, "
+							+ "      count(*) `Matches` "
+							+ "    FROM core_good_categories_map gcm ",
+					query);
+
+			if (filter.getSettedCategories() != null && filter.getSettedCategories().size() > 0){
+
+				query = String.format(" %s INNER JOIN core_good_categories gc ON (gcm.CategoryId = gc.Id AND (1 = 0 OR (gc.`Name` IN ( ", query);
+				for (String ignored : filter.getSettedCategories()){
+					query = String.format(" %s ?,", query);
+				}
+
+				query = query.substring(0, query.length()-1);
+				query = String.format(" %s )) ", query);
+
+				match ++;
+			} else if (filter.getCpId() > 0){
+				query = String.format(" %s INNER JOIN core_good_categories gc ON (gcm.CategoryId = gc.Id AND (1 = 0 OR (gc.`Id` = ?) ", query);
+
+				match ++;
+			} else if (settedAttributes.size() > 0 || filter.getQuery() != null && filter.getQuery().length() > 0){
+				query = String.format(" %s INNER JOIN core_good_categories gc ON (gcm.CategoryId = gc.Id AND (1 = 0 ", query);
+			} else {
+				query = String.format(" %s INNER JOIN core_good_categories gc ON (gcm.CategoryId = gc.Id AND (1 = 1 ", query);
+			}
+
+			query = String.format(" %s )) ", query);
+
+			if (filter.getPid() > 0){
+				query = String.format(" %s INNER JOIN core_good g ON (g.ResourceId = gcm.GoodId AND (%s = g.PurchaseId) AND ('%s' = g.Status)) ", query, filter.getPid(), GoodEntity.Status.ACTIVE.name());
+			} else{
+				query = String.format(" %s INNER JOIN core_good g ON (g.ResourceId = gcm.GoodId AND ('%s' = g.Status)) ", query, GoodEntity.Status.ACTIVE.name());
+			}
+
+			if (	settedAttributes.size() > 0
+					|| (filter.getQuery() != null && (filter.getQuery().length() + settedAttributes.size()) > 1)
+					|| (filter.getSettedCategories() != null && filter.getSettedCategories().size() > 0)
+					|| filter.getCpId() > 0){
+
+				query = String.format(" %s GROUP BY gcm.GoodId ) u GROUP BY `Id` HAVING `Matches` = %s); ",query,match);
+			} else {
+				query = String.format(" %s GROUP BY gcm.GoodId ) u GROUP BY `Id`); ",query);
+			}
+
+			query = String.format(
+					" %s CREATE TEMPORARY TABLE `temp_selection_cnt` AS ( "
+							+ " SELECT DISTINCT g.* "
+							+ "  FROM `temp_good` m "
+							+ "  INNER JOIN core_good g ON g.ResourceId = m.Id "
+//						+ "  INNER JOIN core_purchase p ON (p.ResourceId = g.PurchaseId AND g.PurchaseId = ? ) "
+
+							+ "  INNER JOIN `core_attribute_value` cav1 ON cav1.`RelatesId` = g.`ResourceId` "
+							+ "  INNER JOIN `core_attribute` ca1 ON ca1.`Id` = cav1.`AttributeId` AND ca1.`Name` = 'brand' "
+							+ "  INNER JOIN `core_attribute_value` cav2 ON cav2.`RelatesId` = g.`ResourceId` "
+							+ "  INNER JOIN `core_attribute` ca2 ON ca2.`Id` = cav2.`AttributeId` AND ca2.`Name` = 'title' "
+							+ "  INNER JOIN `core_attribute_value` cav3 ON cav3.`RelatesId` = g.`ResourceId` "
+							+ "  INNER JOIN `core_attribute` ca3 ON ca3.`Id` = cav3.`AttributeId` AND ca3.`Name` = 'desc' "
+							+ "  INNER JOIN core_purchase p ON p.ResourceId = g.PurchaseId "
+					, query);
+
+			if (filter.getPid() > 0){
+				query = String.format(" %s GROUP BY cav1.`Value`, cav2.`Value`, cav3.`Value` ); ", query);
+			} else {
+				query = String.format(" %s GROUP BY p.ResourceId ); ", query);
+			}
+
+			query = String.format(
+					" %s SELECT count(*) from temp_selection_cnt; "
+
+					+ " CREATE TEMPORARY TABLE `temp_selection` AS ( "
+					+ "  SELECT DISTINCT "
+					+ "    g.* "
+					+ "  FROM `temp_good` m "
+					+ "  INNER JOIN core_good g ON g.ResourceId = m.Id "
+
+					+ "  INNER JOIN `core_attribute_value` cav1 ON cav1.`RelatesId` = g.`ResourceId` "
+					+ "  INNER JOIN `core_attribute` ca1 ON ca1.`Id` = cav1.`AttributeId` AND ca1.`Name` = 'brand' "
+					+ "  INNER JOIN `core_attribute_value` cav2 ON cav2.`RelatesId` = g.`ResourceId` "
+					+ "  INNER JOIN `core_attribute` ca2 ON ca2.`Id` = cav2.`AttributeId` AND ca2.`Name` = 'title' "
+					+ "  INNER JOIN `core_attribute_value` cav3 ON cav3.`RelatesId` = g.`ResourceId` "
+					+ "  INNER JOIN `core_attribute` ca3 ON ca3.`Id` = cav3.`AttributeId` AND ca3.`Name` = 'desc' "
+					+ "  INNER JOIN core_purchase p ON p.ResourceId = g.PurchaseId "
+					, query);
+
+			if (filter.getPid() > 0){
+				query = String.format(" %s GROUP BY cav1.`Value`, cav2.`Value`, cav3.`Value` ", query);
+			} else {
+				query = String.format(" %s GROUP BY p.ResourceId ", query);
+			}
+
+			query = String.format(" %s LIMIT %s OFFSET %s  ); ",
+					query,
+					filter.getLimit() > 0 ? filter.getLimit() : CommonConfig.PAGE_ITEMS_LIMIT,
+					filter.getOffset()
+			);
+
+			query = String.format(
+					" %s SELECT DISTINCT * "
+					+ " FROM `temp_selection` s "
+					+ " ; "
+
+					+ " CREATE TEMPORARY TABLE `temp_attribute_value` AS ( "
+					+ "  SELECT DISTINCT "
+					+ "    av.`Id`, "
+					+ "    av.`Value`, "
+					+ "    av.`RelatesId`, "
+					+ "    av.`AttributeId` "
+					+ "  FROM `temp_good` m "
+					+ "  INNER JOIN core_attribute_value av ON av.RelatesId = m.Id "
+					+ "  INNER JOIN core_attribute a ON a.Id = av.AttributeId AND a.Filtering = TRUE "
+					+ "  INNER JOIN core_good g ON g.ResourceId = av.`RelatesId` "
+					+ "  GROUP BY av.`Value` "
+					+ " ); "
+					+ " SELECT "
+					+ "  av.* "
+					+ " FROM `temp_attribute_value` av "
+					+ " ; "
+
+					+ " CREATE TEMPORARY TABLE `temp_category` AS ( "
+					+ "  SELECT DISTINCT "
+					+ "    u.* "
+					+ "  FROM ( "
+					+ "  SELECT DISTINCT "
+					+ "      gc1.* "
+					+ "    FROM `temp_good` m "
+					+ "    INNER JOIN `core_good_categories_map` gcm ON gcm.GoodId = m.Id "
+					+ "    INNER JOIN `core_good_categories` gc1 ON (gc1.ParentId IS NULL OR gc1.Id = gcm.CategoryId) "
+					+ "    UNION "
+					+ "  SELECT "
+					+ "   gc2.* "
+					+ "  FROM core_good_categories gc2 "
+					+ "    WHERE gc2.ParentId IS NULL "
+					+ "  ) u "
+					+ " ); "
+					+ " SELECT * "
+					+ " FROM `temp_category` "
+					+ " ; "
+
+					+ " DROP TEMPORARY TABLE `temp_selection`; "
+					+ " DROP TEMPORARY TABLE `temp_selection_cnt`; "
+					+ " DROP TEMPORARY TABLE `temp_category`; "
+					+ " DROP TEMPORARY TABLE `temp_attribute_value`; "
+					+ " DROP TEMPORARY TABLE `temp_good`; "
+					, query);
+
+			Connection con = em.unwrap(Connection.class);
+			PreparedStatement stmt = con.prepareStatement(query);
+
+			int index = 1;
+			for (Map.Entry<String, List<String>> entry : settedAttributes.entrySet()){
+				stmt.setString(index, entry.getKey());
+				index ++;
+
+				stmt.setString(index, entry.getValue().get(0));
+				index ++;
+			}
+
+			if (filter.getQuery() != null && filter.getQuery().length() > 0){
+				stmt.setString(index, "%" + filter.getQuery() + "%");
+				index ++;
+			}
+
+			if (filter.getSettedCategories() != null && filter.getSettedCategories().size() > 0){
+				for (String prm : filter.getSettedCategories()){
+					stmt.setString(index, prm);
+					index ++;
+				}
+			} else {
+				if (filter.getCpId() > 0){
+					stmt.setLong(index, filter.getCpId());
+					index ++;
+				}
+			}
+
+//			if (filter.getPid() > 0){
+//				stmt.setLong(index, filter.getPid());
+//				index ++;
+//				stmt.setLong(index, filter.getPid());
+//			}
+
+			stmt.execute();
+			stmt.getMoreResults();
+			stmt.getMoreResults();
+			stmt.getMoreResults();
+			stmt.getMoreResults();
+			stmt.getMoreResults();
+			stmt.getMoreResults();
+
+			stmt.getMoreResults();
+			ResultSet rs = stmt.getResultSet();
+
+			rs.next();
+
+			int count = rs.getInt(1);
+
+			stmt.getMoreResults();
+			stmt.getMoreResults();
+
+			rs = stmt.getResultSet();
+
+			List<GoodEntity> goods = new ArrayList<>();
+
+			while(rs.next()) {
+				goods.add(em.find(GoodEntity.class, rs.getLong("ResourceId")));
+			}
+
+			for (GoodEntity g : goods){
+				g.getPurchase();
+			}
+
+			stmt.getMoreResults();
+			stmt.getMoreResults();
+			rs = stmt.getResultSet();
+
+			List<AttributeValue> at = new ArrayList<>();
+
+			while(rs.next()) {
+				at.add(em.find(AttributeValue.class, rs.getLong("Id")));
+			}
+
+			stmt.getMoreResults();
+			stmt.getMoreResults();
+			rs = stmt.getResultSet();
+
+			List<GoodCategory> categories = new ArrayList<>();
+
+			while(rs.next()) {
+				categories.add(em.find(GoodCategory.class, rs.getLong("Id")));
+			}
+
+			List<AtrValueList> avl = new ArrayList<>();
+			Map<AttributeEntity, List<AttributeValue>> attributesMap = new HashMap<>();
+
+			for (AttributeValue atr : at){
+				if (attributesMap.get(atr.getAttribute()) != null){
+					attributesMap.get(atr.getAttribute()).add(atr);
+				} else {
+					attributesMap.put(atr.getAttribute(), new ArrayList<>());
+					attributesMap.get(atr.getAttribute()).add(atr);
+				}
+			}
+
+			for (Map.Entry<AttributeEntity, List<AttributeValue>> entry : attributesMap.entrySet()){
+				avl.add(new AtrValueList(entry.getKey(), entry.getValue()));
+			}
+
+			Collections.sort(avl, (object1, object2) -> object1.getAttribute().getName().compareTo(object2.getAttribute().getName()));
+
+			List<CatValueList> cvl = new ArrayList<>();
+
+			Map<GoodCategory, List<GoodCategory>> catMap = new HashMap<>();
+
+			for (GoodCategory ctg : categories) {
+				if (ctg.getParent() != null && catMap.get(ctg.getParent()) != null) {
+					catMap.get(ctg.getParent()).add(ctg);
+				} else if (ctg.getParent() != null && catMap.get(ctg.getParent()) == null){
+					catMap.put(ctg.getParent(), new ArrayList<>());
+					catMap.get(ctg.getParent()).add(ctg);
+				} else if (ctg.getParent() == null && catMap.get(ctg) == null ){
+					catMap.put(ctg, new ArrayList<>());
+				}
+			}
+
+			for (Map.Entry<GoodCategory, List<GoodCategory>> entry : catMap.entrySet()){
+				cvl.add(new CatValueList(entry.getKey(), entry.getValue()));
+			}
+
+			return new Filtered(
+					count,
+					filter.getOffset(),
+					filter.getLimit(),
+					filter.query,
+					filter.getCpId(),
+					filter.getSettedCategories(),
+					settedAttributes,
+					goods,
+					avl,
+					cvl
+			);
+		} catch (Exception e){
+			log.error("{}", e);
+			throw e;
+		}
+	}
+
+
+    @GET
+    @Path("/items/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Transactional
+    public PurchaseEntity getPurchase(
+            @PathParam("id") long id
+    ) {
+		PurchaseEntity purchase = em.find(PurchaseEntity.class, id);
+        return purchase;
+    }
+
+	@GET
+	@Path("/items/{id}/status/edit")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Transactional
+	public Response purchaseStatusEdit(
+			@PathParam("id") long id
+	) {
+		if (session != null){
+			SecurityUser user = session.getUser();
+			if (user.getRole() == SecurityUser.Role.SELLER || user.getRole() == SecurityUser.Role.MODERATOR){
+
+				PurchaseEntity purchase = em.find(PurchaseEntity.class, id);
+
+				switch (purchase.getStatus()){
+					case NEW:
+						if (user.getId() == purchase.getUser().getId()){
+							return Response.ok(new PurchaseStatusEdit(purchase, new PurchaseEntity.Status[]{PurchaseEntity.Status.MODERATION})).build();
+						} else {
+							return Response.ok(new PurchaseStatusEdit(purchase, new PurchaseEntity.Status[]{})).build();
+						}
+					case MODERATION:
+						if (user.getRole() == SecurityUser.Role.MODERATOR){
+							return Response.ok(new PurchaseStatusEdit(purchase, new PurchaseEntity.Status[]{PurchaseEntity.Status.APPROVED})).build();
+						} else {
+							return Response.ok(new PurchaseStatusEdit(purchase, new PurchaseEntity.Status[]{})).build();
+						}
+					case APPROVED:
+						if (user.getId() == purchase.getUser().getId()){
+							return Response.ok(new PurchaseStatusEdit(purchase, new PurchaseEntity.Status[]{PurchaseEntity.Status.OPEN})).build();
+						} else {
+							return Response.ok(new PurchaseStatusEdit(purchase, new PurchaseEntity.Status[]{})).build();
+						}
+					case OPEN:
+						if (user.getId() == purchase.getUser().getId() && purchase.getStopDate().after(new Date())){
+							return Response.ok(new PurchaseStatusEdit(purchase, new PurchaseEntity.Status[]{PurchaseEntity.Status.HIDDEN, PurchaseEntity.Status.STOPED})).build();
+						} else {
+							return Response.ok(new PurchaseStatusEdit(purchase, new PurchaseEntity.Status[]{})).build();
+						}
+					case HIDDEN:
+						if (user.getId() == purchase.getUser().getId()){
+							if (purchase.getStopDate().after(new Date())){
+								return Response.ok(new PurchaseStatusEdit(purchase, new PurchaseEntity.Status[]{PurchaseEntity.Status.OPEN})).build();
+							} else{
+								return Response.ok(new PurchaseStatusEdit(purchase, new PurchaseEntity.Status[]{PurchaseEntity.Status.STOPED})).build();
+							}
+						}
+						return Response.ok(new PurchaseStatusEdit(purchase, new PurchaseEntity.Status[]{})).build();
+					case STOPED:
+						if (user.getId() == purchase.getUser().getId()){
+							return Response.ok(new PurchaseStatusEdit(purchase, new PurchaseEntity.Status[]{PurchaseEntity.Status.PAYMENT})).build();
+						}
+						return Response.ok(new PurchaseStatusEdit(purchase, new PurchaseEntity.Status[]{})).build();
+					case PAYMENT:
+						if (user.getId() == purchase.getUser().getId()){
+							return Response.ok(new PurchaseStatusEdit(purchase, new PurchaseEntity.Status[]{PurchaseEntity.Status.DISTRIBUTION})).build();
+						}
+						return Response.ok(new PurchaseStatusEdit(purchase, new PurchaseEntity.Status[]{})).build();
+					case DISTRIBUTION:
+						if (user.getId() == purchase.getUser().getId()){
+							return Response.ok(new PurchaseStatusEdit(purchase, new PurchaseEntity.Status[]{PurchaseEntity.Status.FINISHED})).build();
+						}
+						return Response.ok(new PurchaseStatusEdit(purchase, new PurchaseEntity.Status[]{})).build();
+					default:
+						return Response.ok(new PurchaseStatusEdit(purchase, new PurchaseEntity.Status[]{})).build();
+				}
+			}
+			return Response.status(Response.Status.UNAUTHORIZED).build();
+		}
+		return Response.status(Response.Status.UNAUTHORIZED).build();
+	}
+
+	@POST
+	@Path("/items/{id}/status/update")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Transactional
+	//	@RolesAllowed("seller")
+	public Response purchaseStatusUpdate(
+			@PathParam("id") long id,
+			PurchaseStatusEditDo req
+	) {
+		if (session != null){
+			SecurityUser user = session.getUser();
+			if (user.getRole() == SecurityUser.Role.SELLER){
+				PurchaseEntity purchase = em.find(PurchaseEntity.class, id);
+
+				switch (req.status){
+					case MODERATION:
+						if (user.getId() == purchase.getUser().getId()){
+							if (purchase.getStatus() == PurchaseEntity.Status.NEW){
+								purchase.setStatus(req.status);
+							} else {
+								return Response.status(Response.Status.UNAUTHORIZED).build();
+							}
+						} else {
+							return Response.status(Response.Status.UNAUTHORIZED).build();
+						}
+						break;
+					case APPROVED:
+						if (user.getRole() == SecurityUser.Role.MODERATOR){
+							if (purchase.getStatus() == PurchaseEntity.Status.MODERATION){
+								purchase.setStatus(req.status);
+							} else {
+								return Response.status(Response.Status.UNAUTHORIZED).build();
+							}
+						} else {
+							return Response.status(Response.Status.UNAUTHORIZED).build();
+						}
+						break;
+					case OPEN:
+						if (user.getId() == purchase.getUser().getId()){
+							if ((purchase.getStatus() == PurchaseEntity.Status.APPROVED || purchase.getStatus() == PurchaseEntity.Status.HIDDEN) && purchase.getStopDate().after(new Date())){
+								purchase.setStatus(req.status);
+							} else {
+								return Response.status(Response.Status.UNAUTHORIZED).build();
+							}
+						} else {
+							return Response.status(Response.Status.UNAUTHORIZED).build();
+						}
+						break;
+					case HIDDEN:
+						if (user.getId() == purchase.getUser().getId()){
+							if (purchase.getStatus() == PurchaseEntity.Status.OPEN && purchase.getStopDate().after(new Date())){
+								purchase.setStatus(req.status);
+							} else {
+								return Response.status(Response.Status.UNAUTHORIZED).build();
+							}
+						} else {
+							return Response.status(Response.Status.UNAUTHORIZED).build();
+						}
+						break;
+					case STOPED:
+						if (user.getId() == purchase.getUser().getId()){
+							if (purchase.getStatus() == PurchaseEntity.Status.OPEN){
+								purchase.setStatus(req.status);
+							} else {
+								return Response.status(Response.Status.UNAUTHORIZED).build();
+							}
+						} else {
+							return Response.status(Response.Status.UNAUTHORIZED).build();
+						}
+						break;
+					case PAYMENT:
+						if (user.getId() == purchase.getUser().getId()){
+							if (purchase.getStatus() == PurchaseEntity.Status.STOPED){
+								purchase.setStatus(req.status);
+							} else {
+								return Response.status(Response.Status.UNAUTHORIZED).build();
+							}
+						} else {
+							return Response.status(Response.Status.UNAUTHORIZED).build();
+						}
+						break;
+					case DISTRIBUTION:
+						if (user.getId() == purchase.getUser().getId()){
+							if (purchase.getStatus() == PurchaseEntity.Status.PAYMENT){
+								purchase.setStatus(req.status);
+							} else {
+								return Response.status(Response.Status.UNAUTHORIZED).build();
+							}
+						} else {
+							return Response.status(Response.Status.UNAUTHORIZED).build();
+						}
+						break;
+				}
+				return Response.ok().build();
+			}
+			return Response.status(Response.Status.UNAUTHORIZED).build();
+		}
+		return Response.status(Response.Status.UNAUTHORIZED).build();
+	}
+
+	@GET
+	@Path("/provider/add")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Transactional
+	//	@RolesAllowed("seller")
+	public Response addProvider() {
+		if (session != null){
+
+			ProviderEntity provider = new ProviderEntity();
+			provider.setTitle("");
+			provider.setPromo("");
+			provider.setDesc("");
+			provider.setResType(ResourceType.EXTENDED);
+			provider.setName(String.format("/user/%s/provider/", session.getUser().getId()));
+			provider.setUser(session.getUser());
+
+			em.persist(provider);
+			em.flush();
+
+			provider.setName(String.format("/user/%s/provider/%s", session.getUser().getId(), provider.getId()));
+			em.persist(provider);
+			em.flush();
+
+			return Response.ok(em.find(ProviderEntity.class, provider.getId())).build();
+		}
+		return Response.status(Response.Status.UNAUTHORIZED).build();
+	}
+
+	@POST
+	@Path("/providers/items")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Transactional
+	//	@RolesAllowed("seller")
+	public Response listProviders(LoadListProvider prm) {
+		try {
+			if (session != null){
+
+
+
+//				int count = em.createNamedQuery("ProviderEntity.accessibleOfUserId", ProviderEntity.class)		//TODO setHint SELECT FOUND_ROWS()
+//						.setParameter("id", session.getUser().getId())
+//						.getResultList().size();
+
+
+				List<ProviderEntity> providers = em.createNamedQuery("ProviderEntity.accessibleOfUserId", ProviderEntity.class)
+						.setParameter("id", session.getUser().getId())
+//						.setMaxResults(prm.getLimit())
+//						.setFirstResult(prm.getLimit())
+						.getResultList();
+
+				if (prm.getStatus() != null && prm.getStatus() == ProviderEntity.Status.NEW){
+					providers.removeIf(p -> p.getPurchases().size() > 0);
+				}
+
+//				return Response.ok(new GenericEntity<List<ProviderEntity>>(p) {}).build();
+				return Response.ok(new Providers(
+//						count,
+//						prm.getOffset(),
+//						prm.getLimit(),
+						providers)
+				).build();
+			}
+			return Response.status(Response.Status.UNAUTHORIZED).build();
+		} catch (Exception e){
+			throw e;
+		}
+	}
+
+	@GET
+	@Path("/provider/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Transactional
+	//	@RolesAllowed("seller")
+	public Response getProvider(
+			@PathParam("id") long id
+	) {
+		if (session != null){
+
+			return Response.ok(
+					em.createNamedQuery("ProviderEntity.accessibleOfIdUserId", ProviderEntity.class)
+							.setParameter("uid", session.getUser().getId())
+							.setParameter("pid", id)
+							.getSingleResult()
+			).build();
+		}
+		return Response.status(Response.Status.UNAUTHORIZED).build();
+	}
+
+	@POST
+	@Path("/provider/update")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Transactional
+	public Response updateProvider(ProviderEntity provider) {
+		if (session != null){
+
+			List<ProviderEntity> providers = em.createNamedQuery("ProviderEntity.accessibleOfUserId", ProviderEntity.class)
+					.setParameter("id", session.getUser().getId())
+					.getResultList();
+
+			if((providers.stream().filter(p -> p.getId() == provider.getId()).findFirst().isPresent())) {
+				ProviderEntity oldProvider = em.find(ProviderEntity.class, provider.getId());
+
+				oldProvider.setTitle(provider.getTitle());
+				oldProvider.setPromo(provider.getPromo());
+				oldProvider.setDesc(provider.getDesc());
+
+				for (AttributeValue val : provider.getAttributes()){
+					oldProvider.getAttributes().stream().filter(p -> p.getAttribute().getName().equals(val.getAttribute().getName())).findFirst().get().setValue(val.getValue());
+				}
+
+				em.merge(oldProvider);
+				em.flush();
+
+				return Response.ok(em.find(ProviderEntity.class, provider.getId())).build();
+			}
+			return Response.status(Response.Status.UNAUTHORIZED).build();
+		}
+		return Response.status(Response.Status.UNAUTHORIZED).build();
+	}
+
+	@DELETE
+	@Path("/provider/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Transactional
+	public Response deleteProvider(
+			@PathParam("id") long id
+	) {
+		ProviderEntity provider = em.find(ProviderEntity.class, id);
+
+		if (provider.getPurchases() != null && provider.getPurchases().size() >0){
+			return Response.status(Response.Status.BAD_REQUEST).build();
+		}
+
+		em.remove(provider);
+		return Response.ok().build();
+	}
+
+    /**
+     * Создает поставку(закупку) с предустановленными опциями по умолчанию
+     * @return Созданный объект для последующего редактирования и финального сохранения
+     */
+    @GET
+    @Path("/add")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Transactional
+	//	@RolesAllowed("seller")
+    public Response addPurchase() {
+
+		if (session != null){
+			try {
+
+				SecurityUser user = session.getUser();
+
+				CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+				CriteriaQuery criteriaQuery = criteriaBuilder.createQuery();
+				Root res = criteriaQuery.from(PurchaseEntity.class);
+				criteriaQuery.where(criteriaBuilder.equal(res.get("resType"), ResourceType.ROOT_PURCHASE));
+
+				PurchaseEntity basePurchase = (PurchaseEntity) em.createQuery(criteriaQuery).getSingleResult();
+
+				CopyGroup group = new CopyGroup();
+				group.setShouldResetPrimaryKey(true);
+				PurchaseEntity newPurchase = (PurchaseEntity) em.unwrap(JpaEntityManager.class).copy(basePurchase, group);
+
+				newPurchase.setResType(ResourceType.EXTENDED);
+
+				newPurchase.setTitle("Новая закупка");
+				newPurchase.setName("/purchase/");
+
+				newPurchase.setUser(user);
+
+				em.persist(newPurchase);
+
+				newPurchase.setStatus(PurchaseEntity.Status.NEW);
+//				newPurchase.setGoods(new ArrayList<>());
+				newPurchase.setComments(new ArrayList<>());
+				newPurchase.setLikes(new ArrayList<>());
+				newPurchase.setDocuments(new ArrayList<>());
+				newPurchase.setImages(new ArrayList<>());
+
+				em.persist(newPurchase);
+				em.flush();
+
+				newPurchase.setName(String.format("/purchase/%s", newPurchase.getId()));
+				em.persist(newPurchase);
+
+				em.flush();
+
+				return Response.ok(newPurchase).build();
+			} catch (Throwable th){
+				throw th;
+			}
+		}
+		return Response.status(Response.Status.UNAUTHORIZED).build();
+    }
+
+//    @POST
+//    @Path("/create")
+//    @Consumes(MediaType.APPLICATION_JSON)
+//    @Produces(MediaType.APPLICATION_JSON)
+//    @Transactional
+//    public PurchaseEntity createPurchase(PurchaseEntity entity) {
+//
+//        try {
+//            em.persist(entity);
+//
+//            for (GoodEntity good : entity.getGoods()){
+//                em.persist(good);
+//            }
+//
+//            em.persist(entity);
+//            em.flush();
+//
+//            entity.setName(String.format("/purchase/%s", entity.getId()));
+//            em.persist(entity);
+//
+//            for (GoodEntity good : entity.getGoods()){
+//                good.setName(String.format("/purchase/%s/good/%s", entity.getId(), good.getId()));
+//                em.persist(good);
+//            }
+//
+//            em.flush();
+//
+//            //TODO добавить физически файлы:
+//
+//        } catch (Throwable th) {
+//            throw th;
+//        }
+//
+//        return entity;
+//    }
+
+    @POST
+    @Path("/update")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Transactional
+    public Response updatePurchase(PurchaseEntity purchase) {
+
+		//TODO проверка purchases через @RolesAllowed (о том, что Purchase принадлежит User)
+
+		if (session == null){
+			return Response.status(Response.Status.UNAUTHORIZED).build();
+		}
+
+		try {
+			SecurityUser user = session.getUser();		//TODO
+
+			List<ProviderEntity> providers = em.createNamedQuery("ProviderEntity.accessibleOfUserId", ProviderEntity.class)
+					.setParameter("id", user.getId())
+					.getResultList();
+
+			if(purchase.getProvider() != null && !providers.stream().filter(p -> p.getId() == purchase.getProvider().getId()).findFirst().isPresent()) {
+				return Response.status(Response.Status.UNAUTHORIZED).build();
+			}
+
+			PurchaseEntity purchaseOld = em.find(PurchaseEntity.class, purchase.getId());
+
+			if (purchase.getProvider() != null ){
+				ProviderEntity newProvider = em.find(ProviderEntity.class, purchase.getProvider().getId());
+				if (newProvider.getUser().getId() == user.getId()){
+					purchaseOld.setProvider(em.find(ProviderEntity.class, purchase.getProvider().getId()));
+				}
+				return Response.status(Response.Status.UNAUTHORIZED).entity("Current user does not own the setted provider").build();
+			}
+
+			purchaseOld.setTitle(purchase.getTitle());
+
+			purchaseOld.setOpenDate(purchase.getOpenDate());
+			purchaseOld.setStopDate(purchase.getStopDate());
+			purchaseOld.setStartDeliveryDate(purchase.getStartDeliveryDate());
+			purchaseOld.setNextDeliveryExpectDate(purchase.getNextDeliveryExpectDate());
+
+
+//				if (purchaseOld.getStatus() != PurchaseEntity.Status.PAYMENT					//TODO вернуть проверку
+//						&& purchaseOld.getStatus() != PurchaseEntity.Status.DISTRIBUTION
+//						&& purchaseOld.getStatus() != PurchaseEntity.Status.FINISHED
+//						){
+
+			for (AttributeValue val : purchase.getAttributes()){
+				purchaseOld.getAttributes().stream().filter(p -> p.getAttribute().getName().equals(val.getAttribute().getName())).findFirst().get().setValue(val.getValue());
+
+				if (val.getAttribute().getName().equals("title")){
+					purchaseOld.setTitle(val.getValue());
+				}
+			}
+
+			purchaseOld.setImages(purchase.getImages());
+
+			for (DocumentEntity doc : purchase.getDocuments()){
+				if((doc.getId() > 0) &&  !purchaseOld.getDocuments().stream().filter(d -> d.getId() == doc.getId()).findFirst().isPresent()) {
+					return Response.status(Response.Status.UNAUTHORIZED).build();
+				}
+			}
+			purchaseOld.setDocuments(purchase.getDocuments());
+
+			em.merge(purchaseOld);
+			em.flush();
+
+			/*
+				for (GoodEntity good : purchase.getGoods()) {
+
+					// проверка на возможный угон Good
+					if((good.getId() > 0) &&  !purchaseOld.getGoods().stream().filter(g -> g.getId() == good.getId()).findFirst().isPresent()) {
+						return Response.status(Response.Status.UNAUTHORIZED).build();
+					}
+
+					if (good.getAction() != null){
+						switch(good.getAction()) {
+							case REMOVE:
+								// TODO You should check if the parent purchase is
+//								em.remove(em.find(GoodEntity.class, good.getId()));
+								GoodEntity delGood = em.find(GoodEntity.class, good.getId());
+
+								if (delGood.getPurchase().getStatus() == PurchaseEntity.Status.NEW
+										|| delGood.getPurchase().getStatus() == PurchaseEntity.Status.MODERATION){
+									delGood.setStatus(GoodEntity.Status.DELETED);
+
+									em.merge(delGood);
+									em.flush();
+								}
+								else {
+									return Response.status(Response.Status.BAD_REQUEST).build();
+								}
+
+								break;
+							case UPDATE:
+								GoodEntity oldGood = purchaseOld.getGoods().stream().filter(g -> g.getId() == good.getId()).findFirst().get();
+
+								for (AttributeValue val : good.getAttributes()){
+									oldGood.getAttributes().stream().filter(g -> g.getAttribute().getName().equals(val.getAttribute().getName())).findFirst().get().setValue(val.getValue());
+								}
+
+								oldGood.setPrice(good.getPrice());
+								oldGood.setQuantity(good.getQuantity());
+								oldGood.setImages(good.getImages());
+								oldGood.setPersonalImages(good.getPersonalImages());
+								oldGood.setTitle(good.getTitle());
+
+								if (good.getCompany() != null){
+									CompanyEntity company = em.find(CompanyEntity.class, good.getCompany().getId());
+									oldGood.setCompany(company);
+								}
+
+								List<GoodCategory> categories = em.createNamedQuery("GoodCategory.list", GoodCategory.class).getResultList();
+
+								oldGood.getCategories().clear();
+
+								if (good.getCategories() != null){
+
+									Set<GoodCategory> ctgs = new HashSet<>();
+
+									for (GoodCategory cat : good.getCategories()){
+										GoodCategory c = categories.stream().filter(cc -> cc.getId() == cat.getId()).findFirst().get();
+										ctgs.add(c);
+										if (c.getParent() != null)
+											ctgs.add(c.getParent());
+									}
+
+									oldGood.setCategories(new ArrayList<>(ctgs));
+								}
+								em.merge(oldGood);
+								break;
+						}
+					}
+				}
+			*/
+
+				em.flush();
+//				}
+
+			PurchaseEntity p = em.find(PurchaseEntity.class, purchase.getId());
+
+			return Response.ok(em.find(PurchaseEntity.class, purchase.getId())).build();
+		} catch (Exception e){
+			log.error("{}", e);
+			throw e;
+		}
+	}
+
+	@DELETE
+	@Path("/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Transactional
+	public Response itemsDelete(@PathParam("id") long id) {
+	    
+	    PurchaseEntity entity = em.find(PurchaseEntity.class, id);
+        
+        List<GoodEntity> goods = entity.getGoods();
+
+        if (goods != null && !goods.isEmpty()){
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+
+        em.remove(entity);
+        em.flush();
+
+        return Response.ok().build();
+	}
+}

@@ -10,7 +10,7 @@ import javax.ws.rs.core.Context;
 
 import org.glassfish.jersey.message.filtering.spi.ScopeResolver;
 
-import com.ntr1x.treasure.web.model.Resource.ResourceProperty;
+import com.ntr1x.treasure.web.model.security.SecurityResource.ResourceProperty;
 
 @Singleton
 public class ResourceScopeResolver implements ScopeResolver {

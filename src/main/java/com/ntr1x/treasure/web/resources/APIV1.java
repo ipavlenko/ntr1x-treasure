@@ -11,18 +11,18 @@ import io.swagger.models.auth.In;
 
 @SwaggerDefinition(
 	info = @Info(
-		title = "Treasure API",
-		description = "Universal data storage platform for web developers",
+		title = "VSTORe API",
 		version = "1.0.0"
 	),
 	schemes = { SwaggerDefinition.Scheme.HTTP, SwaggerDefinition.Scheme.HTTPS },
 	tags = {
         @Tag(name = "Setup",        description = "Applciation setup"),
-	    @Tag(name = "Security",     description = "Registration & Authorization"),
-		@Tag(name = "Resources",    description = "Universal access to the application data"),
-		@Tag(name = "Publications", description = "News, events, blogs, etc."),
-		@Tag(name = "Categories",   description = "Resource catgories"),
-		@Tag(name = "Accounts",     description = "Users & Profiles"),
+        @Tag(name = "Resources",    description = "Universal access to the application data"),
+        @Tag(name = "Security",     description = "Registration & Authorization"),
+	    @Tag(name = "Users",     description = "Users & Profiles"),
+	    
+//		@Tag(name = "Publications", description = "News, events, blogs, etc."),
+//		@Tag(name = "Categories",   description = "Resource catgories"),
 //		@Tag(name = "Goods",        description = "Goods, services, offers, etc."),
 	}
 )

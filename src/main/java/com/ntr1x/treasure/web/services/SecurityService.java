@@ -6,6 +6,7 @@ import java.util.Random;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -13,8 +14,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Service;
 
 import com.google.common.hash.Hashing;
-import com.ntr1x.treasure.web.model.Account;
-import com.ntr1x.treasure.web.repository.GrantRepository;
+import com.ntr1x.treasure.web.model.security.SecurityUser;
 import com.ntr1x.treasure.web.utils.ConversionUtils;
 import com.ntr1x.treasure.web.utils.CryptoUtils;
 
@@ -25,7 +25,7 @@ public class SecurityService implements ISecurityService {
     private Config config;
     
     @Inject
-    private GrantRepository grants;
+    private EntityManager em;
     
     private final Random random = new Random();
     
@@ -187,12 +187,9 @@ public class SecurityService implements ISecurityService {
     
     @Transactional
     @Override
-    public boolean isUserInRole(Account account, String resource, String action) {
+    public boolean isUserInRole(SecurityUser user, String resource, String action) {
         
-        return grants.check(
-            account.getId(),
-            resource,
-            action
-        ) > 0;
+        int count = em.createNamedQuery("SecurityPrivilege.check", Integer.class).getSingleResult();
+        return count > 0;
     }
 }

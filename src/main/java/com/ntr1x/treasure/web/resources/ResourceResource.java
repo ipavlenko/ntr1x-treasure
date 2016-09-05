@@ -14,7 +14,9 @@ import javax.ws.rs.core.MediaType;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
-import com.ntr1x.treasure.web.model.Resource;
+import com.ntr1x.treasure.web.model.attributes.AttributeValue;
+import com.ntr1x.treasure.web.model.purchase.ResourceType;
+import com.ntr1x.treasure.web.model.security.SecurityResource;
 import com.ntr1x.treasure.web.repository.ResourceRepository;
 
 import io.swagger.annotations.Api;
@@ -31,15 +33,15 @@ public class ResourceResource {
 	@GET
     @Produces(MediaType.APPLICATION_JSON)
 	@Transactional
-    public List<Resource> list(
+    public List<SecurityResource> list(
     		@QueryParam("pattern") @ApiParam(example = "%") String pattern,
 			@QueryParam("page") @ApiParam(example = "0") int page,
     		@QueryParam("size") @ApiParam(example = "10") int size
     ) {
 		return (
 			pattern == null
-				? repository.findOrderByAlias(new PageRequest(page, size))
-				: repository.findByAliasLikeOrderByAlias(pattern, new PageRequest(page, size))
+				? repository.findOrderByName(new PageRequest(page, size))
+				: repository.findByNameLikeOrderByName(pattern, new PageRequest(page, size))
 		).getContent();
     }
 	
@@ -47,7 +49,7 @@ public class ResourceResource {
 	@Path("/i/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Transactional
-    public Resource select(@PathParam("id") long id, @QueryParam("select") String select) {
+    public SecurityResource select(@PathParam("id") long id) {
 		return repository.findOne(id);
     }
 	
@@ -55,7 +57,16 @@ public class ResourceResource {
 	@Path("/a/{alias}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Transactional
-    public Resource select(@PathParam("alias") String alias) {
-		return repository.findByAlias(alias);
+    public SecurityResource select(@PathParam("alias") String alias) {
+		return repository.findByName(alias);
     }
+	
+	@GET
+    @Path("/t/{type}/values")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Transactional
+	public List<AttributeValue> selectValues(@PathParam("type") ResourceType type) {
+	    
+	    return repository.findByResType(type).getAttributes();
+	}
 }
