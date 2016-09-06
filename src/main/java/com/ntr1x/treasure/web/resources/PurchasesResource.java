@@ -11,10 +11,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -26,6 +26,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -35,6 +36,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.sessions.CopyGroup;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
 import com.ntr1x.treasure.web.CommonConfig;
@@ -50,10 +53,12 @@ import com.ntr1x.treasure.web.model.purchase.PurchaseEntity;
 import com.ntr1x.treasure.web.model.purchase.ResourceType;
 import com.ntr1x.treasure.web.model.security.SecuritySession;
 import com.ntr1x.treasure.web.model.security.SecurityUser;
-import com.ntr1x.treasure.web.repository.PurchaseEntityRepository;
+import com.ntr1x.treasure.web.repository.GoodRepository;
+import com.ntr1x.treasure.web.repository.PurchaseRepository;
 import com.ntr1x.treasure.web.utils.map.FilterValue;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiParam;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -69,386 +74,115 @@ public class PurchasesResource {
 	private SecuritySession session;
 	
 	@Inject
-	private PurchaseEntityRepository purchases;
-
-	@Data
-	@NoArgsConstructor
-	@AllArgsConstructor
-	public static class LoadList {
-		private long count;
-		private int offset;
-		private int limit;
-	}
-
-	@Data
-	@NoArgsConstructor
-	@AllArgsConstructor
-	public static class LoadListProvider {
-//		private long count;
-//		private int offset;
-//		private int limit;
-		private ProviderEntity.Status status;
-	}
-
-	@Data
-	@NoArgsConstructor
-	@AllArgsConstructor
-	public static class LoadListPurchase {
-		private long count;
-		private int offset;
-		private int limit;
-		private PurchaseEntity.Status status;
-	}
-
-	@Data
-	@NoArgsConstructor
-	@AllArgsConstructor
-	public static class Purchases {
-		private long count;
-		private int offset;
-		private int limit;
-		private List<PurchValueList> purchases;
-	}
-
-	@Data
-	@NoArgsConstructor
-	@AllArgsConstructor
-	public static class Goods {
-		private long count;
-		private int offset;
-		private int limit;
-		private List<GoodEntity> goods;
-	}
-
-	@Data
-	@NoArgsConstructor
-	@AllArgsConstructor
-	public static class Providers {
-//		private long count;
-//		private int offset;
-//		private int limit;
-		private List<ProviderEntity> providers;
-	}
-
-	@Data
-	@NoArgsConstructor
-	@AllArgsConstructor
-	@XmlRootElement
-	@XmlAccessorType(XmlAccessType.FIELD)
-	public static class AtrValueList implements Serializable{
-		private static final long serialVersionUID = -6410688391927286753L;
-		private AttributeEntity attribute;
-		private List<AttributeValue> values;
-	}
-
-	@NoArgsConstructor
-	@AllArgsConstructor
-	@XmlRootElement
-	public static class PurchaseStatusEdit{
-		public PurchaseEntity purchase;
-		public PurchaseEntity.Status[] availableStatuses;
-	}
-
-	@NoArgsConstructor
-	@AllArgsConstructor
-	@XmlRootElement
-	public static class PurchaseStatusEditDo{
-		public PurchaseEntity.Status status;
-	}
-
-	@Data
-	@NoArgsConstructor
-	@AllArgsConstructor
-	@XmlRootElement
-	@XmlAccessorType(XmlAccessType.FIELD)
-	public static class PurchValueList implements Serializable{
-		private static final long serialVersionUID = -6410688391927286753L;
-		private PurchaseEntity purchase;
-		private List<OrderEntity> orders;
-		private float total;
-		private int paidCnt;
-		private int confirmedCnt;
-		private int canceledCnt;
-		private float goodsCnt;
-	}
-
-	@Data
-	@NoArgsConstructor
-	@AllArgsConstructor
-	@XmlRootElement
-	@XmlAccessorType(XmlAccessType.FIELD)
-	public static class CatValueList implements Serializable{
-		private static final long serialVersionUID = -14038014837124724L;
-		private GoodCategory category;
-		private List<GoodCategory> childs;
-	}
-
-	@Data
-	@NoArgsConstructor
-	@AllArgsConstructor
-	@XmlRootElement
-	@XmlAccessorType(XmlAccessType.FIELD)
-	public static class FilterPurchases {
-		private long count;
-		private int offset;
-		private int limit;
-		private String query;
-		private long cpId;
-		private long pid = 0;
-		private List<String> settedCategories;
-		@XmlElement
-		private List<FilterValue> settedAttributes;
-	}
-
-	@Data
-	@NoArgsConstructor
-	@AllArgsConstructor
-	@XmlRootElement
-	@XmlAccessorType(XmlAccessType.FIELD)
-	public static class Filtered {
-		private long count;
-		private int offset;
-		private int limit;
-		private String query;
-		private long cpId;
-		private List<String> settedCategories;
-		private Map<String, List<String>> settedAttributes = new HashMap<>();
-		private List<GoodEntity> goods;
-		private List<AtrValueList> attributes;
-		private List<CatValueList> categories;
-	}
+	private PurchaseRepository purchases;
+	
+	@Inject
+	private GoodRepository goods;
 
     @PersistenceContext
     private EntityManager em;
 
 	@POST
-	@Path("/items")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@Transactional()
-//	@Detailed
-	public Response listPurchases(
-			LoadListPurchase prm
-	){
-		try {
-			if (session != null){
-				CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+	@RolesAllowed({ "auth" })
+	@Transactional
+	public Response selectWithOrders(
+        @QueryParam("page") @ApiParam(example = "0") int page,
+        @QueryParam("size") @ApiParam(example = "10") int size,
+        @QueryParam("status") PurchaseEntity.Status status
+	){	    
+					    
+	    Page<PurchaseEntity> result = status == null
+            ? purchases.findAllByResTypeAndUserId(ResourceType.EXTENDED, session.getUser().getId(), new PageRequest(page, size))
+            : purchases.findAllByResTypeAndStatusAndUserId(ResourceType.EXTENDED, status, session.getUser().getId(), new PageRequest(page, size))
+	    ;
 
-				CriteriaQuery criteriaQuery = criteriaBuilder.createQuery();
-				Root purchase = criteriaQuery.from(PurchaseEntity.class);
+		List<PurchValueList> purchases = new ArrayList<>();
 
-				criteriaQuery.where(
-						criteriaBuilder.notEqual(purchase.get("resType"), ResourceType.ROOT_PURCHASE),
-						criteriaBuilder.equal(purchase.get("user").get("id"), session.getUser().getId())
-				);
+		for (PurchaseEntity p : result) {
+			
+		    List<OrderEntity> orders = em.createNamedQuery("OrderEntity.accessibleSellerIdAndPurchaseId", OrderEntity.class)
+					.setParameter("id", session.getUser().getId())
+					.setParameter("pid", p.getId())
+					.getResultList();
 
-				if (prm.getStatus() != null){
-					criteriaQuery.where(
-							criteriaBuilder.equal(purchase.get("status"), prm.getStatus()),
-							criteriaBuilder.equal(purchase.get("user").get("id"), session.getUser().getId())
-							,criteriaBuilder.notEqual(purchase.get("resType"), ResourceType.ROOT_PURCHASE)
-					);
-				}
+			PurchValueList pvl = new PurchValueList();
+			pvl.setOrders(orders);
+			pvl.setPurchase(p);
 
-				Query query = em.createQuery(criteriaQuery);
-				query.setMaxResults(prm.getLimit() == 0 ? CommonConfig.PAGE_ITEMS_LIMIT : prm.getLimit());
-				query.setFirstResult(prm.getOffset());
+			for (OrderEntity order : orders){
+				for (OrderEntryEntity entr : order.getEntries()){
 
-				List<PurchaseEntity> result = query.getResultList();
+					pvl.setGoodsCnt(pvl.getGoodsCnt() + entr.getQuantity());
+					pvl.setTotal(pvl.getTotal() + (entr.getQuantity() * entr.getGood().getPrice()));
 
-				criteriaQuery.select(criteriaBuilder.count(purchase));
-				query = em.createQuery(criteriaQuery);
-				long count = (Long)query.getSingleResult();
-
-				List<PurchValueList> purchases = new ArrayList<>();
-
-				for (PurchaseEntity p : result){
-					List<OrderEntity> orders = em.createNamedQuery("OrderEntity.accessibleSellerIdAndPurchaseId", OrderEntity.class)
-							.setParameter("id", session.getUser().getId())
-							.setParameter("pid", p.getId())
-							.getResultList();
-
-					PurchValueList pvl = new PurchValueList();
-					pvl.setOrders(orders);
-					pvl.setPurchase(p);
-
-					for (OrderEntity order : orders){
-						for (OrderEntryEntity entr : order.getEntries()){
-
-							pvl.setGoodsCnt(pvl.getGoodsCnt() + entr.getQuantity());
-							pvl.setTotal(pvl.getTotal() + (entr.getQuantity() * entr.getGood().getPrice()));
-
-							if (order.getStatus() == OrderEntity.Status.PAID){
-								pvl.setPaidCnt(pvl.getPaidCnt() + 1);
-							} else if (order.getStatus() == OrderEntity.Status.CONFIRMED){
-								pvl.setConfirmedCnt(pvl.getConfirmedCnt() + 1);
-							} else if (order.getStatus() == OrderEntity.Status.CANCELED){
-								pvl.setCanceledCnt(pvl.getCanceledCnt() + 1);
-							}
-						}
+					if (order.getStatus() == OrderEntity.Status.PAID){
+						pvl.setPaidCnt(pvl.getPaidCnt() + 1);
+					} else if (order.getStatus() == OrderEntity.Status.CONFIRMED){
+						pvl.setConfirmedCnt(pvl.getConfirmedCnt() + 1);
+					} else if (order.getStatus() == OrderEntity.Status.CANCELED){
+						pvl.setCanceledCnt(pvl.getCanceledCnt() + 1);
 					}
-
-					purchases.add(pvl);
-				}
-
-				return Response.ok(
-						new Purchases(
-								count,
-								prm.getOffset(),
-								prm.getLimit(),
-								purchases
-						)
-				).build();
-			}
-
-			return Response.status(Response.Status.UNAUTHORIZED).build();
-		} catch (Exception e){
-			log.error("{}", e);
-			throw e;
-		}
-	}
-
-	@POST
-	@Path("/{id}/goods/items")
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	@Transactional()
-//	@Detailed
-	public Response listGoods(
-			LoadList prm,
-			@PathParam("id") long id
-	){
-
-		if (session != null){
-			CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
-
-			CriteriaQuery criteriaQuery = criteriaBuilder.createQuery();
-			Root good = criteriaQuery.from(GoodEntity.class);
-
-			criteriaQuery.where(
-					criteriaBuilder.equal(good.get("purchase").get("user").get("id"), session.getUser().getId()),
-					criteriaBuilder.equal(good.get("purchase").get("id"), id)
-			);
-
-			Query query = em.createQuery(criteriaQuery);
-			query.setMaxResults(prm.getLimit() == 0 ? CommonConfig.PAGE_ITEMS_LIMIT : prm.getLimit());
-			query.setFirstResult(prm.getOffset());
-
-			List<GoodEntity> result = query.getResultList();
-
-			criteriaQuery.select(criteriaBuilder.count(good));
-			query = em.createQuery(criteriaQuery);
-			long count = (Long)query.getSingleResult();
-
-			return Response.ok(
-					new Goods(
-							count,
-							prm.getOffset(),
-							prm.getLimit(),
-							result
-					)
-			).build();
-		}
-
-		return Response.status(Response.Status.UNAUTHORIZED).build();
-	}
-
-	private static Map<String, List<String>> getArrValuesMap(List<FilterValue> lst){
-
-		Map<String, List<String>> settedAttributes = new HashMap<>();
-		if (lst != null){
-			for (FilterValue val : lst){
-				if (settedAttributes.get(val.getName()) != null){
-					settedAttributes.get(val.getName()).add(val.getValue());
-				} else {
-					settedAttributes.put(val.getName(), new ArrayList<>());
-					settedAttributes.get(val.getName()).add(val.getValue());
 				}
 			}
+
+			purchases.add(pvl);
 		}
-		return settedAttributes;
+
+		return new PurchasesResponse(
+			result.getTotalElements(),
+			page,
+			size,
+			purchases
+		);
 	}
 
 	@GET
-	@Path("/root/attribute/values")
-	@Produces(MediaType.APPLICATION_JSON)
-	@Transactional()
-	//	@RolesAllowed("admin")
-	public List<AttributeValue> attributeValues() {
-		try {
+    @Path("/i/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Transactional
+    public PurchaseEntity select(@PathParam("id") long id) {
+        
+	    PurchaseEntity purchase = em.find(PurchaseEntity.class, id);
+        return purchase;
+    }
+	
+	@GET
+    @Path("/i/{id}/goods")
+    @Produces(MediaType.APPLICATION_JSON)
+	@RolesAllowed({ "res:///purchases/i/{id}:admin" })
+    @Transactional
+    public GoodsResponse selectGoods(
+        @PathParam("id") long id,
+        @QueryParam("page") @ApiParam(example = "0") int page,
+        @QueryParam("size") @ApiParam(example = "10") int size
+    ) {
+        
+	    Page<GoodEntity> result = goods.findByPurchaseId(id, new PageRequest(page, size));
+        return new Goods(
+            result.getTotalElements(),
+            page,
+            size,
+            result.getContent()
+        );
+    }
 
-			List<AttributeValue> result = em.createNamedQuery("AttributeValue.accessibleOfResType", AttributeValue.class)
-					.setParameter("resType", ResourceType.ROOT_PURCHASE)
-					.getResultList();
-
-			return result;
-		} catch (Exception e){
-			throw e;
-		}
-	}
-
-	@POST
-	@Path("/root/attribute/update")
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	@Transactional
-	//	@RolesAllowed("admin")
-	public Response updateAttribute(AttributeValue attribute) {
-
-		try {
-			if (attribute.getAction() != null){
-				switch(attribute.getAction()) {
-					case REMOVE: {
-						em.remove(em.find(AttributeEntity.class, attribute.getAttribute().getId()));
-						break;
-					}
-					case ADD: {
-						if (em.find(AttributeValue.class, attribute.getId()) != null || em.find(AttributeEntity.class, attribute.getAttribute().getId()) != null)
-							return Response.status(Response.Status.BAD_REQUEST).build();
-
-						em.persist(attribute.getAttribute());
-						em.flush();
-
-						List<PurchaseEntity> purchases = this.purchases.findAll();
-
-						for (PurchaseEntity purchase : purchases){
-
-							AttributeValue val = new AttributeValue();
-							val.setValue(attribute.getValue());
-							val.setRelate(purchase);
-							val.setAttribute(attribute.getAttribute());
-							purchase.getAttributes().add(val);
-//							em.merge(purchase.getAttributes());
-							em.merge(purchase);
-						}
-						break;
-					}
-					case UPDATE: {
-
-						PurchaseEntity basePurchase = purchases.findByResType(ResourceType.ROOT_PURCHASE);
-						AttributeValue val = basePurchase.getAttributes().stream().filter(p -> p.getId() == attribute.getId()).findFirst().get();
-
-						val.getAttribute().setName(attribute.getAttribute().getName());
-						val.getAttribute().setTitle(attribute.getAttribute().getTitle());
-						val.getAttribute().setOptions(attribute.getAttribute().getOptions());
-						val.getAttribute().setOrder(attribute.getAttribute().getOrder());
-						val.setValue(attribute.getValue());
-
-						em.merge(val);
-
-						break;
-					}
-				}
-				em.flush();
-
-				return Response.ok().build();
-			}
-			return Response.status(Response.Status.BAD_REQUEST).build();
-		} catch (Exception e){
-			log.error("{}", e);
-			throw e;
-		}
-	}
+//	private static Map<String, List<String>> getArrValuesMap(List<FilterValue> lst){
+//
+//		Map<String, List<String>> settedAttributes = new HashMap<>();
+//		if (lst != null){
+//			for (FilterValue val : lst){
+//				if (settedAttributes.get(val.getName()) != null){
+//					settedAttributes.get(val.getName()).add(val.getValue());
+//				} else {
+//					settedAttributes.put(val.getName(), new ArrayList<>());
+//					settedAttributes.get(val.getName()).add(val.getValue());
+//				}
+//			}
+//		}
+//		return settedAttributes;
+//	}
 
 	@POST
 	@Path("/filter/purchases")
@@ -796,88 +530,76 @@ public class PurchasesResource {
 		}
 	}
 
-
-    @GET
-    @Path("/items/{id}")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Transactional
-    public PurchaseEntity getPurchase(
-            @PathParam("id") long id
-    ) {
-		PurchaseEntity purchase = em.find(PurchaseEntity.class, id);
-        return purchase;
-    }
-
-	@GET
-	@Path("/items/{id}/status/edit")
-	@Produces(MediaType.APPLICATION_JSON)
-	@Transactional
-	public Response purchaseStatusEdit(
-			@PathParam("id") long id
-	) {
-		if (session != null){
-			SecurityUser user = session.getUser();
-			if (user.getRole() == SecurityUser.Role.SELLER || user.getRole() == SecurityUser.Role.MODERATOR){
-
-				PurchaseEntity purchase = em.find(PurchaseEntity.class, id);
-
-				switch (purchase.getStatus()){
-					case NEW:
-						if (user.getId() == purchase.getUser().getId()){
-							return Response.ok(new PurchaseStatusEdit(purchase, new PurchaseEntity.Status[]{PurchaseEntity.Status.MODERATION})).build();
-						} else {
-							return Response.ok(new PurchaseStatusEdit(purchase, new PurchaseEntity.Status[]{})).build();
-						}
-					case MODERATION:
-						if (user.getRole() == SecurityUser.Role.MODERATOR){
-							return Response.ok(new PurchaseStatusEdit(purchase, new PurchaseEntity.Status[]{PurchaseEntity.Status.APPROVED})).build();
-						} else {
-							return Response.ok(new PurchaseStatusEdit(purchase, new PurchaseEntity.Status[]{})).build();
-						}
-					case APPROVED:
-						if (user.getId() == purchase.getUser().getId()){
-							return Response.ok(new PurchaseStatusEdit(purchase, new PurchaseEntity.Status[]{PurchaseEntity.Status.OPEN})).build();
-						} else {
-							return Response.ok(new PurchaseStatusEdit(purchase, new PurchaseEntity.Status[]{})).build();
-						}
-					case OPEN:
-						if (user.getId() == purchase.getUser().getId() && purchase.getStopDate().after(new Date())){
-							return Response.ok(new PurchaseStatusEdit(purchase, new PurchaseEntity.Status[]{PurchaseEntity.Status.HIDDEN, PurchaseEntity.Status.STOPED})).build();
-						} else {
-							return Response.ok(new PurchaseStatusEdit(purchase, new PurchaseEntity.Status[]{})).build();
-						}
-					case HIDDEN:
-						if (user.getId() == purchase.getUser().getId()){
-							if (purchase.getStopDate().after(new Date())){
-								return Response.ok(new PurchaseStatusEdit(purchase, new PurchaseEntity.Status[]{PurchaseEntity.Status.OPEN})).build();
-							} else{
-								return Response.ok(new PurchaseStatusEdit(purchase, new PurchaseEntity.Status[]{PurchaseEntity.Status.STOPED})).build();
-							}
-						}
-						return Response.ok(new PurchaseStatusEdit(purchase, new PurchaseEntity.Status[]{})).build();
-					case STOPED:
-						if (user.getId() == purchase.getUser().getId()){
-							return Response.ok(new PurchaseStatusEdit(purchase, new PurchaseEntity.Status[]{PurchaseEntity.Status.PAYMENT})).build();
-						}
-						return Response.ok(new PurchaseStatusEdit(purchase, new PurchaseEntity.Status[]{})).build();
-					case PAYMENT:
-						if (user.getId() == purchase.getUser().getId()){
-							return Response.ok(new PurchaseStatusEdit(purchase, new PurchaseEntity.Status[]{PurchaseEntity.Status.DISTRIBUTION})).build();
-						}
-						return Response.ok(new PurchaseStatusEdit(purchase, new PurchaseEntity.Status[]{})).build();
-					case DISTRIBUTION:
-						if (user.getId() == purchase.getUser().getId()){
-							return Response.ok(new PurchaseStatusEdit(purchase, new PurchaseEntity.Status[]{PurchaseEntity.Status.FINISHED})).build();
-						}
-						return Response.ok(new PurchaseStatusEdit(purchase, new PurchaseEntity.Status[]{})).build();
-					default:
-						return Response.ok(new PurchaseStatusEdit(purchase, new PurchaseEntity.Status[]{})).build();
-				}
-			}
-			return Response.status(Response.Status.UNAUTHORIZED).build();
-		}
-		return Response.status(Response.Status.UNAUTHORIZED).build();
-	}
+//	@GET
+//	@Path("/items/{id}/status/edit")
+//	@Produces(MediaType.APPLICATION_JSON)
+//	@Transactional
+//	public Response purchaseStatusEdit(
+//			@PathParam("id") long id
+//	) {
+//		if (session != null){
+//			SecurityUser user = session.getUser();
+//			if (user.getRole() == SecurityUser.Role.SELLER || user.getRole() == SecurityUser.Role.MODERATOR){
+//
+//				PurchaseEntity purchase = em.find(PurchaseEntity.class, id);
+//
+//				switch (purchase.getStatus()){
+//					case NEW:
+//						if (user.getId() == purchase.getUser().getId()){
+//							return Response.ok(new PurchaseStatusEdit(purchase, new PurchaseEntity.Status[]{PurchaseEntity.Status.MODERATION})).build();
+//						} else {
+//							return Response.ok(new PurchaseStatusEdit(purchase, new PurchaseEntity.Status[]{})).build();
+//						}
+//					case MODERATION:
+//						if (user.getRole() == SecurityUser.Role.MODERATOR){
+//							return Response.ok(new PurchaseStatusEdit(purchase, new PurchaseEntity.Status[]{PurchaseEntity.Status.APPROVED})).build();
+//						} else {
+//							return Response.ok(new PurchaseStatusEdit(purchase, new PurchaseEntity.Status[]{})).build();
+//						}
+//					case APPROVED:
+//						if (user.getId() == purchase.getUser().getId()){
+//							return Response.ok(new PurchaseStatusEdit(purchase, new PurchaseEntity.Status[]{PurchaseEntity.Status.OPEN})).build();
+//						} else {
+//							return Response.ok(new PurchaseStatusEdit(purchase, new PurchaseEntity.Status[]{})).build();
+//						}
+//					case OPEN:
+//						if (user.getId() == purchase.getUser().getId() && purchase.getStopDate().after(new Date())){
+//							return Response.ok(new PurchaseStatusEdit(purchase, new PurchaseEntity.Status[]{PurchaseEntity.Status.HIDDEN, PurchaseEntity.Status.STOPED})).build();
+//						} else {
+//							return Response.ok(new PurchaseStatusEdit(purchase, new PurchaseEntity.Status[]{})).build();
+//						}
+//					case HIDDEN:
+//						if (user.getId() == purchase.getUser().getId()){
+//							if (purchase.getStopDate().after(new Date())){
+//								return Response.ok(new PurchaseStatusEdit(purchase, new PurchaseEntity.Status[]{PurchaseEntity.Status.OPEN})).build();
+//							} else{
+//								return Response.ok(new PurchaseStatusEdit(purchase, new PurchaseEntity.Status[]{PurchaseEntity.Status.STOPED})).build();
+//							}
+//						}
+//						return Response.ok(new PurchaseStatusEdit(purchase, new PurchaseEntity.Status[]{})).build();
+//					case STOPED:
+//						if (user.getId() == purchase.getUser().getId()){
+//							return Response.ok(new PurchaseStatusEdit(purchase, new PurchaseEntity.Status[]{PurchaseEntity.Status.PAYMENT})).build();
+//						}
+//						return Response.ok(new PurchaseStatusEdit(purchase, new PurchaseEntity.Status[]{})).build();
+//					case PAYMENT:
+//						if (user.getId() == purchase.getUser().getId()){
+//							return Response.ok(new PurchaseStatusEdit(purchase, new PurchaseEntity.Status[]{PurchaseEntity.Status.DISTRIBUTION})).build();
+//						}
+//						return Response.ok(new PurchaseStatusEdit(purchase, new PurchaseEntity.Status[]{})).build();
+//					case DISTRIBUTION:
+//						if (user.getId() == purchase.getUser().getId()){
+//							return Response.ok(new PurchaseStatusEdit(purchase, new PurchaseEntity.Status[]{PurchaseEntity.Status.FINISHED})).build();
+//						}
+//						return Response.ok(new PurchaseStatusEdit(purchase, new PurchaseEntity.Status[]{})).build();
+//					default:
+//						return Response.ok(new PurchaseStatusEdit(purchase, new PurchaseEntity.Status[]{})).build();
+//				}
+//			}
+//			return Response.status(Response.Status.UNAUTHORIZED).build();
+//		}
+//		return Response.status(Response.Status.UNAUTHORIZED).build();
+//	}
 
 	@POST
 	@Path("/items/{id}/status/update")
@@ -993,13 +715,13 @@ public class PurchasesResource {
 			provider.setPromo("");
 			provider.setDesc("");
 			provider.setResType(ResourceType.EXTENDED);
-			provider.setName(String.format("/user/%s/provider/", session.getUser().getId()));
+			provider.setAlias(String.format("/user/%s/provider/", session.getUser().getId()));
 			provider.setUser(session.getUser());
 
 			em.persist(provider);
 			em.flush();
 
-			provider.setName(String.format("/user/%s/provider/%s", session.getUser().getId(), provider.getId()));
+			provider.setAlias(String.format("/user/%s/provider/%s", session.getUser().getId(), provider.getId()));
 			em.persist(provider);
 			em.flush();
 
@@ -1149,7 +871,7 @@ public class PurchasesResource {
 				newPurchase.setResType(ResourceType.EXTENDED);
 
 				newPurchase.setTitle("Новая закупка");
-				newPurchase.setName("/purchase/");
+				newPurchase.setAlias("/purchase/");
 
 				newPurchase.setUser(user);
 
@@ -1165,7 +887,7 @@ public class PurchasesResource {
 				em.persist(newPurchase);
 				em.flush();
 
-				newPurchase.setName(String.format("/purchase/%s", newPurchase.getId()));
+				newPurchase.setAlias(String.format("/purchase/%s", newPurchase.getId()));
 				em.persist(newPurchase);
 
 				em.flush();
@@ -1381,4 +1103,152 @@ public class PurchasesResource {
 
         return Response.ok().build();
 	}
+	
+	@Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class LoadList {
+        private long count;
+        private int offset;
+        private int limit;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class LoadListProvider {
+//	      private long count;
+//	      private int offset;
+//	      private int limit;
+        private ProviderEntity.Status status;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class LoadListPurchase {
+        private long count;
+        private int offset;
+        private int limit;
+        private PurchaseEntity.Status status;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor<>
+    public static class PurchasesResponse {
+        
+        private long count;
+        private int page;
+        private int size;
+        private List<PurchValueList> purchases;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class GoodsResponse {
+        
+        private long count;
+        private int page;
+        private int size;
+        private List<GoodEntity> goods;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class Providers {
+//	      private long count;
+//	      private int offset;
+//	      private int limit;
+        private List<ProviderEntity> providers;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @XmlRootElement
+    @XmlAccessorType(XmlAccessType.FIELD)
+    public static class AtrValueList implements Serializable{
+        private static final long serialVersionUID = -6410688391927286753L;
+        private AttributeEntity attribute;
+        private List<AttributeValue> values;
+    }
+
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @XmlRootElement
+    public static class PurchaseStatusEdit{
+        public PurchaseEntity purchase;
+        public PurchaseEntity.Status[] availableStatuses;
+    }
+
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @XmlRootElement
+    public static class PurchaseStatusEditDo{
+        public PurchaseEntity.Status status;
+    }
+
+    @XmlRootElement
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class PurchValueList {
+        
+        public PurchaseEntity purchase;
+        public List<OrderEntity> orders;
+        
+        public float total;
+        public int paidCnt;
+        public int confirmedCnt;
+        public int canceledCnt;
+        public float goodsCnt;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @XmlRootElement
+    @XmlAccessorType(XmlAccessType.FIELD)
+    public static class CatValueList implements Serializable{
+        private static final long serialVersionUID = -14038014837124724L;
+        private GoodCategory category;
+        private List<GoodCategory> childs;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @XmlRootElement
+    @XmlAccessorType(XmlAccessType.FIELD)
+    public static class FilterPurchases {
+        private long count;
+        private int offset;
+        private int limit;
+        private String query;
+        private long cpId;
+        private long pid = 0;
+        private List<String> settedCategories;
+        @XmlElement
+        private List<FilterValue> settedAttributes;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @XmlRootElement
+    @XmlAccessorType(XmlAccessType.FIELD)
+    public static class Filtered {
+        private long count;
+        private int offset;
+        private int limit;
+        private String query;
+        private long cpId;
+        private List<String> settedCategories;
+        private Map<String, List<String>> settedAttributes = new HashMap<>();
+        private List<GoodEntity> goods;
+        private List<AtrValueList> attributes;
+        private List<CatValueList> categories;
+    }
 }

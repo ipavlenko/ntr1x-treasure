@@ -104,7 +104,7 @@
 //            ;
 //            
 //            Assert.assertTrue(r.getId() == 1);
-//            Assert.assertNull(r.getPwdhash());
+//            Assert.assertNull(r.getPwdhash())1;
 //	    });
 //	}
 //	

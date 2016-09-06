@@ -1,7 +1,5 @@
 package com.ntr1x.treasure.web.model.attributes;
 
-import java.io.Serializable;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -30,20 +28,18 @@ import lombok.Setter;
 @Table(name = "core_option")
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class AttributeOption implements Serializable {
-
-	private static final long serialVersionUID = -1129690483634966505L;
+public class AttributeOption {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "Id")
-	private long id;
+	private Long id;
 
 	@XmlElement
-    @XmlInverseReference(mappedBy = "attributes")
+    @XmlInverseReference(mappedBy = "options")
 	@ManyToOne
 	@JoinColumn(name = "AttributeId", nullable = false, updatable = false)
-	private AttributeEntity relate;
+	private AttributeEntity attribute;
 
 	@Column(name = "Name", nullable = false)
 	private String name;

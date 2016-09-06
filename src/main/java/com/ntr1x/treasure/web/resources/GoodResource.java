@@ -272,13 +272,13 @@ public class GoodResource {
 
 					newGood.getCategories().add(categories.get(0));                 //TODO это дефолтный вариант выбора категории, в  реальности его не будет
 
-					newGood.setName(String.format("/purchase/%s/good/", purchase.getId()));
+					newGood.setAlias(String.format("/purchase/%s/good/", purchase.getId()));
 					newGood.setPurchase(purchase);
 
 					em.persist(newGood);
 					em.flush();
 
-					newGood.setName(String.format("/purchase/%s/good/%s", purchase.getId(), newGood.getId()));
+					newGood.setAlias(String.format("/purchase/%s/good/%s", purchase.getId(), newGood.getId()));
 					em.persist(newGood);
 
 					em.merge(purchase);
@@ -311,13 +311,13 @@ public class GoodResource {
 
 				modGood.setResType(ResourceType.EXTENDED);
 
-				modGood.setName(String.format("/purchase/%s/good/", modGood.getPurchase().getId()));
+				modGood.setAlias(String.format("/purchase/%s/good/", modGood.getPurchase().getId()));
 				modGood.getPersonalImages().clear();
 
 				em.persist(modGood);
 				em.flush();
 
-				modGood.setName(String.format("/purchase/%s/good/%s", modGood.getPurchase().getId(), modGood.getId()));
+				modGood.setAlias(String.format("/purchase/%s/good/%s", modGood.getPurchase().getId(), modGood.getId()));
 				em.persist(modGood);
 
 				em.merge(modGood);

@@ -67,7 +67,7 @@ public class AttributeEntity {
 	private String title;
 
     @XmlElement
-    @XmlInverseReference(mappedBy= "attribute")
+    @XmlInverseReference(mappedBy = "attribute")
     @OneToMany(mappedBy = "attribute")
     @CascadeOnDelete
     @ResourceRelation

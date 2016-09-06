@@ -1,12 +1,23 @@
 package com.ntr1x.treasure.web.model.purchase;
 
-import lombok.*;
-
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlElement;
-import java.io.Serializable;
 import java.text.Collator;
 import java.util.Comparator;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.xml.bind.annotation.XmlElement;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter
@@ -14,14 +25,12 @@ import java.util.Comparator;
 @AllArgsConstructor
 @Entity
 @Table(name = "core_order_entries")
-public class OrderEntryEntity implements Serializable{
-
-	private static final long serialVersionUID = 7657110812175563337L;
+public class OrderEntryEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "Id")
-	private long id;
+	private Long id;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "OrderId", nullable = false, updatable = true)

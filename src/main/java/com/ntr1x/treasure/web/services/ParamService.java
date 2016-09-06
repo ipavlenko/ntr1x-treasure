@@ -18,67 +18,73 @@ public class ParamService implements IParamService {
     @Override
     public void createParams(SecurityResource resource, CreateParam[] params) {
         
-        for (CreateParam p : params) {
+        if (params != null) {
             
-            AttributeValue v = new AttributeValue(); {
+            for (CreateParam p : params) {
                 
-                AttributeEntity e = em.find(AttributeEntity.class, p.attribute);
-                
-                v.setRelate(resource);
-                v.setValue(p.value);
-                v.setAttribute(e);
-                
-                em.persist(v);
+                AttributeValue v = new AttributeValue(); {
+                    
+                    AttributeEntity e = em.find(AttributeEntity.class, p.attribute);
+                    
+                    v.setRelate(resource);
+                    v.setValue(p.value);
+                    v.setAttribute(e);
+                    
+                    em.persist(v);
+                }
             }
+            
+            em.flush();
         }
-        
-        em.flush();
     }
     
     @Override
     public void updateParams(SecurityResource resource, UpdateParam[] params) {
         
-        for (UpdateParam p : params) {
+        if (params != null) {
             
-            switch (p.action) {
-            
-                case ADD: {
-                    
-                    AttributeValue v = new AttributeValue(); {
+            for (UpdateParam p : params) {
+                
+                switch (p.action) {
+                
+                    case ADD: {
                         
-                        AttributeEntity e = em.find(AttributeEntity.class, p.attribute);
-                        
-                        v.setRelate(resource);
-                        v.setValue(p.value);
-                        v.setAttribute(e);
-                        
-                        em.persist(v);
+                        AttributeValue v = new AttributeValue(); {
+                            
+                            AttributeEntity e = em.find(AttributeEntity.class, p.attribute);
+                            
+                            v.setRelate(resource);
+                            v.setValue(p.value);
+                            v.setAttribute(e);
+                            
+                            em.persist(v);
+                        }
+                        break;
                     }
-                    break;
-                }
-                case UPDATE: {
-                    
-                    AttributeValue v = em.find(AttributeValue.class, p.id); {
+                    case UPDATE: {
                         
-                      v.setValue(p.value);
-                      em.merge(v);
-                    }
-                    
-                    em.merge(v);
-                    break;
-                }
-                case REMOVE: {
-                    
-                    AttributeValue v = em.find(AttributeValue.class, p.id); {
+                        AttributeValue v = em.find(AttributeValue.class, p.id); {
+                            
+                          v.setValue(p.value);
+                          em.merge(v);
+                        }
                         
-                        v.setValue(p.value);
-                        em.remove(v);
+                        em.merge(v);
+                        break;
                     }
-                    break;
+                    case REMOVE: {
+                        
+                        AttributeValue v = em.find(AttributeValue.class, p.id); {
+                            
+                            v.setValue(p.value);
+                            em.remove(v);
+                        }
+                        break;
+                    }
                 }
             }
+            
+            em.flush();
         }
-        
-        em.flush();
     }
 }

@@ -20,9 +20,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -81,7 +79,7 @@ public class UsersResource {
     public UsersResponse list(
         @QueryParam("page") @ApiParam(example = "0") int page,
         @QueryParam("size") @ApiParam(example = "10") int size,
-        @QueryParam("role") String role
+        @QueryParam("role") Role role
     ){
         Page<SecurityUser> result = role == null
             ? users.findAll(new PageRequest(page, size))
@@ -143,16 +141,6 @@ public class UsersResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Transactional
     public SecurityUser create(CreateUser user) {
-
-        switch (user.type) {
-        case ROOT_MODERATOR:
-        case ROOT_SELLER:
-        case ROOT_DELIVERY:
-            // continue
-            break;
-        default:
-            throw new WebApplicationException(Response.Status.BAD_REQUEST);
-        }
         
         SecurityUser u = new SecurityUser(); {
             
@@ -182,44 +170,50 @@ public class UsersResource {
             
             em.flush();
             
-            for (CreateUser.Place place : user.places) {
+            if (user.places != null) {
                 
-                DeliveryPlace d = new DeliveryPlace();
-                
-                d.setResType(ResourceType.EXTENDED);
-                d.setOwner(u);
-                
-                em.persist(d);
-                em.flush();
-                
-                d.setAlias(ResourceUtils.alias(u, "deliveryplaces", d));
-                
-                em.merge(d);
-                em.flush();
-                
-                params.createParams(d, place.params);
-                
-                em.flush();
+                for (CreateUser.Place place : user.places) {
+                    
+                    DeliveryPlace d = new DeliveryPlace();
+                    
+                    d.setResType(ResourceType.EXTENDED);
+                    d.setOwner(u);
+                    
+                    em.persist(d);
+                    em.flush();
+                    
+                    d.setAlias(ResourceUtils.alias(u, "deliveryplaces", d));
+                    
+                    em.merge(d);
+                    em.flush();
+                    
+                    params.createParams(d, place.params);
+                    
+                    em.flush();
+                }
             }
             
-            for (CreateUser.Method method : user.methods) {
+            if (user.methods != null) {
                 
-                PaymentMethod m = new PaymentMethod();
-                
-                m.setResType(ResourceType.EXTENDED);
-                m.setOwner(u);
-                
-                em.persist(m);
-                em.flush();
-                
-                m.setAlias(ResourceUtils.alias(u, "paymentmethods", m));
-                
-                em.merge(m);
-                em.flush();
-                
-                params.createParams(m, method.params);
-                
-                em.flush();
+                for (CreateUser.Method method : user.methods) {
+                    
+                    PaymentMethod m = new PaymentMethod();
+                    
+                    m.setResType(ResourceType.EXTENDED);
+                    m.setOwner(u);
+                    
+                    em.persist(m);
+                    em.flush();
+                    
+                    m.setAlias(ResourceUtils.alias(u, "paymentmethods", m));
+                    
+                    em.merge(m);
+                    em.flush();
+                    
+                    params.createParams(m, method.params);
+                    
+                    em.flush();
+                }
             }
             
             em.refresh(u);

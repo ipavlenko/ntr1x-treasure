@@ -13,6 +13,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.eclipse.persistence.annotations.CascadeOnDelete;
 import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 
 import com.ntr1x.treasure.web.model.security.SecurityResource;
@@ -32,6 +33,7 @@ import lombok.Setter;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 @PrimaryKeyJoinColumn(name = "ResourceId", referencedColumnName = "Id")
+@CascadeOnDelete
 public class CartEntity extends SecurityResource {
 
 	@XmlElement
@@ -43,6 +45,7 @@ public class CartEntity extends SecurityResource {
 	@XmlElement
     @XmlInverseReference(mappedBy = "cart")
 	@OneToMany(mappedBy = "cart")
+	@CascadeOnDelete
 	@ResourceRelation
 	private List<CartEntryEntity> entries;
 }

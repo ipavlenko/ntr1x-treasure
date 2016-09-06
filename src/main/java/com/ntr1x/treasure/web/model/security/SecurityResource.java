@@ -22,12 +22,9 @@ import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -46,7 +43,6 @@ import com.ntr1x.treasure.web.model.sociality.LikeEntity;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -56,31 +52,11 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(
-	name = "security_resources",
-	uniqueConstraints = {
-		@UniqueConstraint(columnNames = { "Name" })
-	}
-)
-@NamedQueries({
-		@NamedQuery(
-			name = "SecurityResource.accessibleByName",
-			query =
-				  "	SELECT re"
-				+ "	FROM SecurityResource re"
-				+ "	WHERE re.name = :name"
-		),
-		@NamedQuery(
-			name = "SecurityResource.accessible",
-			query = "SELECT re FROM SecurityResource re"
-		)
-
-})
+@Table(name = "security_resources")
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "Entity", discriminatorType = DiscriminatorType.STRING, length=20)
-@EqualsAndHashCode(exclude = "attributes")
 public class SecurityResource {
 
 	@Id

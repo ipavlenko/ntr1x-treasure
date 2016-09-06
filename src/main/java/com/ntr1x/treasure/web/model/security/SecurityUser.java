@@ -3,16 +3,14 @@ package com.ntr1x.treasure.web.model.security;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
-import javax.persistence.QueryHint;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -22,8 +20,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.eclipse.persistence.annotations.CascadeOnDelete;
-import org.eclipse.persistence.config.HintValues;
-import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 
 import com.ntr1x.treasure.web.model.assets.DeliveryPlace;
@@ -49,52 +45,10 @@ import lombok.Setter;
 		@UniqueConstraint(columnNames = {"Email" })
 	}
 )
-@NamedQueries({
-	@NamedQuery(
-		name = "SecurityUser.accessible",
-		query =
-			  "	SELECT su"
-			+ "	FROM SecurityUser su"
-	),
-	@NamedQuery(
-		name = "SecurityUser.accessibleFiltered",
-		query =
-			  "	SELECT su"
-			+ "	FROM SecurityUser su"
-			+ "	WHERE (:confirmed IS NULL OR :confirmed = su.confirmed)"
-			+ "	  AND (:locked IS NULL OR :locked = su.locked)"
-			+ "	  AND (:admin IS NULL OR :admin = su.admin)"
-		,
-		hints = {
-			@QueryHint(name = QueryHints.BIND_PARAMETERS, value = HintValues.TRUE)
-		}
-	),
-	@NamedQuery(
-		name = "SecurityUser.accessibleById",
-		query =
-			  "	SELECT su"
-			+ "	FROM SecurityUser su"
-			+ "	WHERE su.id = :id"
-	),
-	@NamedQuery(
-		name = "SecurityUser.accessibleInternalByEmail",
-		query =
-			  "	SELECT su"
-			+ "	FROM SecurityUser su"
-			+ "	WHERE su.email = :email"
-	),
-	@NamedQuery(
-		name = "SecurityUser.accessibleOfResType",
-		query =
-				"	SELECT u"
-				+ "	FROM SecurityUser u "
-				+ "	WHERE "
-				+ "	u.resType = :resType "
-	)
-})
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 @PrimaryKeyJoinColumn(name="ResourceId", referencedColumnName="Id")
+@CascadeOnDelete
 public class SecurityUser extends SecurityResource {
 	
     public static enum Role {
@@ -111,8 +65,15 @@ public class SecurityUser extends SecurityResource {
     @XmlTransient
     @Column(name = "Random")
     @ApiModelProperty(hidden = true)
-    private int random;
-	
+    private Integer random;
+
+    @XmlElement
+    @XmlInverseReference(mappedBy = "user")
+    @OneToOne(mappedBy = "user", cascade = { CascadeType.REMOVE })
+    @ResourceRelation
+    private CartEntity cart;
+    
+    
 //	@Column(name = "Source", nullable = false)
 //	private String source;
 //
@@ -145,11 +106,6 @@ public class SecurityUser extends SecurityResource {
     @Column(name = "Role")
     @Enumerated(EnumType.STRING)
     private Role role;
-
-	@OneToOne(mappedBy="user")
-	@XmlElement
-	@XmlInverseReference(mappedBy="user")
-	private CartEntity cart;
 
 	@XmlElement
     @XmlInverseReference(mappedBy = "user")

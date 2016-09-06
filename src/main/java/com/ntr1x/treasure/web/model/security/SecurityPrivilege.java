@@ -49,7 +49,7 @@ public class SecurityPrivilege implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "Id")
-	private long id;
+	private Long id;
 	
 	@ManyToOne(fetch = FetchType.EAGER, optional = false/*, cascade = CascadeType.PERSIST*/)
 	@JoinColumn(name = "UserId", nullable = false, insertable = false, updatable = false)

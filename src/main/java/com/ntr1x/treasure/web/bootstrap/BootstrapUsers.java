@@ -1,17 +1,15 @@
 package com.ntr1x.treasure.web.bootstrap;
 
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-
-import javax.inject.Inject;
-import javax.persistence.EntityManager;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
 
 import org.springframework.stereotype.Service;
 
+import com.ntr1x.treasure.web.model.purchase.ResourceType;
 import com.ntr1x.treasure.web.model.security.SecurityUser;
 import com.ntr1x.treasure.web.model.security.SecurityUser.Role;
-import com.ntr1x.treasure.web.services.ISecurityService;
+import com.ntr1x.treasure.web.resources.UsersResource.CreateUser;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -19,47 +17,59 @@ import lombok.NoArgsConstructor;
 @Service
 public class BootstrapUsers {
     
-    @Inject
-    private ISecurityService security;
-    
-    @Inject
-    private EntityManager em;
-    
     public Users createUsers(WebTarget target) {
         
-        int random = security.randomInt();
+        Users users = new Users();
         
-        SecurityUser admin = new SecurityUser(
-            true,
-            true,
-            random,
-            Timestamp.valueOf(LocalDateTime.now()),
-            "admin@examle.com",
-            "79001234567",
-            "admin",
-            "Admin",
-            "Admin",
-            security.hashPassword(random, "admin"),
-            Role.ADMIN,
-            null,
-            null,
-            null
-        );
+        {    
+            CreateUser u = new CreateUser(); {
+                
+                u.role = Role.ADMIN;
+                u.type = ResourceType.EXTENDED;
+                u.confirmed = true;
+                u.email = "admin@example.com";
+                u.password = "admin";
+                u.phone = "00000000000";
+                u.surname = "admin";
+                u.userName = "admin";
+                u.middleName = "admin";
+                u.confirmed = true;
+            }
+            
+            users.admin = target
+              .path("/ws/users")
+              .request(MediaType.APPLICATION_JSON_TYPE)
+              .post(Entity.entity(u, MediaType.APPLICATION_JSON_TYPE), SecurityUser.class)
+            ;
+            
+            users.adminPassword = u.password;
+        }
         
-        em.persist(admin);
-        em.flush();
+        {    
+            CreateUser u = new CreateUser(); {
+                
+                u.role = Role.USER;
+                u.type = ResourceType.EXTENDED;
+                u.confirmed = true;
+                u.email = "user@example.com";
+                u.password = "user";
+                u.phone = "11111111111";
+                u.surname = "user";
+                u.userName = "user";
+                u.middleName = "user";
+                u.confirmed = true;
+            }
+            
+            users.user = target
+              .path("/ws/users")
+              .request(MediaType.APPLICATION_JSON_TYPE)
+              .post(Entity.entity(u, MediaType.APPLICATION_JSON_TYPE), SecurityUser.class)
+            ;
+            
+            users.userPassword = u.password;
+        }
         
-        admin.setName(String.format("/users/%s", admin.getId()));
-        
-        em.merge(admin);
-        em.flush();
-        
-        return new Users(
-            admin,
-            "admin",
-            null,
-            null
-        );
+        return users;
     }
     
     @NoArgsConstructor

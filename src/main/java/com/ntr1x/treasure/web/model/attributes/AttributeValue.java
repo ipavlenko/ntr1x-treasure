@@ -38,7 +38,7 @@ public class AttributeValue {
     @Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "Id")
-	private long id;
+	private Long id;
     
     @XmlElement
     @XmlInverseReference(mappedBy = "attributes")

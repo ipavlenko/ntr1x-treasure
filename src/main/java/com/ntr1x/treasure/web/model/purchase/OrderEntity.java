@@ -87,8 +87,6 @@ import lombok.NoArgsConstructor;
 @PrimaryKeyJoinColumn(name="ResourceId", referencedColumnName="Id")
 public class OrderEntity extends SecurityResource {
 
-	private static final long serialVersionUID = -8308947880606353446L;
-
 	public enum Status {
 		NEW,					// Новый
 		REQUIRES_PAYMENT,		// Требует оплаты (пользователь согласился с договором, выбрал способ доставки, селлер перевел поставку в оплату и заказ выкупился)
@@ -102,7 +100,7 @@ public class OrderEntity extends SecurityResource {
 //	@Id
 //	@GeneratedValue(strategy = GenerationType.IDENTITY)
 //	@Column(name = "Id")
-//	private long id;
+//	private Long id;
 
 //	@OneToOne(fetch = FetchType.EAGER, optional = false, cascade = CascadeType.ALL)
 //	@JoinColumn(name = "ResourceId", nullable = false, updatable = true)

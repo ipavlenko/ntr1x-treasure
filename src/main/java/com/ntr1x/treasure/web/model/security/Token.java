@@ -1,11 +1,20 @@
 package com.ntr1x.treasure.web.model.security;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.*;
-import java.io.Serializable;
 
 @Data
 @NoArgsConstructor
@@ -22,9 +31,7 @@ import java.io.Serializable;
 								+ "	  t.user.id = :uid"
 		)
 })
-public class Token implements Serializable {
-
-	private static final long serialVersionUID = -8581710722282605961L;
+public class Token {
 
 	public static final int SIGNUP = 1 << 0;
 	public static final int PASSWD = 1 << 1;
@@ -35,7 +42,7 @@ public class Token implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Id")
-    private long id;
+    private Long id;
 
 	@ManyToOne(fetch = FetchType.EAGER, optional = false)
 	@JoinColumn(name = "UserId", nullable = false, updatable = true)

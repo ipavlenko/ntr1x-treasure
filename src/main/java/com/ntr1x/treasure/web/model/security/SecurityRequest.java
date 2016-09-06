@@ -39,7 +39,7 @@ public class SecurityRequest implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "Id")
-	private long id;
+	private Long id;
 	
 	@Column(name = "Token", nullable = false, unique = true)
 	private String token;

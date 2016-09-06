@@ -13,14 +13,12 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Entity
 @Table(name = "security_actions")
-public class SecurityAction implements Serializable {
-
-	private static final long serialVersionUID = -8747230100147297884L;
+public class SecurityAction {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "Id")
-	private long id;
+	private Long id;
 
 	@Column(name = "Name", nullable = false)
 	private String name;

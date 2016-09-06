@@ -11,10 +11,10 @@ import javax.ws.rs.core.MediaType;
 import org.springframework.stereotype.Service;
 
 import com.ntr1x.treasure.web.index.PublicationIndexRepository;
-import com.ntr1x.treasure.web.resources.UsersResource.Signin;
-import com.ntr1x.treasure.web.resources.UsersResource.SigninResponse;
-import com.ntr1x.treasure.web.resources.UsersResource.Signout;
-import com.ntr1x.treasure.web.resources.UsersResource.SignoutResponse;
+import com.ntr1x.treasure.web.resources.SecurityResource.Signin;
+import com.ntr1x.treasure.web.resources.SecurityResource.SigninResponse;
+import com.ntr1x.treasure.web.resources.SecurityResource.Signout;
+import com.ntr1x.treasure.web.resources.SecurityResource.SignoutResponse;
 
 import lombok.Getter;
 
@@ -43,7 +43,7 @@ public class ProfilerService implements IProfilerService {
         Signin s = new Signin(email, password);
         
         SigninResponse r = target
-            .path("/ws/users/signin")
+            .path("/ws/security/signin")
             .request(MediaType.APPLICATION_JSON_TYPE)
             .post(Entity.entity(s, MediaType.APPLICATION_JSON_TYPE), SigninResponse.class)
         ;
@@ -56,7 +56,7 @@ public class ProfilerService implements IProfilerService {
         Signout s = new Signout();
         
         target
-            .path("/security/signout")
+            .path("/ws/security/signout")
             .request(MediaType.APPLICATION_JSON_TYPE)
             .header(HttpHeaders.AUTHORIZATION, token)
             .post(Entity.entity(s, MediaType.APPLICATION_JSON_TYPE), SignoutResponse.class)

@@ -20,14 +20,6 @@ public class Bootstrap implements IBootstrap {
 
     private Users users;
     
-//    private Accounts accounts;
-//    
-//    public Specialiations specializations;
-//    public Directories directories;
-//    public Localizations localizations;
-
-//    private List<Publication> publications;
-    
     public BootstrapResults bootstrap() {
         
         WebTarget target = ClientBuilder
@@ -35,9 +27,18 @@ public class Bootstrap implements IBootstrap {
             .target(String.format("http://localhost:%d", 8080))
         ;
         
+        BootstrapResults results = new BootstrapResults();
+        
         profiler.withDisabledSecurity(() -> {
-            
             users = bootstrapUsers.createUsers(target);
+        });
+        
+        profiler.withCredentials(target, users.admin.getEmail(), users.adminPassword, (token) -> {
+            results.adminToken = token;
+        });
+        
+        profiler.withCredentials(target, users.user.getEmail(), users.userPassword, (token) -> {
+            results.userToken = token;
         });
         
 //        results = new BootstrapResults();
@@ -62,6 +63,6 @@ public class Bootstrap implements IBootstrap {
 //            results.userToken = token;
 //        });
         
-        return new BootstrapResults();
+        return results;
     }
 }

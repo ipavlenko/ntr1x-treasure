@@ -1,9 +1,18 @@
 package com.ntr1x.treasure.web.model.security;
 
-import lombok.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
-import javax.persistence.*;
-import java.io.Serializable;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
@@ -33,14 +42,12 @@ import java.io.Serializable;
 						+ "	  c.phone = :phone AND c.code = :code"
 		)
 })
-public class SecurityPhoneCode implements Serializable {
-
-	private static final long serialVersionUID = 3223740485148213015L;
+public class SecurityPhoneCode {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "Id")
-	private long id;
+	private Long id;
 
 	@Column(name = "Phone", nullable = false)
 	private long phone;

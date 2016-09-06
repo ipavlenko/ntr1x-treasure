@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.annotation.security.PermitAll;
+import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -37,57 +39,29 @@ import io.swagger.annotations.Api;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @Api("Carts")
 @Component
 @Path("/ws/cart")
+@PermitAll
 public class CartResource {
 
 	@Inject
 	private SecuritySession session;
-
-	@Data
-	@NoArgsConstructor
-	@AllArgsConstructor
-	public static class CartObject {
-		private long goodId;
-		private float quantity;
-		private CartEntryEntity.Type type;
-	}
-
-//	@NoArgsConstructor
-//	@AllArgsConstructor
-//	public static class DeliveryPlaceSynthetic {
-//		private long Id;
-//		private float quantity;
-//		private CartEntryEntity.Type type;
-//	}
-
-	@Data
-	@NoArgsConstructor
-	@AllArgsConstructor
-	public static class CartObjectUpdate {
-		private long entryId;
-		private long goodId;
-		private float quantity;
-		private CartEntryEntity.Type type;
-	}
-
-	@Data
-	@NoArgsConstructor
-	@AllArgsConstructor
-	public static class MakeOrder{
-		private List<CartEntryEntity> entries;
-		private long dpId;									//TODO переделать на Id
-	}
 
 	@PersistenceContext
 	private EntityManager em;
 	
 	@Inject
 	private DeliveryPlaceRepository stores;
+	
+	@GET
+    @Produces(MediaType.APPLICATION_JSON)
+	@RolesAllowed({ "auth" })
+    @Transactional
+    public CartEntity select() {
+	    return session.getUser().getCart();
+    }
 
 	@POST
 	@Path("/add")
@@ -108,7 +82,7 @@ public class CartResource {
 					if (good.getPurchase().getStatus().equals(PurchaseEntity.Status.OPEN)){
 						// TODO СИНХРОНИЗИРОВАТЬ КОЛИЧЕСТВО ТОВАРА!
 						user.getCart().getEntries().add(new CartEntryEntity(
-								0,
+								null,
 								user.getCart(),
 								good,
 								add.getType(),
@@ -207,54 +181,51 @@ public class CartResource {
 	public Response makeOrder(MakeOrder mk){
 
 		if (session != null){
-			try {
-				List<OrderEntryEntity> entries = new ArrayList<>();
+			
+			List<OrderEntryEntity> entries = new ArrayList<>();
 
-				OrderEntity order = new OrderEntity();
-				SecurityUser user = session.getUser();
+			OrderEntity order = new OrderEntity();
+			SecurityUser user = session.getUser();
 
-				for (CartEntryEntity entr : mk.getEntries()){
-					if (user.getCart().getEntries().stream().filter(e -> e.getId() == entr.getId()).findFirst().isPresent()){
-						entries.add(
-								new OrderEntryEntity(
-										0,
-										order,
-										em.find(GoodEntity.class, entr.getGood().getId()),
-										entr.getQuantity(),
-										false
-								)
-						);
-					} else {
-						return Response.status(Response.Status.FORBIDDEN).entity("Entry do not belong to current user").build();
-					}
+			for (CartEntryEntity entr : mk.getEntries()){
+				if (user.getCart().getEntries().stream().filter(e -> e.getId() == entr.getId()).findFirst().isPresent()){
+					entries.add(
+							new OrderEntryEntity(
+							        null,
+									order,
+									em.find(GoodEntity.class, entr.getGood().getId()),
+									entr.getQuantity(),
+									false
+							)
+					);
+				} else {
+					return Response.status(Response.Status.FORBIDDEN).entity("Entry do not belong to current user").build();
 				}
+			}
 
-				order.setUser(user);
-				order.setSeller(entries.get(0).getGood().getPurchase().getUser());
-				order.setStatus(OrderEntity.Status.NEW);
-				order.setDPlace(em.find(DeliveryPlace.class, em.find(DeliveryPlace.class, mk.getDpId()).getId()));
-				order.setEntries(entries);
-				order.setDate(new Date());
+			order.setUser(user);
+			order.setSeller(entries.get(0).getGood().getPurchase().getUser());
+			order.setStatus(OrderEntity.Status.NEW);
+			order.setDPlace(em.find(DeliveryPlace.class, em.find(DeliveryPlace.class, mk.getDpId()).getId()));
+			order.setEntries(entries);
+			order.setDate(new Date());
 
-				order.setResType(ResourceType.EXTENDED);
-				order.setName(String.format("/user/%s/order/", user.getId()));
+			order.setResType(ResourceType.EXTENDED);
+			order.setAlias(String.format("/user/%s/order/", user.getId()));
 
-				for (CartEntryEntity entr : mk.getEntries()){
-					em.remove(em.find(CartEntryEntity.class, entr.getId()));
-				}
+			for (CartEntryEntity entr : mk.getEntries()){
+				em.remove(em.find(CartEntryEntity.class, entr.getId()));
+			}
 
-				em.persist(order);
-				em.flush();
+			em.persist(order);
+			em.flush();
 
-				order.setName(String.format("/user/%s/order/%s", user.getId(), order.getId()));
-				em.merge(order);
+			order.setAlias(String.format("/user/%s/order/%s", user.getId(), order.getId()));
+			em.merge(order);
 
 //				return Response.ok(new GenericEntity<OrderEntity>(order) {}).build();
-				return Response.ok().build();
-			} catch (Exception e){
-				log.error("{}", e);
-				throw e;
-			}
+			return Response.ok().build();
+			
 		}
 		return Response.status(Response.Status.UNAUTHORIZED).build();
 	}
@@ -276,23 +247,6 @@ public class CartResource {
 		} catch (Exception e){
 			throw e;
 		}
-	}
-
-	@GET
-	@Path("/items")
-	@Produces(MediaType.APPLICATION_JSON)
-	@Transactional
-	public Response getCartItems() {
-
-		if (session != null){
-			CartEntity cart = session.getUser().getCart();
-
-			for (CartEntryEntity entr : cart.getEntries()){
-				entr.getGood().getPurchase();
-			}
-			return Response.ok(cart).build();
-		}
-		return Response.status(Response.Status.UNAUTHORIZED).build();
 	}
 
 	@GET
@@ -325,29 +279,62 @@ public class CartResource {
 	@Transactional
 	public Response delete(@PathParam("id") long id) {
 
-		try {
-			if (session != null){
+	    if (session != null){
 
-				CartEntryEntity entry = session.getUser().getCart().getEntries().stream().filter(entr -> entr.getId() == id).findFirst().get();
+            CartEntryEntity entry = session.getUser().getCart().getEntries().stream().filter(entr -> entr.getId() == id).findFirst().get();
 
-				if (entry != null){
+            if (entry != null) {
 
-					entry.getGood().setQuantity(entry.getGood().getQuantity() + entry.getQuantity());
-					em.merge(entry.getGood());
+                entry.getGood().setQuantity(entry.getGood().getQuantity() + entry.getQuantity());
+                em.merge(entry.getGood());
 
-					CartEntryEntity rmEntry = em.find(CartEntryEntity.class, entry.getId());
+                CartEntryEntity rmEntry = em.find(CartEntryEntity.class, entry.getId());
 
-					em.remove(rmEntry);
-					em.flush();
-				}
-			} else {
-				return Response.status(Response.Status.UNAUTHORIZED).build();
-			}
+                em.remove(rmEntry);
+                em.flush();
+            }
+            
+        } else {
+            
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
 
-			return Response.ok().build();
-		} catch (Exception e){
-			log.error("{}", e);
-			throw e;
-		}
+        return Response.ok().build();
 	}
+	
+	   @Data
+	    @NoArgsConstructor
+	    @AllArgsConstructor
+	    public static class CartObject {
+	        private long goodId;
+	        private float quantity;
+	        private CartEntryEntity.Type type;
+	    }
+
+	//  @NoArgsConstructor
+	//  @AllArgsConstructor
+	//  public static class DeliveryPlaceSynthetic {
+//	      private long Id;
+//	      private float quantity;
+//	      private CartEntryEntity.Type type;
+	//  }
+
+	    @Data
+	    @NoArgsConstructor
+	    @AllArgsConstructor
+	    public static class CartObjectUpdate {
+	        private long entryId;
+	        private long goodId;
+	        private float quantity;
+	        private CartEntryEntity.Type type;
+	    }
+
+	    @Data
+	    @NoArgsConstructor
+	    @AllArgsConstructor
+	    public static class MakeOrder {
+	        
+	        private List<CartEntryEntity> entries;
+	        private long dpId;                                  //TODO переделать на Id
+	    }
 }

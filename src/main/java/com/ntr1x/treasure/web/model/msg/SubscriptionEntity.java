@@ -27,7 +27,7 @@ public class SubscriptionEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "Id")
-	private long id;
+	private Long id;
 
 	@ManyToOne
 	@JoinColumn(name = "GoodId", nullable = false, updatable = true)

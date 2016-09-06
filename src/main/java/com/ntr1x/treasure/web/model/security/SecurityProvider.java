@@ -46,7 +46,7 @@ public class SecurityProvider implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "Id")
-	private long id;
+	private Long id;
 
 	@Column(name = "Name", nullable = false)
 	private String name;

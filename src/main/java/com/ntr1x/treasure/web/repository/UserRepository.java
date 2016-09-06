@@ -6,10 +6,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.ntr1x.treasure.web.model.purchase.ResourceType;
 import com.ntr1x.treasure.web.model.security.SecurityUser;
+import com.ntr1x.treasure.web.model.security.SecurityUser.Role;
 
 public interface UserRepository extends JpaRepository<SecurityUser, Long> {
     
-    Page<SecurityUser> findUsersByRole(String role, Pageable pageable);
+    Page<SecurityUser> findUsersByRole(Role role, Pageable pageable);
     
     SecurityUser findByResType(ResourceType type);
     SecurityUser findByEmail(String email);

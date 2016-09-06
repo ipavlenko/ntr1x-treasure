@@ -40,8 +40,8 @@ public class ResourceResource {
     ) {
 		return (
 			pattern == null
-				? repository.findOrderByName(new PageRequest(page, size))
-				: repository.findByNameLikeOrderByName(pattern, new PageRequest(page, size))
+				? repository.findOrderByAlias(new PageRequest(page, size))
+				: repository.findByAliasLikeOrderByAlias(pattern, new PageRequest(page, size))
 		).getContent();
     }
 	
@@ -58,7 +58,7 @@ public class ResourceResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Transactional
     public SecurityResource select(@PathParam("alias") String alias) {
-		return repository.findByName(alias);
+		return repository.findByAlias(alias);
     }
 	
 	@GET
