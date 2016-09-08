@@ -177,7 +177,7 @@ public abstract class CryptoUtils {
         return (bytes[0] << 24) + ((bytes[1] & 0xFF) << 16) + ((bytes[2] & 0xFF) << 8) + (bytes[3] & 0xFF);
     }
     
-    public static void main(String[] args) throws Exception {
-        System.out.println(ConversionUtils.BASE64.encode(AES128.generateKey()));
-    }
+//    public static void main(String[] args) throws Exception {
+//        System.out.println(ConversionUtils.BASE64.encode(AES128.generateKey()));
+//    }
 }

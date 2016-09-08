@@ -1135,7 +1135,7 @@ public class PurchasesResource {
 
     @Data
     @NoArgsConstructor
-    @AllArgsConstructor<>
+    @AllArgsConstructor
     public static class PurchasesResponse {
         
         private long count;
