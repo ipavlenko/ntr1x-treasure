@@ -4,6 +4,7 @@ import javax.inject.Inject;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.ntr1x.treasure.web.bootstrap.BootstrapAccounts.Accounts;
@@ -17,6 +18,9 @@ public class Bootstrap implements IBootstrap {
     
     @Inject
     private IProfilerService profiler;
+    
+    @Value("${app.host}")
+    private String host;
 
     private BootstrapResults results;
     
@@ -32,7 +36,7 @@ public class Bootstrap implements IBootstrap {
         
         WebTarget target = ClientBuilder
             .newClient()
-            .target(String.format("http://localhost:%d", 8080))
+            .target(String.format("http://%s", host))
         ;
         
         profiler.withDisabledSecurity(() -> {
