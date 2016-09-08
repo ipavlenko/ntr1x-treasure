@@ -1,0 +1,7 @@
+CREATE DATABASE inos_dist DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;
+CREATE DATABASE inos_dev DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;
+CREATE DATABASE inos_test DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;
+CREATE USER 'inos'@'localhost' IDENTIFIED BY 'inos';
+CREATE USER 'inos'@'%' IDENTIFIED BY 'inos';
+GRANT ALL PRIVILEGES ON `inos\_%` . * TO 'inos'@'localhost';
+GRANT ALL PRIVILEGES ON `inos\_%` . * TO 'inos'@'%';
