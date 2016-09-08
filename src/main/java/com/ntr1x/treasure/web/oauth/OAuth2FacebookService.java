@@ -9,7 +9,7 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Form;
 import javax.ws.rs.core.MediaType;
 
-import org.glassfish.jersey.filter.LoggingFilter;
+import org.glassfish.jersey.logging.LoggingFeature;
 import org.glassfish.jersey.moxy.json.MoxyJsonFeature;
 import org.glassfish.jersey.moxy.xml.MoxyXmlFeature;
 
@@ -50,7 +50,7 @@ public class OAuth2FacebookService implements IOAuth2FacebookService {
 		String body = ClientBuilder.newClient()
 			.register(MoxyXmlFeature.class)
 			.register(MoxyJsonFeature.class)
-			.register(new LoggingFilter())
+			.register(LoggingFeature.class)
 			.target(config.tokenEndpoint)
 			.request(MediaType.APPLICATION_JSON_TYPE)
 				.post(
@@ -81,7 +81,7 @@ public class OAuth2FacebookService implements IOAuth2FacebookService {
 		return ClientBuilder.newClient()
 			.register(MoxyXmlFeature.class)
 			.register(MoxyJsonFeature.class)
-			.register(new LoggingFilter())
+			.register(LoggingFeature.class)
 			.target(config.userinfoEndpoint)
 			.queryParam("access_token", token.value())
 			.queryParam("format", "json")

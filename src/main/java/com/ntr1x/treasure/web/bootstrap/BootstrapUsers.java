@@ -6,9 +6,8 @@ import javax.ws.rs.core.MediaType;
 
 import org.springframework.stereotype.Service;
 
-import com.ntr1x.treasure.web.model.purchase.ResourceType;
-import com.ntr1x.treasure.web.model.security.SecurityUser;
-import com.ntr1x.treasure.web.model.security.SecurityUser.Role;
+import com.ntr1x.treasure.web.model.Aspect;
+import com.ntr1x.treasure.web.model.User.Role;
 import com.ntr1x.treasure.web.resources.UsersResource.CreateUser;
 
 import lombok.AllArgsConstructor;
@@ -25,7 +24,6 @@ public class BootstrapUsers {
             CreateUser u = new CreateUser(); {
                 
                 u.role = Role.ADMIN;
-                u.type = ResourceType.EXTENDED;
                 u.confirmed = true;
                 u.email = "admin@example.com";
                 u.password = "admin";
@@ -49,7 +47,7 @@ public class BootstrapUsers {
             CreateUser u = new CreateUser(); {
                 
                 u.role = Role.USER;
-                u.type = ResourceType.EXTENDED;
+                u.type = Aspect.EXTENDED;
                 u.confirmed = true;
                 u.email = "user@example.com";
                 u.password = "user";

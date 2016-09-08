@@ -31,13 +31,13 @@ import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.sessions.CopyGroup;
 import org.springframework.stereotype.Component;
 
-import com.ntr1x.treasure.web.model.attributes.AttributeEntity;
+import com.ntr1x.treasure.web.model.Aspect;
+import com.ntr1x.treasure.web.model.Attribute;
+import com.ntr1x.treasure.web.model.Company;
+import com.ntr1x.treasure.web.model.Good;
+import com.ntr1x.treasure.web.model.GoodCategory;
+import com.ntr1x.treasure.web.model.Purchase;
 import com.ntr1x.treasure.web.model.attributes.AttributeValue;
-import com.ntr1x.treasure.web.model.catalog.CompanyEntity;
-import com.ntr1x.treasure.web.model.purchase.GoodCategory;
-import com.ntr1x.treasure.web.model.purchase.GoodEntity;
-import com.ntr1x.treasure.web.model.purchase.PurchaseEntity;
-import com.ntr1x.treasure.web.model.purchase.ResourceType;
 import com.ntr1x.treasure.web.model.security.SecuritySession;
 import com.ntr1x.treasure.web.repository.GoodCategoryRepository;
 import com.ntr1x.treasure.web.repository.GoodEntityRepository;
@@ -114,7 +114,7 @@ public class GoodResource {
 		private static final long serialVersionUID = -6410688391927286753L;
 		private String attrName;
 		private String value;
-		private List<GoodEntity> goods;
+		private List<Good> goods;
 	}
 
 	@Data
@@ -145,11 +145,11 @@ public class GoodResource {
 	@Path("/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Transactional
-	public GoodEntity good(
+	public Good good(
 			@PathParam("id") long id
 	) {
 		try {
-			GoodEntity good = em.find(GoodEntity.class, id);
+			Good good = em.find(Good.class, id);
 
 			return good;
 		} catch (Exception e){
@@ -166,7 +166,7 @@ public class GoodResource {
 		try {
 
 			List<AttributeValue> result = em.createNamedQuery("AttributeValue.accessibleOfResType", AttributeValue.class)
-					.setParameter("resType", ResourceType.ROOT_GOOD)
+					.setParameter("resType", Aspect.ROOT_GOOD)
 					.getResultList();
 
 			return result;
@@ -187,19 +187,19 @@ public class GoodResource {
 			if (attribute.getAction() != null){
 				switch(attribute.getAction()) {
 					case REMOVE: {
-						em.remove(em.find(AttributeEntity.class, attribute.getAttribute().getId()));
+						em.remove(em.find(Attribute.class, attribute.getAttribute().getId()));
 						break;
 					}
 					case ADD: {
-						if (em.find(AttributeValue.class, attribute.getId()) != null || em.find(AttributeEntity.class, attribute.getAttribute().getId()) != null)
+						if (em.find(AttributeValue.class, attribute.getId()) != null || em.find(Attribute.class, attribute.getAttribute().getId()) != null)
 							return Response.status(Response.Status.BAD_REQUEST).build();
 
 						em.persist(attribute.getAttribute());
 						em.flush();
 
-						List<GoodEntity> goods = this.goods.findAll();
+						List<Good> goods = this.goods.findAll();
 
-						for (GoodEntity good : goods){
+						for (Good good : goods){
 
 							AttributeValue val = new AttributeValue();
 							val.setValue(attribute.getValue());
@@ -212,7 +212,7 @@ public class GoodResource {
 					}
 					case UPDATE: {
 
-						GoodEntity baseGood = this.goods.findByResType(ResourceType.ROOT_GOOD);
+						Good baseGood = this.goods.findByResType(Aspect.ROOT_GOOD);
 						AttributeValue val = baseGood.getAttributes().stream().filter(p -> p.getId() == attribute.getId()).findFirst().get();
 
 						val.getAttribute().setName(attribute.getAttribute().getName());
@@ -250,23 +250,23 @@ public class GoodResource {
     public Response addGood(AddObj addObj) {
 
 		if (session != null){
-			PurchaseEntity purchase = em.find(PurchaseEntity.class, addObj.getPid());
+			Purchase purchase = em.find(Purchase.class, addObj.getPid());
 
 			if (purchase.getUser().getId() == session.getUser().getId()){
-				if (purchase.getStatus() == PurchaseEntity.Status.NEW
-						|| purchase.getStatus() == PurchaseEntity.Status.MODERATION
-						|| purchase.getStatus() == PurchaseEntity.Status.OPEN){
+				if (purchase.getStatus() == Purchase.Status.NEW
+						|| purchase.getStatus() == Purchase.Status.MODERATION
+						|| purchase.getStatus() == Purchase.Status.OPEN){
 
-				    GoodEntity baseGood = this.goods.findByResType(ResourceType.ROOT_GOOD);
+				    Good baseGood = this.goods.findByResType(Aspect.ROOT_GOOD);
 				    
 					CopyGroup group = new CopyGroup();
 					group.setShouldResetPrimaryKey(true);
-					GoodEntity newGood = (GoodEntity) em.unwrap(JpaEntityManager.class).copy(baseGood, group);
+					Good newGood = (Good) em.unwrap(JpaEntityManager.class).copy(baseGood, group);
 
-					newGood.setResType(ResourceType.EXTENDED);
+					newGood.setResType(Aspect.EXTENDED);
 
 					newGood.setTitle("Новый товар");
-					newGood.setStatus(GoodEntity.Status.ACTIVE);
+					newGood.setStatus(GoodEntity.Good.ACTIVE);
 
 					List<GoodCategory> categories = this.categories.findAll();
 
@@ -284,7 +284,7 @@ public class GoodResource {
 					em.merge(purchase);
 					em.flush();
 
-					return Response.ok(em.find(GoodEntity.class, newGood.getId())).build();
+					return Response.ok(em.find(Good.class, newGood.getId())).build();
 				}
 				return Response.status(Response.Status.BAD_REQUEST).build();
 			}
@@ -302,14 +302,14 @@ public class GoodResource {
 	public Response addModification(AddMod modObj) {
 
 		if (session != null){
-			GoodEntity good = em.find(GoodEntity.class, modObj.goodId);
+			Good good = em.find(Good.class, modObj.goodId);
 
 			if (good.getPurchase().getUser().getId() == session.getUser().getId()){
 				CopyGroup group = new CopyGroup();
 				group.setShouldResetPrimaryKey(true);
-				GoodEntity modGood = (GoodEntity) em.unwrap(JpaEntityManager.class).copy(good, group);
+				Good modGood = (Good) em.unwrap(JpaEntityManager.class).copy(good, group);
 
-				modGood.setResType(ResourceType.EXTENDED);
+				modGood.setResType(Aspect.EXTENDED);
 
 				modGood.setAlias(String.format("/purchase/%s/good/", modGood.getPurchase().getId()));
 				modGood.getPersonalImages().clear();
@@ -323,7 +323,7 @@ public class GoodResource {
 				em.merge(modGood);
 				em.flush();
 
-				return Response.ok(em.find(GoodEntity.class, modGood.getId())).build();
+				return Response.ok(em.find(Good.class, modGood.getId())).build();
 			}
 			return Response.status(Response.Status.UNAUTHORIZED).build();
 		}
@@ -335,11 +335,11 @@ public class GoodResource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Transactional
-	public Response updateGood(GoodEntity good) {
+	public Response updateGood(Good good) {
 
 		try {
 			if (session != null){
-				GoodEntity oldGood = em.find(GoodEntity.class, good.getId());
+				Good oldGood = em.find(Good.class, good.getId());
 
 				for (AttributeValue val : good.getAttributes()){
 					oldGood.getAttributes().stream().filter(g -> g.getAttribute().getName().equals(val.getAttribute().getName())).findFirst().get().setValue(val.getValue());
@@ -354,7 +354,7 @@ public class GoodResource {
 				oldGood.setSizeRange(good.getSizeRange());
 
 				if (good.getCompany() != null){
-					CompanyEntity company = em.find(CompanyEntity.class, good.getCompany().getId());
+					Company company = em.find(Company.class, good.getCompany().getId());
 					oldGood.setCompany(company);
 				}
 
@@ -379,7 +379,7 @@ public class GoodResource {
 				em.merge(oldGood);
 				em.flush();
 
-				return Response.ok(em.find(GoodEntity.class, good.getId())).build();
+				return Response.ok(em.find(Good.class, good.getId())).build();
 			} else {
 				return Response.status(Response.Status.UNAUTHORIZED).build();
 			}
@@ -397,12 +397,12 @@ public class GoodResource {
 	) {
 		try {
 			if (session != null){
-				GoodEntity good = em.find(GoodEntity.class, id);
+				Good good = em.find(Good.class, id);
 
 				if (good.getPurchase().getUser().getId() == session.getUser().getId()){
-					if (good.getPurchase().getStatus() == PurchaseEntity.Status.NEW
-							|| good.getPurchase().getStatus() == PurchaseEntity.Status.MODERATION){
-						good.setStatus(GoodEntity.Status.DELETED);
+					if (good.getPurchase().getStatus() == Purchase.Status.NEW
+							|| good.getPurchase().getStatus() == Purchase.Status.MODERATION){
+						good.setStatus(GoodEntity.Good.DELETED);
 
 						em.merge(good);
 						em.flush();
@@ -452,7 +452,7 @@ public class GoodResource {
 
 				Query query = em.createQuery(qStr);
 
-				query.setParameter("status", GoodEntity.Status.DELETED);
+				query.setParameter("status", GoodEntity.Good.DELETED);
 
 				for (Map.Entry<String, List<String>> entry : settedAttributes.entrySet()){
 					for (String v : entry.getValue()){
@@ -460,11 +460,11 @@ public class GoodResource {
 					}
 				}
 
-				List<GoodEntity> result = query.getResultList();
+				List<Good> result = query.getResultList();
 				List<AtrGoodList> agl = new ArrayList<>();
 				Map<String, AtrGoodList> attributesMap = new HashMap<>();
 
-				for (GoodEntity g : result){
+				for (Good g : result){
 					g.getPurchase();
 					AttributeValue atr = g.getAttributes().stream().filter(a -> a.getAttribute().getName().equals("color")).findFirst().get();
 

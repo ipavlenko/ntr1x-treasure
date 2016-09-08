@@ -19,8 +19,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
-import com.ntr1x.treasure.web.model.security.SecuritySession;
-import com.ntr1x.treasure.web.model.security.SecurityUser;
+import com.ntr1x.treasure.web.model.Session;
+import com.ntr1x.treasure.web.model.User;
 import com.ntr1x.treasure.web.services.ISecurityService;
 
 import lombok.Data;
@@ -55,11 +55,11 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 			    
 				ISecurityService.SecuritySession parsed = security.parseSession(value);
 
-				SecuritySession session = em.find(SecuritySession.class, parsed.getId());
+				Session session = em.find(Session.class, parsed.getId());
 				
 				if (session != null && session.getSignature() == parsed.getSignature()) {
 
-				    SecurityUser user = session.getUser();
+				    User user = session.getUser();
 				    if (user.isConfirmed() && !user.isLocked()) {
 				        p = new UserPrincipal(session);
 				    }
@@ -83,7 +83,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 
 		private static final long serialVersionUID = -3538893803387492891L;
 
-		public final SecuritySession session;
+		public final Session session;
 
 		@Override
 		public String getName() {
@@ -116,7 +116,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 
 		@Bean
 		@Scope(value = "request", proxyMode = ScopedProxyMode.TARGET_CLASS)
-		public SecuritySession produce() {
+		public Session produce() {
 
 		    UserPrincipal principal = (UserPrincipal) request.getAttribute(UserPrincipal.class.getName());
 			return principal == null ? null : principal.session;
@@ -131,7 +131,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 
 		@Bean
         @Scope(value = "request", proxyMode = ScopedProxyMode.TARGET_CLASS)
-		public SecurityUser produce() {
+		public User produce() {
 
 			UserPrincipal principal = (UserPrincipal) request.getAttribute(UserPrincipal.class.getName());
 			return principal == null ? null : principal.session.getUser();

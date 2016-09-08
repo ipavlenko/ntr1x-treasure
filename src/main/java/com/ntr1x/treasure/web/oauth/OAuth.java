@@ -7,7 +7,7 @@ import javax.transaction.Transactional;
 
 import org.springframework.stereotype.Service;
 
-import com.ntr1x.treasure.web.model.security.SecurityProvider;
+import com.ntr1x.treasure.web.model.Authenticator;
 import com.ntr1x.treasure.web.oauth.IOAuthService.Credentials;
 
 @Service
@@ -28,7 +28,7 @@ public class OAuth {
 	@Transactional
 	public IOAuthService service(String name) {
 		
-		SecurityProvider settings = em.createNamedQuery("SecurityProvider.accessibleByName", SecurityProvider.class)
+		Authenticator settings = em.createNamedQuery("SecurityProvider.accessibleByName", Authenticator.class)
 			.setParameter("name", name)
 			.getSingleResult()
 		;

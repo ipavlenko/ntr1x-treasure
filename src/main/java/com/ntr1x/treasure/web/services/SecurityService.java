@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Service;
 
 import com.google.common.hash.Hashing;
-import com.ntr1x.treasure.web.model.security.SecurityUser;
+import com.ntr1x.treasure.web.model.User;
 import com.ntr1x.treasure.web.utils.ConversionUtils;
 import com.ntr1x.treasure.web.utils.CryptoUtils;
 
@@ -187,7 +187,7 @@ public class SecurityService implements ISecurityService {
     
     @Transactional
     @Override
-    public boolean isUserInRole(SecurityUser user, String resource, String action) {
+    public boolean isUserInRole(User user, String resource, String action) {
         
         int count = em.createNamedQuery("SecurityPrivilege.check", Integer.class).getSingleResult();
         return count > 0;

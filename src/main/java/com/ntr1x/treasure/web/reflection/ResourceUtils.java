@@ -1,10 +1,10 @@
 package com.ntr1x.treasure.web.reflection;
 
-import com.ntr1x.treasure.web.model.security.SecurityResource;
+import com.ntr1x.treasure.web.model.Resource;
 
 public class ResourceUtils {
     
-    public static String alias(SecurityResource parent, String locator, SecurityResource resource) {
+    public static String alias(Resource parent, String locator, Resource resource) {
         
         return parent != null
             ? String.format("%s/%s/%d", parent.getAlias(), locator, resource.getId())

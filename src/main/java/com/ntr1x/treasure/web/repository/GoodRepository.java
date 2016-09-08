@@ -1,12 +1,18 @@
 package com.ntr1x.treasure.web.repository;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.ntr1x.treasure.web.model.purchase.GoodEntity;
+import com.ntr1x.treasure.web.model.Aspect;
+import com.ntr1x.treasure.web.model.Good;
 
-public interface GoodRepository extends JpaRepository<GoodEntity, Long> {
+public interface GoodRepository extends JpaRepository<Good, Long> {
 
-    Page<GoodEntity> findByPurchaseId(long purchase, Pageable pageable);
+    Good findByResType(Aspect type);
+    List<Good> findAllByResType(Aspect type);
+    
+    Page<Good> findByPurchaseId(long purchase, Pageable pageable);
 }

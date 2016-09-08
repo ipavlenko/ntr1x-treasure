@@ -27,12 +27,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.springframework.stereotype.Component;
 
-import com.ntr1x.treasure.web.model.attributes.AttributeEntity;
+import com.ntr1x.treasure.web.model.Attribute;
+import com.ntr1x.treasure.web.model.Good;
+import com.ntr1x.treasure.web.model.Order;
+import com.ntr1x.treasure.web.model.OrderEntry;
+import com.ntr1x.treasure.web.model.Purchase;
 import com.ntr1x.treasure.web.model.attributes.AttributeValue;
-import com.ntr1x.treasure.web.model.purchase.GoodEntity;
-import com.ntr1x.treasure.web.model.purchase.OrderEntity;
-import com.ntr1x.treasure.web.model.purchase.OrderEntryEntity;
-import com.ntr1x.treasure.web.model.purchase.PurchaseEntity;
 import com.ntr1x.treasure.web.model.security.SecuritySession;
 import com.ntr1x.treasure.web.model.security.SecurityUser;
 
@@ -79,7 +79,7 @@ public class OrderResource {
 	@XmlRootElement
 //	@XmlAccessorType(XmlAccessType.FIELD)
 	private static class GoodEntrValueList implements Serializable {
-		public GoodEntity good;
+		public Good good;
 		public List<EntrValueList> entries;
 		public float total;
 		public float totalOrders;
@@ -90,7 +90,7 @@ public class OrderResource {
 	@XmlRootElement
 	private static class SyntheticOrderEntryEntity{
 		public long id;
-		public GoodEntity good;
+		public Good good;
 		public Float quantity;
 		public boolean confirmed;
 		public SecurityUser user;
@@ -122,7 +122,7 @@ public class OrderResource {
 	@XmlAccessorType(XmlAccessType.FIELD)
 	public static class UpdateRequest {
 		private long orderId;
-		private OrderEntity.Status status;
+		private Order.Status status;
 	}
 
 	@Data
@@ -131,7 +131,7 @@ public class OrderResource {
 	@XmlRootElement
 	@XmlAccessorType(XmlAccessType.FIELD)
 	public static class UpdateOrderEntryRequest {
-		private OrderEntryEntity entry;
+		private OrderEntry entry;
 	}
 
 	@Data
@@ -140,7 +140,7 @@ public class OrderResource {
 	@XmlRootElement
 	@XmlAccessorType(XmlAccessType.FIELD)
 	private static class OrderStat implements Serializable {
-		private OrderEntity order;
+		private Order order;
 		private float total;
 		private float deliveryPrice;
 		private float totalToPay;
@@ -182,26 +182,26 @@ public class OrderResource {
 		try {
 			if (session != null){
 
-				int count = em.createNamedQuery("OrderEntity.accessibleUserIdAndStatus", OrderEntity.class)				//TODO
+				int count = em.createNamedQuery("OrderEntity.accessibleUserIdAndStatus", Order.class)				//TODO
 						.setParameter("id", session.getUser().getId())
-						.setParameter("status", req.getStatus() != null ? OrderEntity.Status.valueOf(req.getStatus()) : null)
+						.setParameter("status", req.getStatus() != null ? Order.Status.valueOf(req.getStatus()) : null)
 						.getResultList().size();
 
-				List<OrderEntity> orders = em.createNamedQuery("OrderEntity.accessibleUserIdAndStatus", OrderEntity.class)
+				List<Order> orders = em.createNamedQuery("OrderEntity.accessibleUserIdAndStatus", Order.class)
 						.setParameter("id", session.getUser().getId())
-						.setParameter("status", req.getStatus() != null ? OrderEntity.Status.valueOf(req.getStatus()) : null)
+						.setParameter("status", req.getStatus() != null ? Order.Status.valueOf(req.getStatus()) : null)
 						.setMaxResults(req.getLimit())
 						.setFirstResult(req.getOffset())
 						.getResultList();
 
 				List<OrderStat> ordersStats = new ArrayList<>();
 
-				for (OrderEntity o : orders){
+				for (Order o : orders){
 
 					OrderStat stat = new OrderStat();
 					stat.setOrder(o);
 
-					for (OrderEntryEntity entry : o.getEntries()){
+					for (OrderEntry entry : o.getEntries()){
 						stat.setTotal(stat.getTotal() + entry.getQuantity() * entry.getGood().getPrice());
 					}
 
@@ -246,28 +246,28 @@ public class OrderResource {
 			SecurityUser user = session.getUser();
 			if (user.getRole() == SecurityUser.Role.SELLER){
 
-				int count = em.createNamedQuery("OrderEntity.accessibleSellerIdAndPurchaseIdAndStatus", OrderEntity.class)				//TODO
+				int count = em.createNamedQuery("OrderEntity.accessibleSellerIdAndPurchaseIdAndStatus", Order.class)				//TODO
 						.setParameter("id", session.getUser().getId())
 						.setParameter("pid", req.getPid())
-						.setParameter("status", req.getStatus() != null ? OrderEntity.Status.valueOf(req.getStatus()) : null)
+						.setParameter("status", req.getStatus() != null ? Order.Status.valueOf(req.getStatus()) : null)
 						.getResultList().size();
 
-				List<OrderEntity> orders = em.createNamedQuery("OrderEntity.accessibleSellerIdAndPurchaseIdAndStatus", OrderEntity.class)
+				List<Order> orders = em.createNamedQuery("OrderEntity.accessibleSellerIdAndPurchaseIdAndStatus", Order.class)
 						.setParameter("id", session.getUser().getId())
 						.setParameter("pid", req.getPid())
-						.setParameter("status", req.getStatus() != null ? OrderEntity.Status.valueOf(req.getStatus()) : null)
+						.setParameter("status", req.getStatus() != null ? Order.Status.valueOf(req.getStatus()) : null)
 						.setMaxResults(req.getLimit())
 						.setFirstResult(req.getOffset())
 						.getResultList();
 
 				List<OrderStat> ordersStats = new ArrayList<>();
 
-				for (OrderEntity o : orders){
+				for (Order o : orders){
 
 					OrderStat stat = new OrderStat();
 					stat.setOrder(o);
 
-					for (OrderEntryEntity entry : o.getEntries()){
+					for (OrderEntry entry : o.getEntries()){
 						stat.setTotal(stat.getTotal() + entry.getQuantity() * entry.getGood().getPrice());
 					}
 
@@ -419,14 +419,14 @@ public class OrderResource {
 		if (session != null){
 
 			SecurityUser user = session.getUser();
-			OrderEntryEntity entry = em.find(OrderEntryEntity.class, req.id);
+			OrderEntry entry = em.find(OrderEntry.class, req.id);
 
 			if (user.getRole() == SecurityUser.Role.SELLER && user.getId() == entry.getOrder().getSeller().getId()){
 
 				entry.setConfirmed(true);
 
 				boolean allConfirmed = true;
-				for (OrderEntryEntity entr : entry.getOrder().getEntries()){
+				for (OrderEntry entr : entry.getOrder().getEntries()){
 					if (!entr.isConfirmed()){
 						allConfirmed = false;
 						break;
@@ -436,7 +436,7 @@ public class OrderResource {
 				em.merge(entry);
 
 				if (allConfirmed){
-					entry.getOrder().setStatus(OrderEntity.Status.REQUIRES_PAYMENT);
+					entry.getOrder().setStatus(Order.Status.REQUIRES_PAYMENT);
 					em.merge(entry.getOrder());
 				}
 
@@ -456,17 +456,17 @@ public class OrderResource {
 	) {
 		if (session != null){
 			SecurityUser user = session.getUser();
-			OrderEntryEntity entry = em.find(OrderEntryEntity.class, id);
-			OrderEntity order = entry.getOrder();
+			OrderEntry entry = em.find(OrderEntry.class, id);
+			Order order = entry.getOrder();
 
-			if (order.getStatus() == OrderEntity.Status.NEW){
+			if (order.getStatus() == Order.Status.NEW){
 				if (user.getRole() == SecurityUser.Role.SELLER && user.getId() == entry.getOrder().getSeller().getId()){
 
 					//TODO отправить автосообщение, привязанное к Order, о том, что продавец удалил товар
 
 					// если в заказе был только этот Entry, то отменяем заказ
 					if (order.getEntries().size() == 1){
-						order.setStatus(OrderEntity.Status.CANCELED);
+						order.setStatus(Order.Status.CANCELED);
 						em.merge(order);
 					}
 
@@ -494,7 +494,7 @@ public class OrderResource {
 
 			SecurityUser user = session.getUser();
 
-			OrderEntryEntity entry = em.find(OrderEntryEntity.class, req.entry.getId());
+			OrderEntry entry = em.find(OrderEntry.class, req.entry.getId());
 
 			switch (entry.getOrder().getStatus()){
 				case NEW:
@@ -509,7 +509,7 @@ public class OrderResource {
 							entry.setConfirmed(true);
 
 							boolean allConfirmed = true;
-							for (OrderEntryEntity entr : entry.getOrder().getEntries()){
+							for (OrderEntry entr : entry.getOrder().getEntries()){
 								if (!entr.isConfirmed()){
 									allConfirmed = false;
 									break;
@@ -517,7 +517,7 @@ public class OrderResource {
 							}
 
 							if (allConfirmed){
-								entry.getOrder().setStatus(OrderEntity.Status.REQUIRES_PAYMENT);
+								entry.getOrder().setStatus(Order.Status.REQUIRES_PAYMENT);
 								em.merge(entry.getOrder());
 							}
 						}
@@ -526,12 +526,12 @@ public class OrderResource {
 
 						if(entry.getGood().getId() != req.getEntry().getGood().getId()){
 
-							GoodEntity good = em.find(GoodEntity.class, req.getEntry().getGood().getId());
+							Good good = em.find(Good.class, req.getEntry().getGood().getId());
 
 							if (good != null){
 								if (good.getPurchase().getUser().getId() == entry.getOrder().getSeller().getId()
 										&& good.getPurchase().getId() == entry.getGood().getPurchase().getId()
-										&& (good.getPurchase().getStatus() == PurchaseEntity.Status.OPEN || good.getPurchase().getStatus() == PurchaseEntity.Status.STOPED)){
+										&& (good.getPurchase().getStatus() == Purchase.Status.OPEN || good.getPurchase().getStatus() == Purchase.Status.STOPED)){
 
 									if (good.getQuantity() >= req.getEntry().getQuantity()){
 
@@ -560,9 +560,9 @@ public class OrderResource {
 					break;
 			}
 
-			OrderEntryEntity ordr = em.find(OrderEntryEntity.class, req.entry.getId());
+			OrderEntry ordr = em.find(OrderEntry.class, req.entry.getId());
 
-			return Response.ok(new OrderEntryEntity(ordr.getId(), null, ordr.getGood(), ordr.getQuantity(), false)).build();
+			return Response.ok(new OrderEntry(ordr.getId(), null, ordr.getGood(), ordr.getQuantity(), false)).build();
 		}
 		return Response.status(Response.Status.UNAUTHORIZED).build();
 	}
@@ -579,20 +579,20 @@ public class OrderResource {
 
 			SecurityUser user = session.getUser();
 
-			OrderEntity order = em.createNamedQuery("OrderEntity.accessibleId", OrderEntity.class)
+			Order order = em.createNamedQuery("OrderEntity.accessibleId", Order.class)
 					.setParameter("id", session.getUser().getId())
 					.getSingleResult();
 
 			switch (order.getStatus()){
 				case NEW:
 					if (user.getRole() == SecurityUser.Role.SELLER && user.getId() == order.getSeller().getId()){
-						if (req.getStatus() == OrderEntity.Status.REQUIRES_PAYMENT || req.getStatus() == OrderEntity.Status.CANCELED){
+						if (req.getStatus() == Order.Status.REQUIRES_PAYMENT || req.getStatus() == Order.Status.CANCELED){
 							order.setStatus(req.getStatus());
 							em.merge(order);
 						}
 					}
 					else if (user.getRole() == SecurityUser.Role.USER && user.getId() == order.getUser().getId()) {
-						if (req.getStatus() == OrderEntity.Status.CANCELED) {
+						if (req.getStatus() == Order.Status.CANCELED) {
 							order.setStatus(req.getStatus());
 							em.merge(order);
 						} else {
@@ -605,14 +605,14 @@ public class OrderResource {
 					break;
 				case REQUIRES_PAYMENT:
 					if (user.getRole() == SecurityUser.Role.SELLER && user.getId() == order.getSeller().getId()){
-						if (req.getStatus() == OrderEntity.Status.CANCELED){
+						if (req.getStatus() == Order.Status.CANCELED){
 							order.setStatus(req.getStatus());
 							em.merge(order);
 						} else {
 							return Response.status(Response.Status.UNAUTHORIZED).entity("Сurrent user is not unauthorized for this request").build();
 						}
 					} else if (user.getRole() == SecurityUser.Role.USER && user.getId() == order.getUser().getId()){
-						if (req.getStatus() == OrderEntity.Status.PAID ){
+						if (req.getStatus() == Order.Status.PAID ){
 							order.setStatus(req.getStatus());
 							order.setPaidDate(new Date());
 							em.merge(order);
@@ -628,7 +628,7 @@ public class OrderResource {
 
 				case PAID:
 					if (user.getRole() == SecurityUser.Role.SELLER && user.getId() == order.getSeller().getId()){
-						if (req.getStatus() == OrderEntity.Status.CONFIRMED){
+						if (req.getStatus() == Order.Status.CONFIRMED){
 							order.setStatus(req.getStatus());
 							order.setConfirmDate(new Date());
 							em.merge(order);
@@ -642,7 +642,7 @@ public class OrderResource {
 				case CONFIRMED:
 					if (user.getRole() == SecurityUser.Role.SELLER && user.getId() == order.getSeller().getId() // TODO оставить только DELIVERY (считыватель)
 							|| user.getRole() == SecurityUser.Role.DELIVERY && user.getDeliveryPlaces().stream().filter(d -> d.getId() == order.getDPlace().getId()).findFirst().isPresent()){
-						if (req.getStatus() == OrderEntity.Status.READY){
+						if (req.getStatus() == Order.Status.READY){
 							order.setStatus(req.getStatus());
 							order.setReadyDate(new Date());
 							em.merge(order);
@@ -656,7 +656,7 @@ public class OrderResource {
 				case READY:
 					if (user.getRole() == SecurityUser.Role.USER && user.getId() == order.getUser().getId() // TODO оставить только DELIVERY (считыватель)
 							|| user.getRole() == SecurityUser.Role.DELIVERY && user.getDeliveryPlaces().stream().filter(d -> d.getId() == order.getDPlace().getId()).findFirst().isPresent()){
-						if (req.getStatus() == OrderEntity.Status.RECEIVED){
+						if (req.getStatus() == Order.Status.RECEIVED){
 							order.setStatus(req.getStatus());
 							order.setReceivedDate(new Date());
 							em.merge(order);

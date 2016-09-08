@@ -6,16 +6,16 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.ntr1x.treasure.web.model.purchase.ResourceType;
-import com.ntr1x.treasure.web.model.security.SecurityResource;
+import com.ntr1x.treasure.web.model.Aspect;
+import com.ntr1x.treasure.web.model.Resource;
 
 
-public interface ResourceRepository extends JpaRepository<SecurityResource, Long> {
+public interface ResourceRepository extends JpaRepository<Resource, Long> {
 	
-	SecurityResource findByAlias(String alias);
-	Page<SecurityResource> findByAliasLikeOrderByAlias(String pattern, Pageable pageable);
-	Page<SecurityResource> findOrderByAlias(Pageable pageable);
+	Resource findByAlias(String alias);
+	Page<Resource> findByAliasLikeOrderByAlias(String pattern, Pageable pageable);
+	Page<Resource> findOrderByAlias(Pageable pageable);
 	
-	SecurityResource findByResType(ResourceType type);
-    List<SecurityResource> findAllByResType(ResourceType type);
+	Resource findByResType(Aspect type);
+    List<Resource> findAllByResType(Aspect type);
 }

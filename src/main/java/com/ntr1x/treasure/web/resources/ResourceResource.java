@@ -14,8 +14,8 @@ import javax.ws.rs.core.MediaType;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
+import com.ntr1x.treasure.web.model.Aspect;
 import com.ntr1x.treasure.web.model.attributes.AttributeValue;
-import com.ntr1x.treasure.web.model.purchase.ResourceType;
 import com.ntr1x.treasure.web.model.security.SecurityResource;
 import com.ntr1x.treasure.web.repository.ResourceRepository;
 
@@ -65,7 +65,7 @@ public class ResourceResource {
     @Path("/t/{type}/values")
     @Produces(MediaType.APPLICATION_JSON)
     @Transactional
-	public List<AttributeValue> selectValues(@PathParam("type") ResourceType type) {
+	public List<AttributeValue> selectValues(@PathParam("type") Aspect type) {
 	    
 	    return repository.findByResType(type).getAttributes();
 	}

@@ -5,9 +5,9 @@ import javax.persistence.EntityManager;
 
 import org.springframework.stereotype.Service;
 
-import com.ntr1x.treasure.web.model.attributes.AttributeEntity;
-import com.ntr1x.treasure.web.model.attributes.AttributeValue;
-import com.ntr1x.treasure.web.model.security.SecurityResource;
+import com.ntr1x.treasure.web.model.Attribute;
+import com.ntr1x.treasure.web.model.Resource;
+import com.ntr1x.treasure.web.model.ResourceAttribute;
 
 @Service
 public class ParamService implements IParamService {
@@ -16,15 +16,15 @@ public class ParamService implements IParamService {
     private EntityManager em;
     
     @Override
-    public void createParams(SecurityResource resource, CreateParam[] params) {
+    public void createParams(Resource resource, CreateParam[] params) {
         
         if (params != null) {
             
             for (CreateParam p : params) {
                 
-                AttributeValue v = new AttributeValue(); {
+                ResourceAttribute v = new ResourceAttribute(); {
                     
-                    AttributeEntity e = em.find(AttributeEntity.class, p.attribute);
+                    Attribute e = em.find(Attribute.class, p.attribute);
                     
                     v.setRelate(resource);
                     v.setValue(p.value);
@@ -39,7 +39,7 @@ public class ParamService implements IParamService {
     }
     
     @Override
-    public void updateParams(SecurityResource resource, UpdateParam[] params) {
+    public void updateParams(Resource resource, UpdateParam[] params) {
         
         if (params != null) {
             
@@ -47,11 +47,11 @@ public class ParamService implements IParamService {
                 
                 switch (p.action) {
                 
-                    case ADD: {
+                    case CREATE: {
                         
-                        AttributeValue v = new AttributeValue(); {
+                        ResourceAttribute v = new ResourceAttribute(); {
                             
-                            AttributeEntity e = em.find(AttributeEntity.class, p.attribute);
+                            Attribute e = em.find(Attribute.class, p.attribute);
                             
                             v.setRelate(resource);
                             v.setValue(p.value);
@@ -63,7 +63,7 @@ public class ParamService implements IParamService {
                     }
                     case UPDATE: {
                         
-                        AttributeValue v = em.find(AttributeValue.class, p.id); {
+                        ResourceAttribute v = em.find(ResourceAttribute.class, p.id); {
                             
                           v.setValue(p.value);
                           em.merge(v);
@@ -74,13 +74,15 @@ public class ParamService implements IParamService {
                     }
                     case REMOVE: {
                         
-                        AttributeValue v = em.find(AttributeValue.class, p.id); {
+                        ResourceAttribute v = em.find(ResourceAttribute.class, p.id); {
                             
                             v.setValue(p.value);
                             em.remove(v);
                         }
                         break;
                     }
+                default:
+                    break;
                 }
             }
             

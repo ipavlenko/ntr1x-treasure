@@ -28,10 +28,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
-import com.ntr1x.treasure.web.model.assets.DeliveryPlace;
-import com.ntr1x.treasure.web.model.assets.PaymentMethod;
-import com.ntr1x.treasure.web.model.purchase.CartEntity;
-import com.ntr1x.treasure.web.model.purchase.ResourceType;
+import com.ntr1x.treasure.web.model.Aspect;
+import com.ntr1x.treasure.web.model.Cart;
+import com.ntr1x.treasure.web.model.Depot;
+import com.ntr1x.treasure.web.model.Method;
 import com.ntr1x.treasure.web.model.purchase.StoreAction;
 import com.ntr1x.treasure.web.model.security.SecurityUser;
 import com.ntr1x.treasure.web.model.security.SecurityUser.Role;
@@ -156,7 +156,7 @@ public class UsersResource {
             u.setSurname(user.surname);
             u.setMiddleName(user.middleName);
             u.setRole(user.role);
-            u.setResType(ResourceType.EXTENDED);
+            u.setResType(Aspect.EXTENDED);
             
             em.persist(u);
             em.flush();
@@ -174,9 +174,9 @@ public class UsersResource {
                 
                 for (CreateUser.Place place : user.places) {
                     
-                    DeliveryPlace d = new DeliveryPlace();
+                    Depot d = new Depot();
                     
-                    d.setResType(ResourceType.EXTENDED);
+                    d.setResType(Aspect.EXTENDED);
                     d.setOwner(u);
                     
                     em.persist(d);
@@ -197,9 +197,9 @@ public class UsersResource {
                 
                 for (CreateUser.Method method : user.methods) {
                     
-                    PaymentMethod m = new PaymentMethod();
+                    Method m = new Method();
                     
-                    m.setResType(ResourceType.EXTENDED);
+                    m.setResType(Aspect.EXTENDED);
                     m.setOwner(u);
                     
                     em.persist(m);
@@ -219,10 +219,10 @@ public class UsersResource {
             em.refresh(u);
         }
         
-        CartEntity c = new CartEntity(); {
+        Cart c = new Cart(); {
             
             c.setUser(u);
-            c.setResType(ResourceType.EXTENDED);
+            c.setResType(Aspect.EXTENDED);
             
             em.persist(c);
             em.flush();
@@ -277,9 +277,9 @@ public class UsersResource {
                 
                 case ADD: {
                     
-                    DeliveryPlace d = new DeliveryPlace();
+                    Depot d = new Depot();
                     
-                    d.setResType(ResourceType.EXTENDED);
+                    d.setResType(Aspect.EXTENDED);
                     d.setOwner(u);
                     
                     em.persist(d);
@@ -296,7 +296,7 @@ public class UsersResource {
                 }
                 case UPDATE: {
                     
-                    DeliveryPlace d = em.find(DeliveryPlace.class, place.id);
+                    Depot d = em.find(Depot.class, place.id);
                     
                     params.updateParams(d, place.params);
                     
@@ -304,7 +304,7 @@ public class UsersResource {
                 }
                 case REMOVE: {
                     
-                    DeliveryPlace d = em.find(DeliveryPlace.class, place.id);
+                    Depot d = em.find(Depot.class, place.id);
                     
                     em.remove(d);
                     em.flush();
@@ -318,9 +318,9 @@ public class UsersResource {
             
             case ADD: {
                     
-                    PaymentMethod m = new PaymentMethod();
+                    Method m = new Method();
                     
-                    m.setResType(ResourceType.EXTENDED);
+                    m.setResType(Aspect.EXTENDED);
                     m.setOwner(u);
                     
                     em.persist(m);
@@ -337,7 +337,7 @@ public class UsersResource {
                 }
                 case UPDATE: {
                     
-                    PaymentMethod m = em.find(PaymentMethod.class, method.id);
+                    Method m = em.find(Method.class, method.id);
                     
                     params.updateParams(m, method.params);
                     
@@ -345,7 +345,7 @@ public class UsersResource {
                 }
                 case REMOVE: {
                     
-                    PaymentMethod m = em.find(PaymentMethod.class, method.id);
+                    Method m = em.find(Method.class, method.id);
                     
                     em.remove(m);
                     em.flush();
@@ -407,7 +407,7 @@ public class UsersResource {
         public String phone;
         public String email;
         public String password;
-        public ResourceType type;
+        public Aspect type;
         public boolean confirmed;
         
         @XmlElement
@@ -448,7 +448,7 @@ public class UsersResource {
         public String phone;
         public String email;
         public String password;
-        public ResourceType type;
+        public Aspect type;
         public boolean confirmed;
         
         @XmlElement

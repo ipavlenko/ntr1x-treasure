@@ -11,7 +11,7 @@ import org.glassfish.jersey.message.filtering.spi.EntityGraph;
 import org.glassfish.jersey.message.filtering.spi.EntityProcessor;
 
 import com.google.common.collect.Sets;
-import com.ntr1x.treasure.web.model.security.SecurityResource.ResourceProperty;
+import com.ntr1x.treasure.web.model.Resource.ResourceProperty;
 
 @Singleton
 @Priority(Integer.MAX_VALUE - 5000)

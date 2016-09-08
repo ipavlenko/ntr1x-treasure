@@ -15,7 +15,7 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 
-import org.glassfish.jersey.filter.LoggingFilter;
+import org.glassfish.jersey.logging.LoggingFeature;
 import org.glassfish.jersey.moxy.json.MoxyJsonFeature;
 import org.glassfish.jersey.moxy.xml.MoxyXmlFeature;
 
@@ -46,7 +46,7 @@ public class OAuth1TwitterService implements IOAuth1TwitterService {
 	public TwitterRequestToken token() {
 		
 		String body = ClientBuilder.newClient()
-			.register(new LoggingFilter())
+	        .register(LoggingFeature.class)
 			.target(config.requestTokenEndpoint)
 			.request(MediaType.TEXT_PLAIN_TYPE)
 			.header("Authorization", sign("POST", config.requestTokenEndpoint, null, null, "oauth_callback", encode(credentials.redirectUri)))
@@ -66,7 +66,7 @@ public class OAuth1TwitterService implements IOAuth1TwitterService {
 	public TwitterAccessToken token(String token, String verifier) {
 		
 		String body = ClientBuilder.newClient()
-			.register(new LoggingFilter())
+	        .register(LoggingFeature.class)
 			.target(config.accessTokenEndpoint)
 			.request(MediaType.WILDCARD_TYPE)
 			.header("Authorization", sign("POST", config.accessTokenEndpoint, token, token, "oauth_callback", encode(credentials.redirectUri)))
@@ -93,7 +93,7 @@ public class OAuth1TwitterService implements IOAuth1TwitterService {
 		return ClientBuilder.newClient()
 			.register(MoxyXmlFeature.class)
 			.register(MoxyJsonFeature.class)
-			.register(new LoggingFilter())
+			.register(LoggingFeature.class)
 			.target(config.userinfoEndpoint)
 			.request(MediaType.APPLICATION_JSON_TYPE)
 			.header("Authorization", sign("GET", config.userinfoEndpoint, token.value(), token.secret()))

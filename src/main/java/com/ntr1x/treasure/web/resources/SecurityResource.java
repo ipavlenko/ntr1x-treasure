@@ -30,13 +30,13 @@ import org.apache.commons.lang3.Validate;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.stereotype.Component;
 
-import com.ntr1x.treasure.web.model.purchase.CartEntity;
-import com.ntr1x.treasure.web.model.purchase.ResourceType;
+import com.ntr1x.treasure.web.model.Aspect;
+import com.ntr1x.treasure.web.model.Cart;
+import com.ntr1x.treasure.web.model.Token;
 import com.ntr1x.treasure.web.model.security.SecurityPhoneCode;
 import com.ntr1x.treasure.web.model.security.SecuritySession;
 import com.ntr1x.treasure.web.model.security.SecurityUser;
 import com.ntr1x.treasure.web.model.security.SecurityUser.Role;
-import com.ntr1x.treasure.web.model.security.Token;
 import com.ntr1x.treasure.web.oauth.IOAuthService;
 import com.ntr1x.treasure.web.oauth.IOAuthService.UserInfo;
 import com.ntr1x.treasure.web.oauth.OAuth;
@@ -191,7 +191,7 @@ public class SecurityResource {
             u.setSurname(signup.surname);
             u.setMiddleName(signup.middleName);
             u.setRole(Role.USER);
-            u.setResType(ResourceType.EXTENDED);
+            u.setResType(Aspect.EXTENDED);
             
             em.persist(u);
             em.flush();
@@ -204,10 +204,10 @@ public class SecurityResource {
             em.refresh(u);
         }
         
-        CartEntity c = new CartEntity(); {
+        Cart c = new Cart(); {
             
             c.setUser(u);
-            c.setResType(ResourceType.EXTENDED);
+            c.setResType(Aspect.EXTENDED);
             
             em.persist(c);
             em.flush();

@@ -6,14 +6,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.ntr1x.treasure.web.model.purchase.PurchaseEntity;
-import com.ntr1x.treasure.web.model.purchase.ResourceType;
+import com.ntr1x.treasure.web.model.Aspect;
+import com.ntr1x.treasure.web.model.Purchase;
 
-public interface PurchaseRepository extends JpaRepository<PurchaseEntity, Long> {
+public interface PurchaseRepository extends JpaRepository<Purchase, Long> {
     
-    PurchaseEntity findByResType(ResourceType type);
-    List<PurchaseEntity> findAllByResType(ResourceType type);
+    Purchase findByResType(Aspect type);
+    List<Purchase> findAllByResType(Aspect type);
     
-    Page<PurchaseEntity> findByResTypeAndUserId(ResourceType type, long user, Pageable pageable);
-    Page<PurchaseEntity> findByResTypeAndStatusAndUserId(ResourceType type, PurchaseEntity.Status status, long user, Pageable pageable);
+    Page<Purchase> findByResTypeAndUserId(Aspect type, Long user, Pageable pageable);
+    Page<Purchase> findByResTypeAndStatusAndUserId(Aspect type, Purchase.Status status, Long user, Pageable pageable);
 }

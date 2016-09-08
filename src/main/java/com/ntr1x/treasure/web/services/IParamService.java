@@ -2,17 +2,17 @@ package com.ntr1x.treasure.web.services;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import com.ntr1x.treasure.web.model.purchase.StoreAction;
-import com.ntr1x.treasure.web.model.security.SecurityResource;
+import com.ntr1x.treasure.web.model.Action;
+import com.ntr1x.treasure.web.model.Resource;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
 public interface IParamService {
 
-    void createParams(SecurityResource resource, CreateParam[] params);
+    void createParams(Resource resource, CreateParam[] params);
 
-    void updateParams(SecurityResource resource, UpdateParam[] params);
+    void updateParams(Resource resource, UpdateParam[] params);
     
     @XmlRootElement
     @NoArgsConstructor
@@ -31,6 +31,6 @@ public interface IParamService {
         public Long id;
         public Long attribute;
         public String value;
-        public StoreAction action;
+        public Action action;
     }
 }

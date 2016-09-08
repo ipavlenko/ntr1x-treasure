@@ -19,7 +19,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.ntr1x.treasure.web.App;
-import com.ntr1x.treasure.web.model.purchase.ResourceType;
+import com.ntr1x.treasure.web.model.Aspect;
 import com.ntr1x.treasure.web.model.security.SecurityUser;
 import com.ntr1x.treasure.web.model.security.SecurityUser.Role;
 import com.ntr1x.treasure.web.resources.UsersResource.CreateUser;
@@ -58,7 +58,7 @@ public class UserResourceTest {
             CreateUser s = new CreateUser(); {
                 
                 s.role = Role.ADMIN;
-                s.type = ResourceType.EXTENDED;
+                s.type = Aspect.EXTENDED;
                 s.confirmed = true;
                 s.email = "admin@example.com";
                 s.password = "admin";

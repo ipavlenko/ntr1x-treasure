@@ -17,7 +17,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.springframework.stereotype.Component;
 
-import com.ntr1x.treasure.web.model.purchase.ResourceType;
+import com.ntr1x.treasure.web.model.Aspect;
 import com.ntr1x.treasure.web.model.security.SecurityResource;
 
 import io.swagger.annotations.Api;
@@ -34,7 +34,7 @@ public class SecurityResourceResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Transactional
 	public List<SecurityResource> resourcesQuery(
-			@QueryParam("resType") ResourceType type,
+			@QueryParam("resType") Aspect type,
 			@QueryParam("limit") int limit,
 			@QueryParam("offset") int offset
 	){
