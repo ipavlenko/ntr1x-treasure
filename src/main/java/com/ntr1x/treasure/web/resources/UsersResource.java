@@ -1,6 +1,5 @@
 package com.ntr1x.treasure.web.resources;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -28,13 +27,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
+import com.ntr1x.treasure.web.model.Action;
 import com.ntr1x.treasure.web.model.Aspect;
 import com.ntr1x.treasure.web.model.Cart;
 import com.ntr1x.treasure.web.model.Depot;
 import com.ntr1x.treasure.web.model.Method;
-import com.ntr1x.treasure.web.model.purchase.StoreAction;
-import com.ntr1x.treasure.web.model.security.SecurityUser;
-import com.ntr1x.treasure.web.model.security.SecurityUser.Role;
+import com.ntr1x.treasure.web.model.User;
+import com.ntr1x.treasure.web.model.User.Role;
 import com.ntr1x.treasure.web.reflection.ResourceUtils;
 import com.ntr1x.treasure.web.repository.UserRepository;
 import com.ntr1x.treasure.web.services.IParamService;
@@ -81,7 +80,7 @@ public class UsersResource {
         @QueryParam("size") @ApiParam(example = "10") int size,
         @QueryParam("role") Role role
     ){
-        Page<SecurityUser> result = role == null
+        Page<User> result = role == null
             ? users.findAll(new PageRequest(page, size))
             : users.findUsersByRole(role, new PageRequest(page, size))
         ;
@@ -99,9 +98,9 @@ public class UsersResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Transactional
     @RolesAllowed({ "res:///users/i/{id}:admin" })
-    public SecurityUser lock(@PathParam("id") long id) {
+    public User lock(@PathParam("id") long id) {
 
-        SecurityUser user = em.find(SecurityUser.class, id);
+        User user = em.find(User.class, id);
         user.setLocked(true);
         
         em.persist(user);
@@ -115,9 +114,9 @@ public class UsersResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Transactional
     @RolesAllowed( { "res:///users/i/{id}:admin" })
-    public SecurityUser unlock(@PathParam("id") long id) {
+    public User unlock(@PathParam("id") long id) {
 
-        SecurityUser user = em.find(SecurityUser.class, id);
+        User user = em.find(User.class, id);
         user.setLocked(false);
         
         em.persist(user);
@@ -131,18 +130,18 @@ public class UsersResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Transactional
     @RolesAllowed({ "res:///users/i/{id}:admin" })
-    public SecurityUser select(@PathParam("id") long id) {
+    public User select(@PathParam("id") long id) {
         
-        return em.find(SecurityUser.class, id);
+        return em.find(User.class, id);
     }
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Transactional
-    public SecurityUser create(CreateUser user) {
+    public User create(CreateUser user) {
         
-        SecurityUser u = new SecurityUser(); {
+        User u = new User(); {
             
             int random = security.randomInt();
             
@@ -150,13 +149,12 @@ public class UsersResource {
             u.setPwdhash(security.hashPassword(random, user.email));
             u.setRandom(random);
             u.setConfirmed(user.confirmed);
-            u.setDate(Timestamp.valueOf(LocalDateTime.now()));
+            u.setRegistered(LocalDateTime.now());
             u.setPhone(user.phone);
-            u.setUserName(user.userName);
+            u.setName(user.userName);
             u.setSurname(user.surname);
-            u.setMiddleName(user.middleName);
+            u.setMiddlename(user.middleName);
             u.setRole(user.role);
-            u.setResType(Aspect.EXTENDED);
             
             em.persist(u);
             em.flush();
@@ -176,8 +174,7 @@ public class UsersResource {
                     
                     Depot d = new Depot();
                     
-                    d.setResType(Aspect.EXTENDED);
-                    d.setOwner(u);
+                    d.setUser(u);
                     
                     em.persist(d);
                     em.flush();
@@ -199,8 +196,7 @@ public class UsersResource {
                     
                     Method m = new Method();
                     
-                    m.setResType(Aspect.EXTENDED);
-                    m.setOwner(u);
+                    m.setUser(u);
                     
                     em.persist(m);
                     em.flush();
@@ -222,7 +218,6 @@ public class UsersResource {
         Cart c = new Cart(); {
             
             c.setUser(u);
-            c.setResType(Aspect.EXTENDED);
             
             em.persist(c);
             em.flush();
@@ -243,9 +238,9 @@ public class UsersResource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Transactional
-	public SecurityUser update(@PathParam("id") long id, UpdateUser user) {
+	public User update(@PathParam("id") long id, UpdateUser user) {
 	    
-	    SecurityUser u = em.find(SecurityUser.class, id);
+	    User u = em.find(User.class, id);
 	    
 	    int random = security.randomInt();
         
@@ -254,9 +249,9 @@ public class UsersResource {
         u.setRandom(random);
         u.setConfirmed(user.confirmed);
         u.setPhone(user.phone);
-        u.setUserName(user.userName);
+        u.setName(user.userName);
         u.setSurname(user.surname);
-        u.setMiddleName(user.middleName);
+        u.setMiddlename(user.middleName);
         u.setRole(user.role);
         
         em.persist(u);
@@ -275,12 +270,11 @@ public class UsersResource {
             
             switch (place.action) {
                 
-                case ADD: {
+                case CREATE: {
                     
                     Depot d = new Depot();
                     
-                    d.setResType(Aspect.EXTENDED);
-                    d.setOwner(u);
+                    d.setUser(u);
                     
                     em.persist(d);
                     em.flush();
@@ -316,12 +310,11 @@ public class UsersResource {
             
             switch (method.action) {
             
-            case ADD: {
+            case CREATE: {
                     
                     Method m = new Method();
                     
-                    m.setResType(Aspect.EXTENDED);
-                    m.setOwner(u);
+                    m.setUser(u);
                     
                     em.persist(m);
                     em.flush();
@@ -350,6 +343,7 @@ public class UsersResource {
                     em.remove(m);
                     em.flush();
                 }
+                
             }
         }
         
@@ -363,20 +357,9 @@ public class UsersResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Transactional
     @RolesAllowed({ "res:///users/i/{id}:admin" })
-    public SecurityUser delete(@PathParam("id") long id) {
+    public User delete(@PathParam("id") long id) {
         
-        SecurityUser u = em.find(SecurityUser.class, id);
-        
-        switch(u.getResType()) {
-        case ROOT_SELLER:
-        case ROOT_DELIVERY:
-        case ROOT_MODERATOR:
-        case ROOT_USER:
-            throw new IllegalArgumentException();
-        default:
-            // contiue
-        }
-        
+        User u = em.find(User.class, id);
         em.remove(u);
         
         return u;
@@ -392,7 +375,7 @@ public class UsersResource {
         public int size;
         
         @XmlElement
-        public List<SecurityUser> users;
+        public List<User> users;
     }
     
     @XmlRootElement
@@ -465,7 +448,7 @@ public class UsersResource {
         public static class Place {
             
             public Long id;
-            public StoreAction action;
+            public Action action;
             
             @XmlElement
             public UpdateParam[] params;
@@ -476,7 +459,7 @@ public class UsersResource {
         public static class Method {
             
             public Long id;
-            public StoreAction action;
+            public Action action;
             
             @XmlElement
             public UpdateParam[] params;

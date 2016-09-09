@@ -38,4 +38,7 @@ public class Good extends Resource {
 
 	@Column(name = "Title", nullable = false)
 	private String title;
+	
+	@Column(name = "Promo", nullable = false)
+    private String promo;
 }

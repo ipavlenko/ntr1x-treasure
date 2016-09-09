@@ -1,6 +1,5 @@
 package com.ntr1x.treasure.web.resources;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -8,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -20,10 +20,9 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -31,267 +30,169 @@ import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.sessions.CopyGroup;
 import org.springframework.stereotype.Component;
 
+import com.ntr1x.treasure.web.model.Action;
 import com.ntr1x.treasure.web.model.Aspect;
-import com.ntr1x.treasure.web.model.Attribute;
 import com.ntr1x.treasure.web.model.Company;
 import com.ntr1x.treasure.web.model.Good;
-import com.ntr1x.treasure.web.model.GoodCategory;
+import com.ntr1x.treasure.web.model.Modification;
 import com.ntr1x.treasure.web.model.Purchase;
-import com.ntr1x.treasure.web.model.attributes.AttributeValue;
-import com.ntr1x.treasure.web.model.security.SecuritySession;
-import com.ntr1x.treasure.web.repository.GoodCategoryRepository;
-import com.ntr1x.treasure.web.repository.GoodEntityRepository;
-import com.ntr1x.treasure.web.utils.map.FilterValue;
+import com.ntr1x.treasure.web.reflection.ResourceUtils;
+import com.ntr1x.treasure.web.repository.CategoryRepository;
+import com.ntr1x.treasure.web.repository.GoodRepository;
+import com.ntr1x.treasure.web.resources.PurchasesResource.CatValueList;
+import com.ntr1x.treasure.web.resources.PurchasesResource.Filtered;
+import com.ntr1x.treasure.web.services.IParamService;
+import com.ntr1x.treasure.web.services.ISecurityService;
 
 import io.swagger.annotations.Api;
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Api("Goods")
 @Component
-@Path("/ws/catalog/goods")
+@Path("goods")
 @Slf4j
 public class GoodResource {
 
+    @PersistenceContext
+    private EntityManager em;
+    
+    @Inject
+    private ISecurityService security;
+    
+    @Inject
+    private IParamService params;
+    
 	@Inject
-	private SecuritySession session;
-
-	@Inject
-    private GoodCategoryRepository categories;
+    private CategoryRepository categories;
 	
 	@Inject
-    private GoodEntityRepository goods;
-	
-	@Data
-	@NoArgsConstructor
-	@AllArgsConstructor
-	public static class AddObj {
-		private long pid;
-	}
-
-	@Data
-	@NoArgsConstructor
-	@AllArgsConstructor
-	public static class AddMod {
-		private long goodId;
-	}
-
-	@Data
-	@NoArgsConstructor
-	@AllArgsConstructor
-	@XmlRootElement
-	@XmlAccessorType(XmlAccessType.FIELD)
-	public static class FilterGoods {
-		@XmlElement
-		private List<FilterValue> settedAttributes;
-		private long pid;
-
-		private Map<String, List<String>> getArrValuesMap(){
-
-			Map<String, List<String>> attributes = new HashMap<>();
-			if (settedAttributes != null){
-				for (FilterValue val : settedAttributes){
-					if (attributes.get(val.getName()) != null){
-						attributes.get(val.getName()).add(val.getValue());
-					} else {
-						attributes.put(val.getName(), new ArrayList<>());
-						attributes.get(val.getName()).add(val.getValue());
-					}
-				}
-			}
-			return attributes;
-		}
-	}
-
-	@Data
-	@NoArgsConstructor
-	@AllArgsConstructor
-	@XmlRootElement
-	@XmlAccessorType(XmlAccessType.FIELD)
-	public static class AtrGoodList implements Serializable {
-		private static final long serialVersionUID = -6410688391927286753L;
-		private String attrName;
-		private String value;
-		private List<Good> goods;
-	}
-
-	@Data
-	@NoArgsConstructor
-	@AllArgsConstructor
-	@XmlRootElement
-	@XmlAccessorType(XmlAccessType.FIELD)
-	private static class CatValueList implements Serializable{
-		private static final long serialVersionUID = -14038014837124724L;
-		private GoodCategory category;
-		private List<GoodCategory> childs;
-	}
-
-	@Data
-	@NoArgsConstructor
-	@AllArgsConstructor
-	@XmlRootElement
-	@XmlAccessorType(XmlAccessType.FIELD)
-	public static class Filtered {
-		private List<CatValueList> allCategories;
-		private List<AtrGoodList> goods;
-	}
-
-	@PersistenceContext
-	private EntityManager em;
+    private GoodRepository goods;
 
 	@GET
-	@Path("/{id}")
+	@Path("/i/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Transactional
-	public Good good(
-			@PathParam("id") long id
-	) {
-		try {
-			Good good = em.find(Good.class, id);
-
-			return good;
-		} catch (Exception e){
-			throw  e;
-		}
+	public Good select(@PathParam("id") long id) {
+	    
+	    Good good = em.find(Good.class, id);
+        return good;
 	}
-
-	@GET
-	@Path("/root/attribute/values")
-	@Produces(MediaType.APPLICATION_JSON)
-	@Transactional()
-	//	@RolesAllowed("admin")
-	public List<AttributeValue> attributeValues() {
-		try {
-
-			List<AttributeValue> result = em.createNamedQuery("AttributeValue.accessibleOfResType", AttributeValue.class)
-					.setParameter("resType", Aspect.ROOT_GOOD)
-					.getResultList();
-
-			return result;
-		} catch (Exception e){
-			throw e;
-		}
-	}
-
+	
 	@POST
-	@Path("/root/attribute/update")
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	@Transactional
-	//	@RolesAllowed("admin")						//TODO
-	public Response updateAttribute(AttributeValue attribute) {
-
-		try {
-			if (attribute.getAction() != null){
-				switch(attribute.getAction()) {
-					case REMOVE: {
-						em.remove(em.find(Attribute.class, attribute.getAttribute().getId()));
-						break;
-					}
-					case ADD: {
-						if (em.find(AttributeValue.class, attribute.getId()) != null || em.find(Attribute.class, attribute.getAttribute().getId()) != null)
-							return Response.status(Response.Status.BAD_REQUEST).build();
-
-						em.persist(attribute.getAttribute());
-						em.flush();
-
-						List<Good> goods = this.goods.findAll();
-
-						for (Good good : goods){
-
-							AttributeValue val = new AttributeValue();
-							val.setValue(attribute.getValue());
-							val.setRelate(good);
-							val.setAttribute(attribute.getAttribute());
-							good.getAttributes().add(val);
-							em.merge(good);
-						}
-						break;
-					}
-					case UPDATE: {
-
-						Good baseGood = this.goods.findByResType(Aspect.ROOT_GOOD);
-						AttributeValue val = baseGood.getAttributes().stream().filter(p -> p.getId() == attribute.getId()).findFirst().get();
-
-						val.getAttribute().setName(attribute.getAttribute().getName());
-						val.getAttribute().setTitle(attribute.getAttribute().getTitle());
-						val.getAttribute().setOptions(attribute.getAttribute().getOptions());
-						val.getAttribute().setOrder(attribute.getAttribute().getOrder());
-						val.setValue(attribute.getValue());
-
-						em.merge(val);
-
-						break;
-					}
-				}
-				em.flush();
-
-				return Response.ok().build();
-			}
-			return Response.status(Response.Status.BAD_REQUEST).build();
-		} catch (Exception e){
-			throw e;
-		}
-	}
-
-    /**
-     * Создает товар внутри указанной поставки, с предустановленными опциями по умолчанию
-     * @param addObj параметры добавления
-     * @return
-     */
-    @POST
-    @Path("/add")
+	@Path("/purchases/i/{id}/goods")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Transactional
-	//	@RolesAllowed("user")
-    public Response addGood(AddObj addObj) {
+    @RolesAllowed({ "res:///purchases/i/{id}:admin" })
+    public Good create(@PathParam("id") long id, CreateGoodRequest request) {
 
-		if (session != null){
-			Purchase purchase = em.find(Purchase.class, addObj.getPid());
+	    Purchase p = em.find(Purchase.class, id);
+	    
+	    switch (p.getStatus()) {
+    	    case NEW:
+    	    case MODERATION:
+    	    case OPEN:
+    	        break;
+    	    default:
+    	        throw new WebApplicationException("Current state of the purchase doesn't allow modification", Response.Status.CONFLICT);
+	    }
+	    
+	    Good g = new Good(); {
+	        
+	        g.setPurchase(p);
+	        g.setTitle(request.title);
+	        g.setPromo(request.promo);
+	        
+	        em.persist(g);
+	        em.flush();
+	        
+	        security.register(g, ResourceUtils.alias(null, "goods/i", g));
+	        
+	        params.createParams(g, request.params);
+	    }
+	    
+	    if (request.modifications != null) {
+	        
+	        for (CreateGoodRequest.Modification modification : request.modifications) {
+	            
+	            Modification m = new Modification(); {
+	                
+	                m.setGood(g);
+	                m.setPrice(modification.price);
+	                m.setSizeRange(modification.sizeRange);
+	                
+	                em.persist(m);
+	                em.flush();
+	                
+	                security.register(m, ResourceUtils.alias(g, "modifications/i", g));
+	                
+	                params.createParams(m, modification.params);
+	            }
+	        }
+	    }
+	    
+	    return g;
+    }
+	
+	@POST
+	@Path("/purchases/i/{id}/goods/i/{good}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Transactional
+    @RolesAllowed({ "res:///purchases/i/{id}:admin" })
+    public Good update(@PathParam("id") long id, @PathParam("good") long good, UpdateGoodRequest request) {
 
-			if (purchase.getUser().getId() == session.getUser().getId()){
-				if (purchase.getStatus() == Purchase.Status.NEW
-						|| purchase.getStatus() == Purchase.Status.MODERATION
-						|| purchase.getStatus() == Purchase.Status.OPEN){
-
-				    Good baseGood = this.goods.findByResType(Aspect.ROOT_GOOD);
-				    
-					CopyGroup group = new CopyGroup();
-					group.setShouldResetPrimaryKey(true);
-					Good newGood = (Good) em.unwrap(JpaEntityManager.class).copy(baseGood, group);
-
-					newGood.setResType(Aspect.EXTENDED);
-
-					newGood.setTitle("Новый товар");
-					newGood.setStatus(GoodEntity.Good.ACTIVE);
-
-					List<GoodCategory> categories = this.categories.findAll();
-
-					newGood.getCategories().add(categories.get(0));                 //TODO это дефолтный вариант выбора категории, в  реальности его не будет
-
-					newGood.setAlias(String.format("/purchase/%s/good/", purchase.getId()));
-					newGood.setPurchase(purchase);
-
-					em.persist(newGood);
-					em.flush();
-
-					newGood.setAlias(String.format("/purchase/%s/good/%s", purchase.getId(), newGood.getId()));
-					em.persist(newGood);
-
-					em.merge(purchase);
-					em.flush();
-
-					return Response.ok(em.find(Good.class, newGood.getId())).build();
-				}
-				return Response.status(Response.Status.BAD_REQUEST).build();
-			}
-			return Response.status(Response.Status.UNAUTHORIZED).build();
-		}
-		return Response.status(Response.Status.UNAUTHORIZED).build();
-	}
+        Purchase p = em.find(Purchase.class, id);
+        
+        switch (p.getStatus()) {
+            case NEW:
+            case MODERATION:
+            case OPEN:
+                break;
+            default:
+                throw new WebApplicationException("Current state of the purchase doesn't allow modification", Response.Status.CONFLICT);
+        }
+        
+        Good g = em.find(Good.class, good); {
+            
+            if (g.getPurchase().getId() != p.getId()) {
+                throw new WebApplicationException("Good belongs to another Purchase", Response.Status.CONFLICT);
+            }
+            
+            g.setTitle(request.title);
+            g.setPromo(request.promo);
+            
+            em.merge(g);
+            em.flush();
+            
+            params.updateParams(g, request.params);
+        }
+        
+        if (request.modifications != null) {
+            
+            for (UpdateGoodRequest.Modification modification : request.modifications) {
+                
+                Modification m = new Modification(); {
+                    
+                    m.setGood(g);
+                    m.setPrice(modification.price);
+                    m.setSizeRange(modification.sizeRange);
+                    
+                    em.persist(m);
+                    em.flush();
+                    
+                    security.register(m, ResourceUtils.alias(g, "modifications/i", g));
+                    
+                    params.createParams(m, modification.params);
+                }
+            }
+        }
+        
+        return g;
+    }
+    
 
 	@POST
 	@Path("/mod/add")
@@ -512,4 +413,143 @@ public class GoodResource {
 		}
 	}
 
+	@XmlRootElement
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class CreateGoodRequest {
+	    
+        public String title;
+        public String promo;
+        
+        @XmlElement
+        public IParamService.CreateParam[] params;
+        
+        @XmlElement
+        public Modification[] modifications;
+        
+        @NoArgsConstructor
+        @AllArgsConstructor
+        public static class Modification {
+            
+            public float price;
+            public float sizeRange;
+            
+            @XmlElement
+            public IParamService.CreateParam[] params;
+        }
+	}
+	
+	@XmlRootElement
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class UpdateGoodRequest {
+        
+        public String title;
+        public String promo;
+        
+        @XmlElement
+        public IParamService.UpdateParam[] params;
+        
+        @XmlElement
+        public Modification[] modifications;
+        
+        @NoArgsConstructor
+        @AllArgsConstructor
+        public static class Modification {
+            
+            public float price;
+            public float sizeRange;
+            public Action action;
+            
+            @XmlElement
+            public IParamService.UpdateParam[] params;
+        }
+    }
+	
+//	@XmlRootElement
+//    @NoArgsConstructor
+//    @AllArgsConstructor
+//    public static class CreateModificationRequest {
+//        
+//        public long purchase;
+//        public String title;
+//        public String promo;
+//        
+//        @XmlElement
+//        public IParamService.CreateParam[] params;
+//    }
+	
+//	   @Data
+//	    @NoArgsConstructor
+//	    @AllArgsConstructor
+//	    public static class AddObj {
+//	        private long pid;
+//	    }
+//
+//	    @Data
+//	    @NoArgsConstructor
+//	    @AllArgsConstructor
+//	    public static class AddMod {
+//	        private long goodId;
+//	    }
+//
+//	    @Data
+//	    @NoArgsConstructor
+//	    @AllArgsConstructor
+//	    @XmlRootElement
+//	    @XmlAccessorType(XmlAccessType.FIELD)
+//	    public static class FilterGoods {
+//	        @XmlElement
+//	        private List<FilterValue> settedAttributes;
+//	        private long pid;
+//
+//	        private Map<String, List<String>> getArrValuesMap(){
+//
+//	            Map<String, List<String>> attributes = new HashMap<>();
+//	            if (settedAttributes != null){
+//	                for (FilterValue val : settedAttributes){
+//	                    if (attributes.get(val.getName()) != null){
+//	                        attributes.get(val.getName()).add(val.getValue());
+//	                    } else {
+//	                        attributes.put(val.getName(), new ArrayList<>());
+//	                        attributes.get(val.getName()).add(val.getValue());
+//	                    }
+//	                }
+//	            }
+//	            return attributes;
+//	        }
+//	    }
+//
+//	    @Data
+//	    @NoArgsConstructor
+//	    @AllArgsConstructor
+//	    @XmlRootElement
+//	    @XmlAccessorType(XmlAccessType.FIELD)
+//	    public static class AtrGoodList implements Serializable {
+//	        private static final long serialVersionUID = -6410688391927286753L;
+//	        private String attrName;
+//	        private String value;
+//	        private List<Good> goods;
+//	    }
+//
+//	    @Data
+//	    @NoArgsConstructor
+//	    @AllArgsConstructor
+//	    @XmlRootElement
+//	    @XmlAccessorType(XmlAccessType.FIELD)
+//	    private static class CatValueList implements Serializable{
+//	        private static final long serialVersionUID = -14038014837124724L;
+//	        private GoodCategory category;
+//	        private List<GoodCategory> childs;
+//	    }
+//
+//	    @Data
+//	    @NoArgsConstructor
+//	    @AllArgsConstructor
+//	    @XmlRootElement
+//	    @XmlAccessorType(XmlAccessType.FIELD)
+//	    public static class Filtered {
+//	        private List<CatValueList> allCategories;
+//	        private List<AtrGoodList> goods;
+//	    }
 }

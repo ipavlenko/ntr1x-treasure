@@ -14,7 +14,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Service;
 
 import com.google.common.hash.Hashing;
+import com.ntr1x.treasure.web.model.Grant;
+import com.ntr1x.treasure.web.model.Resource;
 import com.ntr1x.treasure.web.model.User;
+import com.ntr1x.treasure.web.reflection.ResourceUtils;
 import com.ntr1x.treasure.web.utils.ConversionUtils;
 import com.ntr1x.treasure.web.utils.CryptoUtils;
 
@@ -191,5 +194,33 @@ public class SecurityService implements ISecurityService {
         
         int count = em.createNamedQuery("SecurityPrivilege.check", Integer.class).getSingleResult();
         return count > 0;
+    }
+    
+    @Override
+    public void register(Resource resource, String alias) {
+        
+        resource.setAlias(alias);
+        
+        em.merge(resource);
+        em.flush();
+    }
+    
+    @Override
+    public void grant(User user, String pattern, String action) {
+        
+        Grant grant = new Grant(); {
+            
+            grant.setAccount(user);
+            grant.setPattern(pattern);
+            grant.setAction(action);
+        }
+        
+        em.persist(grant);
+        em.flush();
+        
+        grant.setAlias(ResourceUtils.alias(user, "grants/i", grant));
+        
+        em.merge(grant);
+        em.flush();
     }
 }

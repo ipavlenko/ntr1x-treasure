@@ -32,6 +32,7 @@ import org.springframework.stereotype.Component;
 
 import com.ntr1x.treasure.web.model.Aspect;
 import com.ntr1x.treasure.web.model.Cart;
+import com.ntr1x.treasure.web.model.Session;
 import com.ntr1x.treasure.web.model.Token;
 import com.ntr1x.treasure.web.model.security.SecurityPhoneCode;
 import com.ntr1x.treasure.web.model.security.SecuritySession;
@@ -79,7 +80,7 @@ public class SecurityResource {
     private ISMSService sms;
 
     @Inject
-    private SecuritySession session;
+    private Session session;
     
     @Inject
     private SecurityPhoneCodeRepository phones;

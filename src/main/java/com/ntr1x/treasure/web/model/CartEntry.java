@@ -46,10 +46,10 @@ public class CartEntry extends Resource {
 //	@XmlInverseReference(mappedBy="cartEntries")
 	private Modification modification;
 
-	@Column(name = "ResourceType", nullable = false)
+	@Column(name = "Type", nullable = false)
 	@Enumerated(EnumType.STRING)
 	private Type type;
 
 	@Column(name = "Quantity", nullable = false)
-	private Float quantity;
+	private float quantity;
 }

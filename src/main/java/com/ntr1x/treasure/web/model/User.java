@@ -91,6 +91,11 @@ public class User extends Resource {
     @Column(name = "Locked")
     private boolean locked;
     
+    @Column(name = "Registered")
+    @XmlJavaTypeAdapter(LocalDateTimeConverter.class)
+    @ApiModelProperty(example="1970-01-01T00:00:00")
+    private LocalDateTime registered;
+    
 	@XmlElement
     @XmlInverseReference(mappedBy = "user")
     @OneToOne(mappedBy = "user", cascade = { CascadeType.REMOVE })

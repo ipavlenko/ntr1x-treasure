@@ -26,7 +26,7 @@ import lombok.Setter;
 @Table(name = "methods")
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-@PrimaryKeyJoinColumn(name="ResourceId", referencedColumnName="Id")
+@PrimaryKeyJoinColumn(name = "ResourceId", referencedColumnName = "Id")
 @CascadeOnDelete
 public class Method extends Resource {
 

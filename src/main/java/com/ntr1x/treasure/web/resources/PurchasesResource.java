@@ -45,18 +45,13 @@ import com.ntr1x.treasure.web.model.Aspect;
 import com.ntr1x.treasure.web.model.Attribute;
 import com.ntr1x.treasure.web.model.Document;
 import com.ntr1x.treasure.web.model.Good;
-import com.ntr1x.treasure.web.model.GoodCategory;
 import com.ntr1x.treasure.web.model.Order;
 import com.ntr1x.treasure.web.model.OrderEntry;
 import com.ntr1x.treasure.web.model.Provider;
 import com.ntr1x.treasure.web.model.Purchase;
-import com.ntr1x.treasure.web.model.attributes.AttributeValue;
-import com.ntr1x.treasure.web.model.security.SecuritySession;
-import com.ntr1x.treasure.web.model.security.SecurityUser;
 import com.ntr1x.treasure.web.repository.GoodRepository;
 import com.ntr1x.treasure.web.repository.OrderRepository;
 import com.ntr1x.treasure.web.repository.PurchaseRepository;
-import com.ntr1x.treasure.web.utils.map.FilterValue;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
@@ -67,13 +62,10 @@ import lombok.extern.slf4j.Slf4j;
 
 @Api("Purchases")
 @Component
-@Path("/ws/purchases")
+@Path("purchases")
 @Slf4j
 public class PurchasesResource {
 
-	@Inject
-	private SecuritySession session;
-	
 	@Inject
 	private PurchaseRepository purchases;
 	
@@ -86,6 +78,36 @@ public class PurchasesResource {
     @PersistenceContext
     private EntityManager em;
 
+    @GET
+    @Path("/i/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Transactional
+    public Purchase select(@PathParam("id") long id) {
+        
+        Purchase purchase = em.find(Purchase.class, id);
+        return purchase;
+    }
+    
+//    @GET
+//    @Path("/i/{id}/goods")
+//    @Produces(MediaType.APPLICATION_JSON)
+//    @RolesAllowed({ "res:///purchases/i/{id}:admin" })
+//    @Transactional
+//    public GoodsResponse selectGoods(
+//        @PathParam("id") long id,
+//        @QueryParam("page") @ApiParam(example = "0") int page,
+//        @QueryParam("size") @ApiParam(example = "10") int size
+//    ) {
+//        
+//        Page<Good> result = goods.findByPurchaseId(id, new PageRequest(page, size));
+//        return new GoodsResponse(
+//            result.getTotalElements(),
+//            page,
+//            size,
+//            result.getContent()
+//        );
+//    }
+    
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
@@ -146,36 +168,6 @@ public class PurchasesResource {
 			purchases
 		);
 	}
-
-	@GET
-    @Path("/i/{id}")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Transactional
-    public Purchase select(@PathParam("id") long id) {
-        
-	    Purchase purchase = em.find(Purchase.class, id);
-        return purchase;
-    }
-	
-	@GET
-    @Path("/i/{id}/goods")
-    @Produces(MediaType.APPLICATION_JSON)
-	@RolesAllowed({ "res:///purchases/i/{id}:admin" })
-    @Transactional
-    public GoodsResponse selectGoods(
-        @PathParam("id") long id,
-        @QueryParam("page") @ApiParam(example = "0") int page,
-        @QueryParam("size") @ApiParam(example = "10") int size
-    ) {
-        
-	    Page<Good> result = goods.findByPurchaseId(id, new PageRequest(page, size));
-        return new GoodsResponse(
-            result.getTotalElements(),
-            page,
-            size,
-            result.getContent()
-        );
-    }
 
 //	private static Map<String, List<String>> getArrValuesMap(List<FilterValue> lst){
 //
@@ -1156,12 +1148,14 @@ public class PurchasesResource {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class GoodsResponse {
+    public static class PurchaseResponse {
         
-        private long count;
-        private int page;
-        private int size;
-        private List<Good> goods;
+        public Purchase purchase;
+        public List<Good> goods;
+        
+        public long count;
+        public int page;
+        public int size;
     }
 
     @Data
