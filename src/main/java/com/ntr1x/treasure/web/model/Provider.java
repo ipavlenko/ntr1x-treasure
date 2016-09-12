@@ -36,28 +36,23 @@ import lombok.Setter;
 @CascadeOnDelete
 public class Provider extends Resource {
 
-	public enum Status {
-		NEW,
-		OPEN
-	}
-
 	@Column(name = "Title", nullable = false)
 	private String title;
 
-	@Column(name = "Promo", nullable = false, columnDefinition = "VARCHAR(511)")
+	@Column(name = "Promo", nullable = false, columnDefinition = "MEDIUMTEXT")
 	private String promo;
 
 	@Column(name = "Description", nullable = false, columnDefinition = "MEDIUMTEXT")
-	private String desc;
+	private String description;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "UserId", nullable = false)
 	@XmlElement
 	private User user;
 
-	@XmlElement
-	@XmlInverseReference(mappedBy="provider")
-	@OneToMany(mappedBy = "provider")
+    @XmlElement
+    @XmlInverseReference(mappedBy = "provider")
+    @OneToMany(mappedBy = "provider")
 	@ResourceRelation
 	@ApiModelProperty(hidden = true)
 	private List<Purchase> purchases;

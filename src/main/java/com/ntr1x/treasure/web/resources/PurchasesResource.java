@@ -82,7 +82,7 @@ public class PurchasesResource {
     @Path("/i/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     @Transactional
-    public Purchase select(@PathParam("id") long id) {
+    public Purchase select(@PathParam("id") long id, @QueryParam("select") String[] fields) {
         
         Purchase purchase = em.find(Purchase.class, id);
         return purchase;

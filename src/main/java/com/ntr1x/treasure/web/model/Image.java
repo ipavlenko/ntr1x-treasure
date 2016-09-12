@@ -1,18 +1,16 @@
 package com.ntr1x.treasure.web.model;
 
+import java.util.UUID;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
+import org.eclipse.persistence.annotations.CascadeOnDelete;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,21 +22,19 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "goods")
+@Table(name = "images")
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 @PrimaryKeyJoinColumn(name = "ResourceId", referencedColumnName = "Id")
-public class Good extends Resource {
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "PurchaseId", nullable = true, updatable = true)
-    @XmlElement
-    @XmlInverseReference(mappedBy="goods")
-    private Purchase purchase;
-
-	@Column(name = "Title", nullable = false)
-	private String title;
-	
-	@Column(name = "Promo", nullable = false)
-    private String promo;
+@CascadeOnDelete
+public class Image extends Resource {
+ 
+    @Column(name = "Uuid")
+    private UUID uuid;
+    
+    @Column(name = "Original")
+    private String original;
+    
+    @Column(name = "Dir")
+    private String dir;
 }
