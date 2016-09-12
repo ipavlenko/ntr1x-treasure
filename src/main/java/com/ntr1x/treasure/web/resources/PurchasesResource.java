@@ -703,145 +703,6 @@ public class PurchasesResource {
 		return Response.status(Response.Status.UNAUTHORIZED).build();
 	}
 
-	@GET
-	@Path("/provider/add")
-	@Produces(MediaType.APPLICATION_JSON)
-	@Transactional
-	//	@RolesAllowed("seller")
-	public Response addProvider() {
-		if (session != null){
-
-			Provider provider = new Provider();
-			provider.setTitle("");
-			provider.setPromo("");
-			provider.setDesc("");
-			provider.setResType(Aspect.EXTENDED);
-			provider.setAlias(String.format("/user/%s/provider/", session.getUser().getId()));
-			provider.setUser(session.getUser());
-
-			em.persist(provider);
-			em.flush();
-
-			provider.setAlias(String.format("/user/%s/provider/%s", session.getUser().getId(), provider.getId()));
-			em.persist(provider);
-			em.flush();
-
-			return Response.ok(em.find(Provider.class, provider.getId())).build();
-		}
-		return Response.status(Response.Status.UNAUTHORIZED).build();
-	}
-
-	@POST
-	@Path("/providers/items")
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	@Transactional
-	//	@RolesAllowed("seller")
-	public Response listProviders(LoadListProvider prm) {
-		try {
-			if (session != null){
-
-
-
-//				int count = em.createNamedQuery("ProviderEntity.accessibleOfUserId", ProviderEntity.class)		//TODO setHint SELECT FOUND_ROWS()
-//						.setParameter("id", session.getUser().getId())
-//						.getResultList().size();
-
-
-				List<Provider> providers = em.createNamedQuery("ProviderEntity.accessibleOfUserId", Provider.class)
-						.setParameter("id", session.getUser().getId())
-//						.setMaxResults(prm.getLimit())
-//						.setFirstResult(prm.getLimit())
-						.getResultList();
-
-				if (prm.getStatus() != null && prm.getStatus() == Provider.Status.NEW){
-					providers.removeIf(p -> p.getPurchases().size() > 0);
-				}
-
-//				return Response.ok(new GenericEntity<List<ProviderEntity>>(p) {}).build();
-				return Response.ok(new Providers(
-//						count,
-//						prm.getOffset(),
-//						prm.getLimit(),
-						providers)
-				).build();
-			}
-			return Response.status(Response.Status.UNAUTHORIZED).build();
-		} catch (Exception e){
-			throw e;
-		}
-	}
-
-	@GET
-	@Path("/provider/{id}")
-	@Produces(MediaType.APPLICATION_JSON)
-	@Transactional
-	//	@RolesAllowed("seller")
-	public Response getProvider(
-			@PathParam("id") long id
-	) {
-		if (session != null){
-
-			return Response.ok(
-					em.createNamedQuery("ProviderEntity.accessibleOfIdUserId", Provider.class)
-							.setParameter("uid", session.getUser().getId())
-							.setParameter("pid", id)
-							.getSingleResult()
-			).build();
-		}
-		return Response.status(Response.Status.UNAUTHORIZED).build();
-	}
-
-	@POST
-	@Path("/provider/update")
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	@Transactional
-	public Response updateProvider(Provider provider) {
-		if (session != null){
-
-			List<Provider> providers = em.createNamedQuery("ProviderEntity.accessibleOfUserId", Provider.class)
-					.setParameter("id", session.getUser().getId())
-					.getResultList();
-
-			if((providers.stream().filter(p -> p.getId() == provider.getId()).findFirst().isPresent())) {
-				Provider oldProvider = em.find(Provider.class, provider.getId());
-
-				oldProvider.setTitle(provider.getTitle());
-				oldProvider.setPromo(provider.getPromo());
-				oldProvider.setDesc(provider.getDesc());
-
-				for (AttributeValue val : provider.getAttributes()){
-					oldProvider.getAttributes().stream().filter(p -> p.getAttribute().getName().equals(val.getAttribute().getName())).findFirst().get().setValue(val.getValue());
-				}
-
-				em.merge(oldProvider);
-				em.flush();
-
-				return Response.ok(em.find(Provider.class, provider.getId())).build();
-			}
-			return Response.status(Response.Status.UNAUTHORIZED).build();
-		}
-		return Response.status(Response.Status.UNAUTHORIZED).build();
-	}
-
-	@DELETE
-	@Path("/provider/{id}")
-	@Produces(MediaType.APPLICATION_JSON)
-	@Transactional
-	public Response deleteProvider(
-			@PathParam("id") long id
-	) {
-		Provider provider = em.find(Provider.class, id);
-
-		if (provider.getPurchases() != null && provider.getPurchases().size() >0){
-			return Response.status(Response.Status.BAD_REQUEST).build();
-		}
-
-		em.remove(provider);
-		return Response.ok().build();
-	}
-
     /**
      * Создает поставку(закупку) с предустановленными опциями по умолчанию
      * @return Созданный объект для последующего редактирования и финального сохранения
@@ -1117,16 +978,6 @@ public class PurchasesResource {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class LoadListProvider {
-//	      private long count;
-//	      private int offset;
-//	      private int limit;
-        private Provider.Status status;
-    }
-
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
     public static class LoadListPurchase {
         private long count;
         private int offset;
@@ -1156,16 +1007,6 @@ public class PurchasesResource {
         public long count;
         public int page;
         public int size;
-    }
-
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class Providers {
-//	      private long count;
-//	      private int offset;
-//	      private int limit;
-        private List<Provider> providers;
     }
 
     @Data
