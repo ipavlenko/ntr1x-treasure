@@ -1,6 +1,6 @@
 package com.ntr1x.treasure.web.model;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -21,7 +21,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.eclipse.persistence.annotations.CascadeOnDelete;
 import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 
-import com.ntr1x.treasure.web.converter.AppConverterProvider.LocalDateTimeConverter;
+import com.ntr1x.treasure.web.converter.AppConverterProvider.LocalDateConverter;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -61,24 +61,24 @@ public class Purchase extends Resource {
 	private Status status;
 
 	@Column(name = "OpenDate")
-    @XmlJavaTypeAdapter(LocalDateTimeConverter.class)
-    @ApiModelProperty(example="1970-01-01T00:00:00")
-    private LocalDateTime openDate;
+    @XmlJavaTypeAdapter(LocalDateConverter.class)
+    @ApiModelProperty(example="1970-01-01")
+    private LocalDate open;
 
 	@Column(name = "StopDate")
-    @XmlJavaTypeAdapter(LocalDateTimeConverter.class)
-    @ApiModelProperty(example="1970-01-01T00:00:00")
-    private LocalDateTime stopDate;
+    @XmlJavaTypeAdapter(LocalDateConverter.class)
+    @ApiModelProperty(example="1970-01-01")
+    private LocalDate stop;
 
 	@Column(name = "StartDeliveryDate")
-    @XmlJavaTypeAdapter(LocalDateTimeConverter.class)
-    @ApiModelProperty(example="1970-01-01T00:00:00")
-    private LocalDateTime startDeliveryDate;
+    @XmlJavaTypeAdapter(LocalDateConverter.class)
+    @ApiModelProperty(example="1970-01-01")
+    private LocalDate delivery;
 	
 	@Column(name = "NextDeliveryExpectDate")
-    @XmlJavaTypeAdapter(LocalDateTimeConverter.class)
-    @ApiModelProperty(example="1970-01-01T00:00:00")
-    private LocalDateTime nextDeliveryExpectDate;
+    @XmlJavaTypeAdapter(LocalDateConverter.class)
+    @ApiModelProperty(example="1970-01-01")
+    private LocalDate nextDelivery;
 	
 	@ManyToOne
 	@JoinColumn(name = "ProviderId", nullable = true, updatable = true)

@@ -94,7 +94,7 @@ public class ProviderResource {
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({ "res:///providers:admin" })
     @Transactional
-    public Provider create(@PathParam("id") long id, ProviderCreate create) {
+    public Provider create(ProviderCreate create) {
         
         Provider provider = new Provider(); {
             
@@ -107,7 +107,7 @@ public class ProviderResource {
             em.flush();
         }
         
-        security.register(provider, ResourceUtils.alias(null, "provider/i", provider));
+        security.register(provider, ResourceUtils.alias(null, "providers/i", provider));
         security.grant(session.getUser(), provider.getAlias(), "admin");
         
         params.createParams(provider, create.params);

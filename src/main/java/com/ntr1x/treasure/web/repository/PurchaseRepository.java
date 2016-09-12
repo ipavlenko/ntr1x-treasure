@@ -14,6 +14,6 @@ public interface PurchaseRepository extends JpaRepository<Purchase, Long> {
     Purchase findByResType(Aspect type);
     List<Purchase> findAllByResType(Aspect type);
     
-    Page<Purchase> findByResTypeAndUserId(Aspect type, Long user, Pageable pageable);
-    Page<Purchase> findByResTypeAndStatusAndUserId(Aspect type, Purchase.Status status, Long user, Pageable pageable);
+    Page<Purchase> findByUserId(Long user, Pageable pageable);
+    Page<Purchase> findByUserIdAndStatus(Long user, Purchase.Status status, Pageable pageable);
 }

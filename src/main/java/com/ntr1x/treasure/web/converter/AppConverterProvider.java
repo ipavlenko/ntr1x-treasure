@@ -29,7 +29,7 @@ public class AppConverterProvider implements ParamConverterProvider {
 		return null;
 	}
 	
-	private static class LocalDateConverter extends XmlAdapter<String, LocalDate> implements ParamConverter<LocalDate> {
+	public static class LocalDateConverter extends XmlAdapter<String, LocalDate> implements ParamConverter<LocalDate> {
 		
 		@Override
 		public LocalDate fromString(String value) {
