@@ -107,6 +107,7 @@ public class User extends Resource {
     @OneToMany(mappedBy = "user", cascade = { CascadeType.REMOVE })
     @CascadeOnDelete
     @ResourceRelation
+    @ApiModelProperty(hidden = true)
     private List<Provider> providers;
 
     @XmlElement
@@ -114,6 +115,7 @@ public class User extends Resource {
     @OneToMany(mappedBy = "user", cascade = { CascadeType.REMOVE })
     @CascadeOnDelete
     @ResourceRelation
+    @ApiModelProperty(hidden = true)
     private List<Purchase> purchases;
 
     @XmlElement
@@ -121,14 +123,16 @@ public class User extends Resource {
     @OneToMany(mappedBy = "user", cascade = { CascadeType.REMOVE })
     @CascadeOnDelete
     @ResourceRelation
-    private List<Method> paymentMethods;
+    @ApiModelProperty(hidden = true)
+    private List<Method> methods;
 
+    @ResourceRelation
     @XmlElement
     @XmlInverseReference(mappedBy = "user")
     @OneToMany(mappedBy = "user", cascade = { CascadeType.REMOVE })
     @CascadeOnDelete
-    @ResourceRelation
-    private List<Depot> deliveryPlaces;
+    @ApiModelProperty(hidden = true)
+    private List<Depot> depots;
 	
 	@ResourceRelation
 	@XmlElement

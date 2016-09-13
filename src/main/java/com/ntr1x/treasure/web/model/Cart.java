@@ -16,6 +16,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.eclipse.persistence.annotations.CascadeOnDelete;
 import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -44,5 +45,6 @@ public class Cart extends Resource {
 	@OneToMany(mappedBy = "cart")
 	@CascadeOnDelete
 	@ResourceRelation
+	@ApiModelProperty(hidden = true)
 	private List<CartEntry> entries;
 }

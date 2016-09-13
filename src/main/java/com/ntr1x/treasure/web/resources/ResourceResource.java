@@ -24,6 +24,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
+import com.ntr1x.treasure.web.model.Attribute;
 import com.ntr1x.treasure.web.model.Comment;
 import com.ntr1x.treasure.web.model.Grant;
 import com.ntr1x.treasure.web.model.Like;
@@ -56,7 +57,6 @@ public class ResourceResource {
 	@Inject
 	private Session session;
 	
-	
 	@GET
     @Produces(MediaType.APPLICATION_JSON)
 	@Transactional
@@ -71,6 +71,12 @@ public class ResourceResource {
 				: resources.findByAliasLikeOrderByAlias(pattern, new PageRequest(page, size))
 		).getContent();
     }
+	
+//	@GET
+//	@Path("/attributes")
+//	public List<Attribute> attributes(@QueryParam("aspect") String[]) {
+//	    
+//	}
 	
 	@GET
 	@Path("/i/{id}")

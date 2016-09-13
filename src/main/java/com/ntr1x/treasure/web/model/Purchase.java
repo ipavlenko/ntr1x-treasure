@@ -97,6 +97,7 @@ public class Purchase extends Resource {
     @XmlInverseReference(mappedBy="purchases")
     private User user;
 
+    @ResourceRelation
     @XmlElement
     @XmlInverseReference(mappedBy = "purchase")
     @OneToMany(mappedBy = "purchase")
