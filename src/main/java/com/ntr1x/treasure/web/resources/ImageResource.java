@@ -36,7 +36,7 @@ import com.ntr1x.treasure.web.converter.ImageSettingsProvider.ImageSettings;
 import com.ntr1x.treasure.web.model.Image;
 import com.ntr1x.treasure.web.model.Session;
 import com.ntr1x.treasure.web.reflection.ResourceUtils;
-import com.ntr1x.treasure.web.repository.UploadRepository;
+import com.ntr1x.treasure.web.repository.ImageRepository;
 import com.ntr1x.treasure.web.services.IFileService;
 import com.ntr1x.treasure.web.services.IScaleImageService;
 import com.ntr1x.treasure.web.services.ISecurityService;
@@ -63,7 +63,7 @@ public class ImageResource {
     private Session session;
     
     @Inject
-    private UploadRepository uploads;
+    private ImageRepository uploads;
     
     @PersistenceContext
     private EntityManager em;

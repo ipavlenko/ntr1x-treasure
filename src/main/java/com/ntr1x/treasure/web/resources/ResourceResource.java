@@ -164,7 +164,7 @@ public class ResourceResource {
         Grant g = new Grant(); {
             
             g.setAlias(c.getAlias());
-            g.setAccount(u);
+            g.setUser(u);
             g.setAction("admin");
             
             em.persist(g);

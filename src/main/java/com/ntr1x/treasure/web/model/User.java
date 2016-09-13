@@ -61,7 +61,7 @@ public class User extends Resource {
 	@XmlTransient
 	@Column(name = "Random")
 	@ApiModelProperty(hidden = true)
-	private int random;
+	private Integer random;
 	
 	@Column(name = "Published")
 	@XmlJavaTypeAdapter(LocalDateTimeConverter.class)

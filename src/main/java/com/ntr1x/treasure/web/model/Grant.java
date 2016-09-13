@@ -36,8 +36,8 @@ public class Grant extends Resource {
 	@XmlElement
     @XmlInverseReference(mappedBy = "grants")
 	@ManyToOne
-	@JoinColumn(name = "AccountId", nullable = false, updatable = false)
-	private User account;
+	@JoinColumn(name = "UserId", nullable = false, updatable = false)
+	private User user;
 	
 	@Column(name = "Pattern")
 	private String pattern;

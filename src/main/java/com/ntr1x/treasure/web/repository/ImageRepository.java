@@ -10,13 +10,13 @@ import org.springframework.data.repository.query.Param;
 
 import com.ntr1x.treasure.web.model.Image;
 
-public interface UploadRepository extends JpaRepository<Image, Long> {
+public interface ImageRepository extends JpaRepository<Image, Long> {
 
     @Query(
-        " SELECT DISTINCT u"
+        " SELECT DISTINCT i"
       + " FROM"
-      + "   Upload u"
-      + "   JOIN u.aspects a"
+      + "   Image i"
+      + "   JOIN i.aspects a"
       + " WHERE (:aspect IS NULL OR a = :aspect)"
     )
     Page<Image> findByAspect(

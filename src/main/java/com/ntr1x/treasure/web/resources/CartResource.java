@@ -227,7 +227,7 @@ public class CartResource {
 	    em.flush();
 	    
 	    Grant grant = new Grant(); {
-	        grant.setAccount(user);
+	        grant.setUser(user);
 	        grant.setAction("admin");
 	        grant.setAlias(order.getAlias());
 	    }

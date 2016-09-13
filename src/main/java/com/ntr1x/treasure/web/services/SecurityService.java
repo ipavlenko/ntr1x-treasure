@@ -210,7 +210,7 @@ public class SecurityService implements ISecurityService {
         
         Grant grant = new Grant(); {
             
-            grant.setAccount(user);
+            grant.setUser(user);
             grant.setPattern(pattern);
             grant.setAction(action);
         }
