@@ -6,7 +6,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.springframework.stereotype.Service;
 
-import com.ntr1x.treasure.web.model.Aspect;
+import com.ntr1x.treasure.web.model.User;
 import com.ntr1x.treasure.web.model.User.Role;
 import com.ntr1x.treasure.web.resources.UsersResource.CreateUser;
 
@@ -37,7 +37,7 @@ public class BootstrapUsers {
             users.admin = target
               .path("/ws/users")
               .request(MediaType.APPLICATION_JSON_TYPE)
-              .post(Entity.entity(u, MediaType.APPLICATION_JSON_TYPE), SecurityUser.class)
+              .post(Entity.entity(u, MediaType.APPLICATION_JSON_TYPE), User.class)
             ;
             
             users.adminPassword = u.password;
@@ -47,7 +47,6 @@ public class BootstrapUsers {
             CreateUser u = new CreateUser(); {
                 
                 u.role = Role.USER;
-                u.type = Aspect.EXTENDED;
                 u.confirmed = true;
                 u.email = "user@example.com";
                 u.password = "user";
@@ -61,7 +60,7 @@ public class BootstrapUsers {
             users.user = target
               .path("/ws/users")
               .request(MediaType.APPLICATION_JSON_TYPE)
-              .post(Entity.entity(u, MediaType.APPLICATION_JSON_TYPE), SecurityUser.class)
+              .post(Entity.entity(u, MediaType.APPLICATION_JSON_TYPE), User.class)
             ;
             
             users.userPassword = u.password;
@@ -74,10 +73,10 @@ public class BootstrapUsers {
     @AllArgsConstructor
     class Users {
         
-        public SecurityUser admin;
+        public User admin;
         public String adminPassword;
         
-        public SecurityUser user;
+        public User user;
         public String userPassword;
     }
 }

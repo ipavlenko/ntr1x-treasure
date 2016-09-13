@@ -2,11 +2,8 @@ package com.ntr1x.treasure.web.resources;
 
 import java.net.URI;
 import java.sql.Date;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -30,21 +27,15 @@ import org.apache.commons.lang3.Validate;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.stereotype.Component;
 
-import com.ntr1x.treasure.web.model.Aspect;
 import com.ntr1x.treasure.web.model.Cart;
 import com.ntr1x.treasure.web.model.Session;
 import com.ntr1x.treasure.web.model.Token;
-import com.ntr1x.treasure.web.model.security.SecurityPhoneCode;
-import com.ntr1x.treasure.web.model.security.SecuritySession;
-import com.ntr1x.treasure.web.model.security.SecurityUser;
-import com.ntr1x.treasure.web.model.security.SecurityUser.Role;
+import com.ntr1x.treasure.web.model.User;
 import com.ntr1x.treasure.web.oauth.IOAuthService;
 import com.ntr1x.treasure.web.oauth.IOAuthService.UserInfo;
 import com.ntr1x.treasure.web.oauth.OAuth;
 import com.ntr1x.treasure.web.reflection.ResourceUtils;
-import com.ntr1x.treasure.web.repository.SecurityPhoneCodeRepository;
 import com.ntr1x.treasure.web.repository.UserRepository;
-import com.ntr1x.treasure.web.services.ISMSService;
 import com.ntr1x.treasure.web.services.ISecurityService;
 import com.ntr1x.treasure.web.services.IStoreMailService;
 import com.ntr1x.treasure.web.utils.ConversionUtils;
@@ -76,54 +67,54 @@ public class SecurityResource {
     @Inject
     private OAuth oauth;
 
-    @Inject
-    private ISMSService sms;
+//    @Inject
+//    private ISMSService sms;
 
     @Inject
     private Session session;
     
-    @Inject
-    private SecurityPhoneCodeRepository phones;
+//    @Inject
+//    private SecurityPhoneCodeRepository phones;
 	
-	@POST
-    @Path("/phone/code")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    @Transactional
-    public Response code(GetCode code) throws Exception {
-
-        if (code.phone > 0){
-
-            SecurityPhoneCode phoneCode;
-
-            List<SecurityPhoneCode> result = em.createNamedQuery("SecurityPhoneCode.accessibleOfPhone", SecurityPhoneCode.class)
-                    .setParameter("phone", code.phone)
-                    .getResultList();
-
-            if (result == null || result.size() == 0) {
-                phoneCode = new SecurityPhoneCode();
-                phoneCode.setPhone(code.phone);
-                phoneCode.setCode((10000 + (int)(Math.random() * (89999))));
-
-                em.persist(phoneCode);
-                em.flush();
-            } else {
-                phoneCode = result.get(0);
-            }
-
-            List<String> phones = new LinkedList<>();
-            phones.add(String.valueOf(code.phone));
-
-            return Response.ok(
-                    sms.sendSMS(
-                            String.valueOf(phoneCode.getCode()),
-                            phones
-                    )
-            ).build();
-        }
-        
-        return Response.status(Response.Status.BAD_REQUEST).build();
-    }
+//	@POST
+//    @Path("/phone/code")
+//    @Consumes(MediaType.APPLICATION_JSON)
+//    @Produces(MediaType.APPLICATION_JSON)
+//    @Transactional
+//    public Response code(GetCode code) throws Exception {
+//
+//        if (code.phone > 0){
+//
+//            SecurityPhoneCode phoneCode;
+//
+//            List<SecurityPhoneCode> result = em.createNamedQuery("SecurityPhoneCode.accessibleOfPhone", SecurityPhoneCode.class)
+//                    .setParameter("phone", code.phone)
+//                    .getResultList();
+//
+//            if (result == null || result.size() == 0) {
+//                phoneCode = new SecurityPhoneCode();
+//                phoneCode.setPhone(code.phone);
+//                phoneCode.setCode((10000 + (int)(Math.random() * (89999))));
+//
+//                em.persist(phoneCode);
+//                em.flush();
+//            } else {
+//                phoneCode = result.get(0);
+//            }
+//
+//            List<String> phones = new LinkedList<>();
+//            phones.add(String.valueOf(code.phone));
+//
+//            return Response.ok(
+//                    sms.sendSMS(
+//                            String.valueOf(phoneCode.getCode()),
+//                            phones
+//                    )
+//            ).build();
+//        }
+//        
+//        return Response.status(Response.Status.BAD_REQUEST).build();
+//    }
 
     @XmlRootElement
     @NoArgsConstructor
@@ -170,15 +161,15 @@ public class SecurityResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Transactional
-    public SecurityUser signup(Signup signup) throws Exception {
+    public User signup(Signup signup) throws Exception {
         
-        SecurityPhoneCode code = phones.findByPhoneAndCode(signup.phone, signup.code);
+//        SecurityPhoneCode code = phones.findByPhoneAndCode(signup.phone, signup.code);
+//
+//        if (code == null) {
+//            throw new WebApplicationException(Response.Status.BAD_REQUEST);
+//        }
 
-        if (code == null) {
-            throw new WebApplicationException(Response.Status.BAD_REQUEST);
-        }
-
-        SecurityUser u = new SecurityUser(); {
+        User u = new User(); {
             
             int random = security.randomInt();
             
@@ -186,13 +177,12 @@ public class SecurityResource {
             u.setPwdhash(security.hashPassword(random, signup.password));
             u.setRandom(random);
             u.setConfirmed(false);
-            u.setDate(Timestamp.valueOf(LocalDateTime.now()));
+            u.setRegistered(LocalDateTime.now());
             u.setPhone(String.valueOf(signup.phone));
-            u.setUserName(signup.name);
+            u.setName(signup.name);
             u.setSurname(signup.surname);
-            u.setMiddleName(signup.middleName);
-            u.setRole(Role.USER);
-            u.setResType(Aspect.EXTENDED);
+            u.setMiddlename(signup.middleName);
+            u.setRole(User.Role.USER);
             
             em.persist(u);
             em.flush();
@@ -208,8 +198,7 @@ public class SecurityResource {
         Cart c = new Cart(); {
             
             c.setUser(u);
-            c.setResType(Aspect.EXTENDED);
-            
+
             em.persist(c);
             em.flush();
             
@@ -271,7 +260,7 @@ public class SecurityResource {
         
         Token token = em.find(Token.class, st.id);
         
-        SecurityUser user = token != null && token.getToken() == st.getSignature()
+        User user = token != null && token.getToken() == st.getSignature()
             ? token.getUser()
             : null
         ;
@@ -285,10 +274,11 @@ public class SecurityResource {
 
         Validate.isTrue(!user.isLocked());
 
-        SecuritySession session = new SecuritySession();
-        session.setUser(user);
-        session.setSignature(security.randomInt());
-
+        Session session = new Session(); {
+            session.setUser(user);
+            session.setSignature(security.randomInt());
+        }
+        
         em.persist(session);
         em.flush();
         
@@ -313,7 +303,7 @@ public class SecurityResource {
     @Transactional
     public SignoutResponse doSignout(Signout signout) {
         
-        SecuritySession s = em.find(SecuritySession.class, session.getId());
+        Session s = em.find(Session.class, session.getId());
         em.remove(s);
         em.flush();
         
@@ -331,7 +321,7 @@ public class SecurityResource {
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
         }
 
-        SecurityUser user = users.findByEmail(signin.email);
+        User user = users.findByEmail(signin.email);
 
         if (user == null) {
             throw new WebApplicationException(Response.Status.UNAUTHORIZED);
@@ -343,7 +333,7 @@ public class SecurityResource {
             Validate.isTrue(!user.isLocked());
             Validate.isTrue(user.isConfirmed());
 
-            SecuritySession session = new SecuritySession();
+            Session session = new Session();
             session.setUser(user);
             session.setSignature(security.randomInt());
 
@@ -389,7 +379,7 @@ public class SecurityResource {
     public static class SigninResponse {
         
         @XmlElement
-        public SecurityUser user;
+        public User user;
         
         public String token;
     }
@@ -400,7 +390,7 @@ public class SecurityResource {
     public static class SignoutResponse {
         
         @XmlElement
-        public SecurityUser user;
+        public User user;
         
         public String token;
     }
@@ -411,7 +401,7 @@ public class SecurityResource {
     public static class CurrentResponse {
         
         @XmlElement
-        public SecurityUser user;
+        public User user;
     }
 
     @XmlRootElement

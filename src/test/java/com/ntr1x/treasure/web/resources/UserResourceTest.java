@@ -19,9 +19,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.ntr1x.treasure.web.App;
-import com.ntr1x.treasure.web.model.Aspect;
-import com.ntr1x.treasure.web.model.security.SecurityUser;
-import com.ntr1x.treasure.web.model.security.SecurityUser.Role;
+import com.ntr1x.treasure.web.model.User;
 import com.ntr1x.treasure.web.resources.UsersResource.CreateUser;
 import com.ntr1x.treasure.web.resources.UsersResource.UsersResponse;
 import com.ntr1x.treasure.web.services.IProfilerService;
@@ -57,8 +55,7 @@ public class UserResourceTest {
             
             CreateUser s = new CreateUser(); {
                 
-                s.role = Role.ADMIN;
-                s.type = Aspect.EXTENDED;
+                s.role = User.Role.ADMIN;
                 s.confirmed = true;
                 s.email = "admin@example.com";
                 s.password = "admin";
@@ -69,10 +66,10 @@ public class UserResourceTest {
                 s.confirmed = true;
             }
             
-            SecurityUser r = target
+            User r = target
               .path("/ws/users")
               .request(MediaType.APPLICATION_JSON_TYPE)
-              .post(Entity.entity(s, MediaType.APPLICATION_JSON_TYPE), SecurityUser.class)
+              .post(Entity.entity(s, MediaType.APPLICATION_JSON_TYPE), User.class)
             ;
             
             Assert.assertNotNull(r.getId());
@@ -88,11 +85,11 @@ public class UserResourceTest {
         profiler.withDisabledSecurity(() -> {
             
             {
-                SecurityUser r = target
+                User r = target
                     .path(String.format("/ws/users/i/%d", 1))
                     .queryParam("page", 0)
                     .request()
-                    .get(SecurityUser.class)
+                    .get(User.class)
                 ;
                   
                 Assert.assertEquals(Long.valueOf(1), r.getId());
@@ -125,7 +122,7 @@ public class UserResourceTest {
             {
                 UsersResponse r = target
                     .path("/ws/users")
-                    .queryParam("role", Role.ADMIN)
+                    .queryParam("role", User.Role.ADMIN)
                     .queryParam("page", 0)
                     .queryParam("size", 10)
                     .request()
@@ -141,7 +138,7 @@ public class UserResourceTest {
             {
                 UsersResponse r = target
                     .path("/ws/users")
-                    .queryParam("role", Role.DELIVERY)
+                    .queryParam("role", User.Role.DELIVERY)
                     .queryParam("page", 0)
                     .queryParam("size", 10)
                     .request()
@@ -162,11 +159,11 @@ public class UserResourceTest {
         profiler.withDisabledSecurity(() -> {
             
             {
-                SecurityUser r = target
+                User r = target
                     .path(String.format("/ws/users/i/%d", 1))
                     .queryParam("page", 0)
                     .request()
-                    .delete(SecurityUser.class)
+                    .delete(User.class)
                 ;
                   
                 Assert.assertEquals(Long.valueOf(1), r.getId());
