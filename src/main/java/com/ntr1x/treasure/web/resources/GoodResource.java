@@ -28,7 +28,7 @@ import com.ntr1x.treasure.web.model.Session;
 import com.ntr1x.treasure.web.reflection.ResourceUtils;
 import com.ntr1x.treasure.web.repository.GoodRepository;
 import com.ntr1x.treasure.web.services.ICategoryService;
-import com.ntr1x.treasure.web.services.IParamService;
+import com.ntr1x.treasure.web.services.IAttributeService;
 import com.ntr1x.treasure.web.services.ISecurityService;
 
 import io.swagger.annotations.Api;
@@ -47,7 +47,7 @@ public class GoodResource {
     private ISecurityService security;
     
     @Inject
-    private IParamService params;
+    private IAttributeService params;
     
 	@Inject
     private ICategoryService categories;
@@ -99,7 +99,7 @@ public class GoodResource {
 	    
 	    security.register(g, ResourceUtils.alias(null, "goods/i", g));
         
-        params.createParams(g, request.params);
+        params.createAttributes(g, request.params);
         categories.createCategories(g, request.categories);
         
         security.grant(session.getUser(), g.getAlias(), "admin");
@@ -119,7 +119,7 @@ public class GoodResource {
 	                
 	                security.register(m, ResourceUtils.alias(g, "modifications/i", g));
 	                
-	                params.createParams(m, modification.params);
+	                params.createAttributes(m, modification.params);
 	            }
 	        }
 	    }
@@ -158,7 +158,7 @@ public class GoodResource {
             em.merge(g);
             em.flush();
             
-            params.updateParams(g, request.params);
+            params.updateAttributes(g, request.params);
         }
         
         if (request.modifications != null) {
@@ -176,7 +176,7 @@ public class GoodResource {
                     
                     security.register(m, ResourceUtils.alias(g, "modifications/i", g));
                     
-                    params.updateParams(m, modification.params);
+                    params.updateAttributes(m, modification.params);
                 }
             }
         }
@@ -216,7 +216,7 @@ public class GoodResource {
         public String promo;
         
         @XmlElement
-        public IParamService.CreateParam[] params;
+        public IAttributeService.CreateAttribute[] params;
         
         @XmlElement
         public ICategoryService.CreateCategory[] categories;
@@ -232,7 +232,7 @@ public class GoodResource {
             public float sizeRange;
             
             @XmlElement
-            public IParamService.CreateParam[] params;
+            public IAttributeService.CreateAttribute[] params;
         }
 	}
 	
@@ -245,7 +245,7 @@ public class GoodResource {
         public String promo;
         
         @XmlElement
-        public IParamService.UpdateParam[] params;
+        public IAttributeService.UpdateAttribute[] params;
         
         @XmlElement
         public ICategoryService.CreateCategory[] categories;
@@ -262,7 +262,7 @@ public class GoodResource {
             public Action action;
             
             @XmlElement
-            public IParamService.UpdateParam[] params;
+            public IAttributeService.UpdateAttribute[] params;
         }
     }
 }

@@ -36,9 +36,9 @@ import com.ntr1x.treasure.web.model.User;
 import com.ntr1x.treasure.web.model.User.Role;
 import com.ntr1x.treasure.web.reflection.ResourceUtils;
 import com.ntr1x.treasure.web.repository.UserRepository;
-import com.ntr1x.treasure.web.services.IParamService;
-import com.ntr1x.treasure.web.services.IParamService.CreateParam;
-import com.ntr1x.treasure.web.services.IParamService.UpdateParam;
+import com.ntr1x.treasure.web.services.IAttributeService;
+import com.ntr1x.treasure.web.services.IAttributeService.CreateAttribute;
+import com.ntr1x.treasure.web.services.IAttributeService.UpdateAttribute;
 import com.ntr1x.treasure.web.services.ISecurityService;
 
 import io.swagger.annotations.Api;
@@ -60,7 +60,7 @@ public class UsersResource {
 	private UserRepository users;
 	
 	@Inject
-    private IParamService params;
+    private IAttributeService params;
 	
 //	@Inject
 //	private PaymentMethodRepository payments;
@@ -164,7 +164,7 @@ public class UsersResource {
             em.merge(u);
             em.flush();
             
-            params.createParams(u, user.params);
+            params.createAttributes(u, user.params);
             
             em.flush();
             
@@ -184,7 +184,7 @@ public class UsersResource {
                     em.merge(d);
                     em.flush();
                     
-                    params.createParams(d, place.params);
+                    params.createAttributes(d, place.params);
                     
                     em.flush();
                 }
@@ -206,7 +206,7 @@ public class UsersResource {
                     em.merge(m);
                     em.flush();
                     
-                    params.createParams(m, method.params);
+                    params.createAttributes(m, method.params);
                     
                     em.flush();
                 }
@@ -262,7 +262,7 @@ public class UsersResource {
         em.merge(u);
         em.flush();
         
-        params.updateParams(u, user.params);
+        params.updateAttributes(u, user.params);
         
         em.flush();
         
@@ -284,7 +284,7 @@ public class UsersResource {
                     em.merge(d);
                     em.flush();
                     
-                    params.createParams(d, Arrays.stream(place.params).map(p -> new CreateParam(p.attribute, p.value)).toArray(CreateParam[]::new));
+                    params.createAttributes(d, Arrays.stream(place.params).map(p -> new CreateAttribute(p.attribute, p.value)).toArray(CreateAttribute[]::new));
                     
                     em.flush();
                 }
@@ -292,7 +292,7 @@ public class UsersResource {
                     
                     Depot d = em.find(Depot.class, place.id);
                     
-                    params.updateParams(d, place.params);
+                    params.updateAttributes(d, place.params);
                     
                     em.flush();
                 }
@@ -324,7 +324,7 @@ public class UsersResource {
                     em.merge(m);
                     em.flush();
                     
-                    params.createParams(m, Arrays.stream(method.params).map(p -> new CreateParam(p.attribute, p.value)).toArray(CreateParam[]::new));
+                    params.createAttributes(m, Arrays.stream(method.params).map(p -> new CreateAttribute(p.attribute, p.value)).toArray(CreateAttribute[]::new));
                     
                     em.flush();
                 }
@@ -332,7 +332,7 @@ public class UsersResource {
                     
                     Method m = em.find(Method.class, method.id);
                     
-                    params.updateParams(m, method.params);
+                    params.updateAttributes(m, method.params);
                     
                     em.flush();
                 }
@@ -394,7 +394,7 @@ public class UsersResource {
         public boolean confirmed;
         
         @XmlElement
-        private CreateParam[] params;
+        private CreateAttribute[] params;
         
         @XmlElement
         private Place[] places;
@@ -407,7 +407,7 @@ public class UsersResource {
         public static class Place {
             
             @XmlElement
-            public CreateParam[] params;
+            public CreateAttribute[] params;
         }
         
         @NoArgsConstructor
@@ -415,7 +415,7 @@ public class UsersResource {
         public static class Method {
             
             @XmlElement
-            public CreateParam[] params;
+            public CreateAttribute[] params;
         }
     }
     
@@ -435,7 +435,7 @@ public class UsersResource {
         public boolean confirmed;
         
         @XmlElement
-        private UpdateParam[] params;
+        private UpdateAttribute[] params;
         
         @XmlElement
         private Place[] places;
@@ -451,7 +451,7 @@ public class UsersResource {
             public Action action;
             
             @XmlElement
-            public UpdateParam[] params;
+            public UpdateAttribute[] params;
         }
         
         @NoArgsConstructor
@@ -462,7 +462,7 @@ public class UsersResource {
             public Action action;
             
             @XmlElement
-            public UpdateParam[] params;
+            public UpdateAttribute[] params;
         }
     }
     

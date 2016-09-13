@@ -30,10 +30,10 @@ import lombok.Setter;
 @AllArgsConstructor
 @Entity
 @Table(name = "providers")
-@XmlRootElement
-@XmlAccessorType(XmlAccessType.FIELD)
 @PrimaryKeyJoinColumn(name = "ResourceId", referencedColumnName = "Id")
 @CascadeOnDelete
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Provider extends Resource {
 
 	@Column(name = "Title", nullable = false)

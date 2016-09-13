@@ -23,7 +23,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "core_comments")
+@Table(name = "subscriptions")
 public class Subscription {
 
 	@Id

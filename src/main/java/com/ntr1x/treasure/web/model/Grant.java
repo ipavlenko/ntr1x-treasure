@@ -18,6 +18,8 @@ import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 import lombok.Getter;
 import lombok.Setter;
 
+@Getter
+@Setter
 @Entity
 @Table(
 	name = "grants",
@@ -26,11 +28,9 @@ import lombok.Setter;
 	}
 )
 @PrimaryKeyJoinColumn(name = "ResourceId", referencedColumnName = "Id")
+@CascadeOnDelete
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-@CascadeOnDelete
-@Getter
-@Setter
 public class Grant extends Resource {
 	
 	@XmlElement

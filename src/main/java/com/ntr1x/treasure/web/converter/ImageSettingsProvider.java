@@ -21,7 +21,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
 
-import com.ntr1x.treasure.web.services.IImageService;
+import com.ntr1x.treasure.web.services.IScaleImageService;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -106,7 +106,7 @@ public class ImageSettingsProvider implements ParamConverterProvider {
             public String format;
             public Integer width;
             public Integer height;
-            public IImageService.Type type;
+            public IScaleImageService.Type type;
         }
     }
 }

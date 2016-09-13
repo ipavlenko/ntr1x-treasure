@@ -17,14 +17,14 @@ import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 import lombok.Getter;
 import lombok.Setter;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "likes")
 @PrimaryKeyJoinColumn(name = "ResourceId", referencedColumnName = "Id")
+@CascadeOnDelete
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-@CascadeOnDelete
-@Getter
-@Setter
 public class Like extends Resource {
 	
 	@XmlElement

@@ -35,10 +35,10 @@ import lombok.Setter;
 @AllArgsConstructor
 @Entity
 @Table(name = "purchases")
-@XmlRootElement
-@XmlAccessorType(XmlAccessType.FIELD)
 @PrimaryKeyJoinColumn(name = "ResourceId", referencedColumnName = "Id")
 @CascadeOnDelete
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Purchase extends Resource {
 
 	public enum Status {

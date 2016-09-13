@@ -1,6 +1,6 @@
 package com.ntr1x.treasure.web.model;
 
-public enum Aspect{
+public enum Aspect {
     
 	PURCHASE,
 	GOOD,

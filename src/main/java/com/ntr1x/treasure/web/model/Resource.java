@@ -81,29 +81,37 @@ public class Resource {
 	@ApiModelProperty(hidden = true)
     private List<Comment> comments;
 	
+//	@ResourceRelation
+//	@XmlElement
+//	@XmlInverseReference(mappedBy = "relate")
+//	@OneToMany(mappedBy = "relate")
+//	@CascadeOnDelete
+//	@ApiModelProperty(hidden = true)
+//    private List<Attachment> attachments;
+	
 	@ResourceRelation
 	@XmlElement
 	@XmlInverseReference(mappedBy = "relate")
 	@OneToMany(mappedBy = "relate")
 	@CascadeOnDelete
 	@ApiModelProperty(hidden = true)
-    private List<Attachment> attachments;
+    private List<ResourceCategory> categories;
 	
-//	@ResourceRelation
-//	@XmlElement
-//	@XmlInverseReference(mappedBy = "relate")
-//	@OneToMany(mappedBy = "relate")
-//	@CascadeOnDelete
-//	@ApiModelProperty(hidden = true)
-//    private List<ResourceCategory> categories;
-//	
-//	@ResourceRelation
-//	@XmlElement
-//	@XmlInverseReference(mappedBy = "relate")
-//	@OneToMany(mappedBy = "relate")
-//	@CascadeOnDelete
-//	@ApiModelProperty(hidden = true)
-//    private List<Category> subcategories;
+	@ResourceRelation
+    @XmlElement
+    @XmlInverseReference(mappedBy = "relate")
+    @OneToMany(mappedBy = "relate")
+    @CascadeOnDelete
+    @ApiModelProperty(hidden = true)
+    private List<ResourceImage> images;
+	
+	@ResourceRelation
+	@XmlElement
+	@XmlInverseReference(mappedBy = "relate")
+	@OneToMany(mappedBy = "relate")
+	@CascadeOnDelete
+	@ApiModelProperty(hidden = true)
+    private List<Category> subcategories;
 	
 	@ResourceRelation
 	@XmlElement

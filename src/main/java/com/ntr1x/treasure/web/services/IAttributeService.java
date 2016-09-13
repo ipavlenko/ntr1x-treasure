@@ -8,16 +8,16 @@ import com.ntr1x.treasure.web.model.Resource;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
-public interface IParamService {
+public interface IAttributeService {
 
-    void createParams(Resource resource, CreateParam[] params);
+    void createAttributes(Resource resource, CreateAttribute[] attributes);
 
-    void updateParams(Resource resource, UpdateParam[] params);
+    void updateAttributes(Resource resource, UpdateAttribute[] attributes);
     
     @XmlRootElement
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class CreateParam {
+    public static class CreateAttribute {
         
         public Long attribute;
         public String value;
@@ -26,7 +26,7 @@ public interface IParamService {
     @XmlRootElement
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class UpdateParam {
+    public static class UpdateAttribute {
         
         public Long id;
         public Long attribute;

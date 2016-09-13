@@ -39,7 +39,7 @@ import com.ntr1x.treasure.web.reflection.ResourceUtils;
 import com.ntr1x.treasure.web.repository.PurchaseRepository;
 import com.ntr1x.treasure.web.services.IAttachmentService;
 import com.ntr1x.treasure.web.services.IOrderService;
-import com.ntr1x.treasure.web.services.IParamService;
+import com.ntr1x.treasure.web.services.IAttributeService;
 import com.ntr1x.treasure.web.services.ISecurityService;
 import com.ntr1x.treasure.web.services.IOrderService.OrdersResponse;
 
@@ -67,7 +67,7 @@ public class PurchaseResource {
 	private PurchaseRepository purchases;
 	
 	@Inject
-    private IParamService paramService;
+    private IAttributeService paramService;
 	
 	@Inject
     private IAttachmentService attachmentService;
@@ -154,7 +154,7 @@ public class PurchaseResource {
         security.register(purchase, ResourceUtils.alias(null, "purchases/i", purchase));
         security.grant(session.getUser(), purchase.getAlias(), "admin");
         
-        paramService.createParams(purchase, create.params);
+        paramService.createAttributes(purchase, create.params);
         attachmentService.createAttachments(purchase, create.attachments);
         
         return purchase;
@@ -185,7 +185,7 @@ public class PurchaseResource {
             em.flush();
         }
         
-        paramService.updateParams(purchase, update.params);
+        paramService.updateAttributes(purchase, update.params);
         attachmentService.updateAttachments(purchase, update.attachments);
         
         return purchase;
@@ -296,7 +296,7 @@ public class PurchaseResource {
         private LocalDate nextDelivery;
         
         @XmlElement
-        public IParamService.CreateParam[] params;
+        public IAttributeService.CreateAttribute[] params;
         
         @XmlElement
         public IAttachmentService.CreateAttachment[] attachments;
@@ -328,7 +328,7 @@ public class PurchaseResource {
         private LocalDate nextDelivery;
         
         @XmlElement
-        public IParamService.UpdateParam[] params;
+        public IAttributeService.UpdateAttribute[] params;
         
         @XmlElement
         public IAttachmentService.UpdateAttachment[] attachments;

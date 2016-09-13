@@ -11,18 +11,24 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.eclipse.persistence.annotations.CascadeOnDelete;
 import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "tags")
 @PrimaryKeyJoinColumn(name = "ResourceId", referencedColumnName = "Id")
+@CascadeOnDelete
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-@Getter
-@Setter
 public class Tag extends Resource {
 	
 	@XmlElement

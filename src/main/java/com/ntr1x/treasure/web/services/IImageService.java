@@ -1,19 +1,34 @@
 package com.ntr1x.treasure.web.services;
 
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.InputStream;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import com.ntr1x.treasure.web.model.Action;
+import com.ntr1x.treasure.web.model.Resource;
+
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 public interface IImageService {
-    
-    public static enum Type {
-        COVER,
-        CONTAIN,
-        SCALE,
-        
-        ;
-    }
 
-    BufferedImage scale(BufferedImage source, Type type, int width, int height) throws IOException;
-    InputStream stream(BufferedImage src) throws IOException;
+    void createImages(Resource resource, CreateImage[] images);
+
+    void updateImages(Resource resource, UpdateImage[] images);
+    
+    @XmlRootElement
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class CreateImage {
+        
+        public Long image;
+    }
+    
+    @XmlRootElement
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class UpdateImage {
+        
+        public Long id;
+        public Long image;
+        public Action action;
+    }
 }

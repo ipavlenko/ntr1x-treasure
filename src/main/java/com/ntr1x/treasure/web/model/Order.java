@@ -12,7 +12,10 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.eclipse.persistence.annotations.CascadeOnDelete;
@@ -32,7 +35,10 @@ import lombok.Setter;
 @AllArgsConstructor
 @Entity
 @Table(name = "orders")
-@PrimaryKeyJoinColumn(name="ResourceId", referencedColumnName="Id")
+@PrimaryKeyJoinColumn(name = "ResourceId", referencedColumnName = "Id")
+@CascadeOnDelete
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Order extends Resource {
 
 	public enum Status {

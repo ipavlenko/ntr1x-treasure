@@ -2,9 +2,6 @@ package com.ntr1x.treasure.web.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
@@ -34,20 +31,18 @@ public class CartEntry extends Resource {
 		COMPARE
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@ManyToOne
 	@JoinColumn(name = "CartId", nullable = false, updatable = true)
 	@XmlElement
-	@XmlInverseReference(mappedBy="entries")
+    @XmlInverseReference(mappedBy = "entries")
 	private Cart cart;
 
-	@ManyToOne(fetch = FetchType.EAGER, optional = false)
-	@JoinColumn(name = "GoodId", nullable = false, updatable = true)
+	@ManyToOne
+	@JoinColumn(name = "ModificationId", nullable = false, updatable = true)
 	@XmlElement
-//	@XmlInverseReference(mappedBy="cartEntries")
 	private Modification modification;
 
 	@Column(name = "Type", nullable = false)
-	@Enumerated(EnumType.STRING)
 	private Type type;
 
 	@Column(name = "Quantity", nullable = false)

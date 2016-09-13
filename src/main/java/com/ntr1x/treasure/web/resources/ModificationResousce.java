@@ -30,7 +30,7 @@ import com.ntr1x.treasure.web.model.Modification;
 import com.ntr1x.treasure.web.model.Session;
 import com.ntr1x.treasure.web.reflection.ResourceUtils;
 import com.ntr1x.treasure.web.repository.ModificationRepository;
-import com.ntr1x.treasure.web.services.IParamService;
+import com.ntr1x.treasure.web.services.IAttributeService;
 import com.ntr1x.treasure.web.services.ISecurityService;
 
 import io.swagger.annotations.Api;
@@ -51,7 +51,7 @@ public class ModificationResousce {
     private ModificationRepository modifications;
     
     @Inject
-    private IParamService params;
+    private IAttributeService params;
     
     @Inject
     private ISecurityService security;
@@ -111,7 +111,7 @@ public class ModificationResousce {
         security.register(modification, ResourceUtils.alias(null, "modifications/i", modification));
         security.grant(session.getUser(), modification.getAlias(), "admin");
         
-        params.createParams(modification, create.params);
+        params.createAttributes(modification, create.params);
         
         return modification;
     }
@@ -134,7 +134,7 @@ public class ModificationResousce {
             em.flush();
         }
         
-        params.updateParams(modification, update.params);
+        params.updateAttributes(modification, update.params);
         
         return modification;
     }
@@ -165,7 +165,7 @@ public class ModificationResousce {
         public float sizeRange;
         
         @XmlElement
-        public IParamService.CreateParam[] params;
+        public IAttributeService.CreateAttribute[] params;
     }
     
     @XmlRootElement
@@ -178,7 +178,7 @@ public class ModificationResousce {
         public float sizeRange;
         
         @XmlElement
-        public IParamService.UpdateParam[] params;
+        public IAttributeService.UpdateAttribute[] params;
     }
     
     @XmlRootElement

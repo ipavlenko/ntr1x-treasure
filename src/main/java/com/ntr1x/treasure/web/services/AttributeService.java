@@ -10,17 +10,17 @@ import com.ntr1x.treasure.web.model.Resource;
 import com.ntr1x.treasure.web.model.ResourceAttribute;
 
 @Service
-public class ParamService implements IParamService {
+public class AttributeService implements IAttributeService {
 
     @Inject
     private EntityManager em;
     
     @Override
-    public void createParams(Resource resource, CreateParam[] params) {
+    public void createAttributes(Resource resource, CreateAttribute[] attributes) {
         
-        if (params != null) {
+        if (attributes != null) {
             
-            for (CreateParam p : params) {
+            for (CreateAttribute p : attributes) {
                 
                 ResourceAttribute v = new ResourceAttribute(); {
                     
@@ -39,11 +39,11 @@ public class ParamService implements IParamService {
     }
     
     @Override
-    public void updateParams(Resource resource, UpdateParam[] params) {
+    public void updateAttributes(Resource resource, UpdateAttribute[] attributes) {
         
-        if (params != null) {
+        if (attributes != null) {
             
-            for (UpdateParam p : params) {
+            for (UpdateAttribute p : attributes) {
                 
                 switch (p.action) {
                 
@@ -76,7 +76,6 @@ public class ParamService implements IParamService {
                         
                         ResourceAttribute v = em.find(ResourceAttribute.class, p.id); {
                             
-                            v.setValue(p.value);
                             em.remove(v);
                         }
                         break;

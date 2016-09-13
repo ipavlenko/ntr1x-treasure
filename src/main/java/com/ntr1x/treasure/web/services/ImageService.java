@@ -1,90 +1,80 @@
 package com.ntr1x.treasure.web.services;
 
-import java.awt.Dimension;
-import java.awt.Image;
-import java.awt.Rectangle;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-
-import javax.imageio.ImageIO;
+import javax.inject.Inject;
+import javax.persistence.EntityManager;
 
 import org.springframework.stereotype.Service;
 
+import com.ntr1x.treasure.web.model.Image;
+import com.ntr1x.treasure.web.model.Resource;
+import com.ntr1x.treasure.web.model.ResourceImage;
+
 @Service
 public class ImageService implements IImageService {
-
+    
+    @Inject
+    private EntityManager em;
+    
     @Override
-    public InputStream stream(BufferedImage src) throws IOException {
+    public void createImages(Resource resource, CreateImage[] images) {
         
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
-        ImageIO.write(src, "png", os);
-        return new ByteArrayInputStream(os.toByteArray());
+        if (images != null) {
+            
+            for (CreateImage p : images) {
+                
+                ResourceImage v = new ResourceImage(); {
+                    
+                    Image e = em.find(Image.class, p.image);
+                    
+                    v.setRelate(resource);
+                    v.setImage(e);
+                    
+                    em.persist(v);
+                }
+            }
+            
+            em.flush();
+        }
     }
     
     @Override
-    public BufferedImage scale(BufferedImage source, Type type, int width, int height) throws IOException {
+    public void updateImages(Resource resource, UpdateImage[] images) {
         
-        Rectangle bounds = bounds(
-            type,
-            new Dimension(source.getWidth(), source.getHeight()),
-            new Dimension(width, height)
-        );
-        
-        Image scaled = source.getScaledInstance(
-            bounds.width,
-            bounds.height,
-            Image.SCALE_SMOOTH
-        );
-
-        BufferedImage target = new BufferedImage(
-            scaled.getWidth(null),
-            scaled.getHeight(null),
-            BufferedImage.SCALE_DEFAULT
-        );
-
-        target.getGraphics().drawImage(scaled, bounds.x, bounds.y, bounds.width, bounds.height, null);
-        
-        return target;
-    }
-    
-    private Rectangle bounds(Type type, Dimension source, Dimension target) {
-        
-        if (target.width < 0 && target.height < 0)
-            return new Rectangle(0, 0, source.width, source.height); 
-        if (target.width < 0)
-            return new Rectangle(0, 0, -1, target.width);
-        if (target.height < 0)
-            return new Rectangle(0, 0, target.height, -1);
-        
-        switch (type) {
-        
-            case CONTAIN: {
+        if (images != null) {
+            
+            for (UpdateImage p : images) {
                 
-                float kw = target.width / (float) source.width;
-                float kh = target.height / (float) source.width;
+                switch (p.action) {
                 
-                return kw < kh
-                    ? new Rectangle(0, (int) ((target.height - kw * source.height) / 2.f), target.width, (int) (kw * target.height))
-                    : new Rectangle((int) ((target.width - kh * source.width) / 2.f), 0, (int) (kh * target.width), target.height)
-                ;
+                    case CREATE: {
+                        
+                        ResourceImage v = new ResourceImage(); {
+                            
+                            Image e = em.find(Image.class, p.image);
+                            
+                            v.setRelate(resource);
+                            v.setImage(e);
+                            
+                            em.persist(v);
+                        }
+                        break;
+                    }
+                    case UPDATE: {
+                        // ignore
+                        break;
+                    }
+                    case REMOVE: {
+                        
+                        ResourceImage v = em.find(ResourceImage.class, p.id);
+                        em.remove(v);
+                        break;
+                    }
+                default:
+                    break;
+                }
             }
-            case COVER: {
-                
-                float kw = target.width / (float) source.width;
-                float kh = target.height / (float) source.width;
-                
-                return kw > kh
-                    ? new Rectangle(0, (int) ((target.height - kw * source.height) / 2.f), target.width, (int) (kw * target.height))
-                    : new Rectangle((int) ((target.width - kh * source.width) / 2.f), 0, (int) (kh * target.width), target.height)
-                ;
-            }
-            case SCALE:
-            default: {
-                return new Rectangle(0, 0, target.width, target.height);
-            }
+            
+            em.flush();
         }
     }
 }

@@ -144,5 +144,13 @@ public class User extends Resource {
     @OneToMany(mappedBy = "user", cascade = { CascadeType.REMOVE })
     @CascadeOnDelete
     @ApiModelProperty(hidden = true)
+    private List<Token> tokens;
+	
+	@ResourceRelation
+    @XmlElement
+    @XmlInverseReference(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = { CascadeType.REMOVE })
+    @CascadeOnDelete
+    @ApiModelProperty(hidden = true)
     private List<Grant> grants;
 }

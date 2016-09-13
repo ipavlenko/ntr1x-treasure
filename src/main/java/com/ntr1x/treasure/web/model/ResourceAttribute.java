@@ -29,10 +29,10 @@ import lombok.Setter;
 @AllArgsConstructor
 @Entity
 @Table(name = "resources_attributes")
+@PrimaryKeyJoinColumn(name = "ResourceId", referencedColumnName = "Id")
+@CascadeOnDelete
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-@PrimaryKeyJoinColumn(name="ResourceId", referencedColumnName="Id")
-@CascadeOnDelete
 public class ResourceAttribute extends Resource {
 
     @Id

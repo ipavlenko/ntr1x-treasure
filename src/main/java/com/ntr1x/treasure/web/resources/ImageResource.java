@@ -38,7 +38,7 @@ import com.ntr1x.treasure.web.model.Session;
 import com.ntr1x.treasure.web.reflection.ResourceUtils;
 import com.ntr1x.treasure.web.repository.UploadRepository;
 import com.ntr1x.treasure.web.services.IFileService;
-import com.ntr1x.treasure.web.services.IImageService;
+import com.ntr1x.treasure.web.services.IScaleImageService;
 import com.ntr1x.treasure.web.services.ISecurityService;
 
 import io.swagger.annotations.Api;
@@ -54,7 +54,7 @@ public class ImageResource {
     private IFileService files;
 
     @Inject
-    private IImageService images;
+    private IScaleImageService images;
     
     @Inject
     private ISecurityService security;

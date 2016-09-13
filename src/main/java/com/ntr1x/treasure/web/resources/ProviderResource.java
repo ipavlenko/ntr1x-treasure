@@ -31,7 +31,7 @@ import com.ntr1x.treasure.web.model.Provider;
 import com.ntr1x.treasure.web.model.Session;
 import com.ntr1x.treasure.web.reflection.ResourceUtils;
 import com.ntr1x.treasure.web.repository.ProviderRepository;
-import com.ntr1x.treasure.web.services.IParamService;
+import com.ntr1x.treasure.web.services.IAttributeService;
 import com.ntr1x.treasure.web.services.ISecurityService;
 
 import io.swagger.annotations.Api;
@@ -52,7 +52,7 @@ public class ProviderResource {
     private ProviderRepository providers;
     
     @Inject
-    private IParamService params;
+    private IAttributeService params;
     
     @Inject
     private ISecurityService security;
@@ -110,7 +110,7 @@ public class ProviderResource {
         security.register(provider, ResourceUtils.alias(null, "providers/i", provider));
         security.grant(session.getUser(), provider.getAlias(), "admin");
         
-        params.createParams(provider, create.params);
+        params.createAttributes(provider, create.params);
         
         return provider;
     }
@@ -133,7 +133,7 @@ public class ProviderResource {
             em.flush();
         }
         
-        params.updateParams(provider, update.params);
+        params.updateAttributes(provider, update.params);
         
         return provider;
     }
@@ -167,7 +167,7 @@ public class ProviderResource {
         public String description;
         
         @XmlElement
-        public IParamService.CreateParam[] params;
+        public IAttributeService.CreateAttribute[] params;
     }
     
     @XmlRootElement
@@ -180,7 +180,7 @@ public class ProviderResource {
         public String description;
         
         @XmlElement
-        public IParamService.UpdateParam[] params;
+        public IAttributeService.UpdateAttribute[] params;
     }
     
     @XmlRootElement
