@@ -36,10 +36,10 @@ public class OrderEntry extends Resource {
 	@XmlElement
 	private Modification modification;
 
-	@Column(name = "Quantity", nullable = false)
-	private Float quantity;
+	@Column(name = "Quantity")
+	private float quantity;
 
-	@Column(name = "Confirmed", nullable = false)
+	@Column(name = "Confirmed")
 	private boolean confirmed;
 
 //	private static final Collator COLLATOR = Collator.getInstance();

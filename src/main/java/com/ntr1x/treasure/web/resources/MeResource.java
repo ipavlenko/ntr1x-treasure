@@ -9,7 +9,6 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
@@ -27,6 +26,8 @@ import com.ntr1x.treasure.web.model.Purchase;
 import com.ntr1x.treasure.web.model.Session;
 import com.ntr1x.treasure.web.repository.OrderRepository;
 import com.ntr1x.treasure.web.repository.PurchaseRepository;
+import com.ntr1x.treasure.web.services.IOrderService;
+import com.ntr1x.treasure.web.services.IOrderService.OrdersResponse;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
@@ -48,6 +49,9 @@ public class MeResource {
     @Inject
     private OrderRepository orders;
     
+    @Inject
+    private IOrderService orderService;
+    
     @GET
     @Path("/cart")
     @Produces(MediaType.APPLICATION_JSON)
@@ -57,7 +61,36 @@ public class MeResource {
         return session.getUser().getCart();
     }
     
-    @POST
+    @GET
+    @Path("/orders")
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({ "auth" })
+    @Transactional
+    public OrdersResponse orders(
+        @QueryParam("page") @ApiParam(example = "0") int page,
+        @QueryParam("size") @ApiParam(example = "10") int size,
+        @QueryParam("purchase") Long purchase,
+        @QueryParam("status") Order.Status status
+    ) {
+        return orderService.select(page, size, status, session.getUser().getId(), purchase);
+    }
+    
+//    @POST
+//    @Path("/orders/i/{id}/status")
+//    @Produces(MediaType.APPLICATION_JSON)
+//    @RolesAllowed({ "auth" })
+//    @Transactional
+//    public OrdersResponse ordersUpdateStatus(
+//        @QueryParam("page") @ApiParam(example = "0") int page,
+//        @QueryParam("size") @ApiParam(example = "10") int size,
+//        @QueryParam("purchase") Long purchase,
+//        @QueryParam("status") Order.Status status
+//    ) {
+//        return orderService.select(page, size, status, session.getUser().getId(), purchase);
+//    }
+    
+    @GET
+    @Path("/purchases")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({ "auth" })
@@ -66,7 +99,7 @@ public class MeResource {
         @QueryParam("page") @ApiParam(example = "0") int page,
         @QueryParam("size") @ApiParam(example = "10") int size,
         @QueryParam("status") Purchase.Status status
-    ){      
+    ) {
                         
         Page<Purchase> result = status == null
             ? purchases.findByUserId(session.getUser().getId(), new PageRequest(page, size))
@@ -79,7 +112,7 @@ public class MeResource {
             
             PurchasesResponse.Details details = new PurchasesResponse.Details(); {
                 
-                details.orders = orders.findByPurchaseId(p.getId());
+                details.orders = orders.findByStatusAndUserIdAndPurchaseId(null, null, p.getId(), null).getContent();
                 details.purchase = p;
             }
 

@@ -1,7 +1,7 @@
 package com.ntr1x.treasure.web.repository;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -11,11 +11,18 @@ import com.ntr1x.treasure.web.model.Order;
 public interface OrderRepository extends JpaRepository<Order, Long> {
 
     @Query(
-          " SELECT DISTINCT o"
-        + " FROM OrderEntity o"
-        + " INNER JOIN o.entries e "
-        + " INNER JOIN e.good.purchase p"
-        + " WHERE p.id = :purchase"
+        " SELECT o"
+      + " FROM Order o"
+      + " INNER JOIN o.purchase p"
+      + " INNER JOIN o.user u"
+      + " WHERE (:purchase IS NULL OR p.id = :purchase)"
+      + "   AND (:user IS NULL OR u.id = :user)"
+      + "   AND (:status IS NULL OR o.status = :status)"
     )
-    List<Order> findByPurchaseId(@Param("purchase") Long purchase);
+    Page<Order> findByStatusAndUserIdAndPurchaseId(
+        @Param("status") Order.Status status,
+        @Param("user") Long user,
+        @Param("purchase") Long purchase,
+        Pageable pageable
+    );
 }

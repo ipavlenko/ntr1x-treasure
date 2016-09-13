@@ -1,5 +1,6 @@
 package com.ntr1x.treasure.web.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -30,9 +31,12 @@ import lombok.Setter;
 @CascadeOnDelete
 public class Depot extends Resource {
 
-	@ManyToOne()
+	@ManyToOne
 	@JoinColumn(name = "UserId", nullable = false)
 	@XmlElement
     @XmlInverseReference(mappedBy = "depots")
 	private User user;
+	
+	@Column(name = "DeliveryPrice")
+	private float deliveryPrice;
 }

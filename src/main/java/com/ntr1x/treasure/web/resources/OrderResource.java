@@ -1,295 +1,70 @@
 package com.ntr1x.treasure.web.resources;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.time.LocalDateTime;
 
+import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 import javax.transaction.Transactional;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.springframework.stereotype.Component;
 
-import com.ntr1x.treasure.web.model.Attribute;
-import com.ntr1x.treasure.web.model.Good;
 import com.ntr1x.treasure.web.model.Order;
 import com.ntr1x.treasure.web.model.OrderEntry;
-import com.ntr1x.treasure.web.model.Purchase;
-import com.ntr1x.treasure.web.model.attributes.AttributeValue;
-import com.ntr1x.treasure.web.model.security.SecuritySession;
-import com.ntr1x.treasure.web.model.security.SecurityUser;
+import com.ntr1x.treasure.web.services.IOrderService;
+import com.ntr1x.treasure.web.services.IOrderService.OrdersResponse;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiParam;
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @Api("Orders")
 @Component
-@Path("/ws/order")
+@Path("orders")
 public class OrderResource {
+
+    @PersistenceContext
+    private EntityManager em;
+    
+//    @Inject
+//	private Session session;
+
+	@Inject
+	private IOrderService orderService;
 	
-    @Inject
-	private SecuritySession session;
-
-	@PersistenceContext
-	private EntityManager em;
-
-	@Data
-	@NoArgsConstructor
-	@AllArgsConstructor
-	@XmlRootElement
-	@XmlAccessorType(XmlAccessType.FIELD)
-	public static class OrdersRequest {
-		private int offset;
-		private int limit;
-		private long pid;
-		private String status;
-	}
-
-	@NoArgsConstructor
-	@AllArgsConstructor
-	@XmlRootElement
-	private static class ConfirmOrderEntryRequest{
-		public long id;
-	}
-
-//	@Data
-	@NoArgsConstructor
-	@AllArgsConstructor
-	@XmlRootElement
-//	@XmlAccessorType(XmlAccessType.FIELD)
-	private static class GoodEntrValueList implements Serializable {
-		public Good good;
-		public List<EntrValueList> entries;
-		public float total;
-		public float totalOrders;
-	}
-
-	@NoArgsConstructor
-	@AllArgsConstructor
-	@XmlRootElement
-	private static class SyntheticOrderEntryEntity{
-		public long id;
-		public Good good;
-		public Float quantity;
-		public boolean confirmed;
-		public SecurityUser user;
-	}
-
-	@Data
-	@NoArgsConstructor
-	@AllArgsConstructor
-	@XmlRootElement
-	@XmlAccessorType(XmlAccessType.FIELD)
-	public static class EntrValueList implements Serializable {
-		private static final long serialVersionUID = 8826219591253863648L;
-		private AttributeValue attribute;
-		private List<EntrValueListInner> entries;
-	}
-
-	@NoArgsConstructor
-	@AllArgsConstructor
-	@XmlRootElement
-	public static class EntrValueListInner {
-		public AttributeValue attribute;
-		public List<SyntheticOrderEntryEntity> entries;
-	}
-
-	@Data
-	@NoArgsConstructor
-	@AllArgsConstructor
-	@XmlRootElement
-	@XmlAccessorType(XmlAccessType.FIELD)
-	public static class UpdateRequest {
-		private long orderId;
-		private Order.Status status;
-	}
-
-	@Data
-	@NoArgsConstructor
-	@AllArgsConstructor
-	@XmlRootElement
-	@XmlAccessorType(XmlAccessType.FIELD)
-	public static class UpdateOrderEntryRequest {
-		private OrderEntry entry;
-	}
-
-	@Data
-	@NoArgsConstructor
-	@AllArgsConstructor
-	@XmlRootElement
-	@XmlAccessorType(XmlAccessType.FIELD)
-	private static class OrderStat implements Serializable {
-		private Order order;
-		private float total;
-		private float deliveryPrice;
-		private float totalToPay;
-	}
-
-	@Data
-	@NoArgsConstructor
-	@AllArgsConstructor
-	@XmlRootElement
-	@XmlAccessorType(XmlAccessType.FIELD)
-	public static class OrdersResponse {
-		private long count;
-		private int offset;
-		private int limit;
-		private List<OrderStat> orders;
-	}
-
-	@Data
-	@NoArgsConstructor
-	@AllArgsConstructor
-	@XmlRootElement
-	@XmlAccessorType(XmlAccessType.FIELD)
-	public static class BillsResponse {
-		private List<GoodEntrValueList> entries;
-	}
-
-	/**
-	 * Возвращает заказы для текущего покупателя
-	 * @param req параметры запроса
-	 * @return
-	 */
-	@POST
-	@Path("/items")
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	@Transactional
-	public Response items(OrdersRequest req) {
-
-		try {
-			if (session != null){
-
-				int count = em.createNamedQuery("OrderEntity.accessibleUserIdAndStatus", Order.class)				//TODO
-						.setParameter("id", session.getUser().getId())
-						.setParameter("status", req.getStatus() != null ? Order.Status.valueOf(req.getStatus()) : null)
-						.getResultList().size();
-
-				List<Order> orders = em.createNamedQuery("OrderEntity.accessibleUserIdAndStatus", Order.class)
-						.setParameter("id", session.getUser().getId())
-						.setParameter("status", req.getStatus() != null ? Order.Status.valueOf(req.getStatus()) : null)
-						.setMaxResults(req.getLimit())
-						.setFirstResult(req.getOffset())
-						.getResultList();
-
-				List<OrderStat> ordersStats = new ArrayList<>();
-
-				for (Order o : orders){
-
-					OrderStat stat = new OrderStat();
-					stat.setOrder(o);
-
-					for (OrderEntry entry : o.getEntries()){
-						stat.setTotal(stat.getTotal() + entry.getQuantity() * entry.getGood().getPrice());
-					}
-
-					stat.setDeliveryPrice(Float.parseFloat(o.getDPlace().getAttributes().stream().filter(a -> a.getAttribute().getName().equals("deliveryPrice")).findFirst().get().getValue()));
-					stat.setTotalToPay(stat.getTotal() + stat.getDeliveryPrice());		//TODO стоимость доставки
-
-//					o.getEntries().get
-
-					ordersStats.add(stat);
-				}
-
-//			return Response.ok(new GenericEntity<List<OrderEntity>>(orders) {}).build();
-				return Response.ok(
-						new OrdersResponse(
-								count,
-								req.getOffset(),
-								req.getLimit(),
-								ordersStats
-						)
-				).build();
-			}
-			return Response.status(Response.Status.UNAUTHORIZED).build();
-		} catch (Exception e){
-			throw e;
-		}
-	}
-
-	/**
-	 * Возвращает заказы для текущего селлера и показ в зависимости от статуса
-	 * @param req параметры запроса
-	 * @return
-	 */
-	@POST
-	@Path("/seller/items")
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	@Transactional
-	public Response sellerItems(OrdersRequest req) {
-
-		if (session != null){
-
-			SecurityUser user = session.getUser();
-			if (user.getRole() == SecurityUser.Role.SELLER){
-
-				int count = em.createNamedQuery("OrderEntity.accessibleSellerIdAndPurchaseIdAndStatus", Order.class)				//TODO
-						.setParameter("id", session.getUser().getId())
-						.setParameter("pid", req.getPid())
-						.setParameter("status", req.getStatus() != null ? Order.Status.valueOf(req.getStatus()) : null)
-						.getResultList().size();
-
-				List<Order> orders = em.createNamedQuery("OrderEntity.accessibleSellerIdAndPurchaseIdAndStatus", Order.class)
-						.setParameter("id", session.getUser().getId())
-						.setParameter("pid", req.getPid())
-						.setParameter("status", req.getStatus() != null ? Order.Status.valueOf(req.getStatus()) : null)
-						.setMaxResults(req.getLimit())
-						.setFirstResult(req.getOffset())
-						.getResultList();
-
-				List<OrderStat> ordersStats = new ArrayList<>();
-
-				for (Order o : orders){
-
-					OrderStat stat = new OrderStat();
-					stat.setOrder(o);
-
-					for (OrderEntry entry : o.getEntries()){
-						stat.setTotal(stat.getTotal() + entry.getQuantity() * entry.getGood().getPrice());
-					}
-
-					stat.setDeliveryPrice(Float.parseFloat(o.getDPlace().getAttributes().stream().filter(a -> a.getAttribute().getName().equals("deliveryPrice")).findFirst().get().getValue()));
-					stat.setTotalToPay(stat.getTotal() + stat.getDeliveryPrice());		//TODO стоимость доставки
-
-					ordersStats.add(stat);
-				}
-
-				return Response.ok(
-						new OrdersResponse(
-								count,
-								req.getOffset(),
-								req.getLimit(),
-								ordersStats
-						)
-				).build();
-			}
-			return Response.status(Response.Status.UNAUTHORIZED).build();
-		}
-		return Response.status(Response.Status.UNAUTHORIZED).build();
-	}
+	@GET
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+	@RolesAllowed({
+	    "res:///orders:admin",
+	    "res:///purchases/i/{id}:admin",
+	})
+    @Transactional
+    public OrdersResponse orders(
+        @QueryParam("page") @ApiParam(example = "0") int page,
+        @QueryParam("size") @ApiParam(example = "10") int size,
+        @QueryParam("user") Long user,
+        @QueryParam("purchase") Long purchase,
+        @QueryParam("status") Order.Status status
+    ) {
+	    
+	    return orderService.select(page, size, status, user, purchase);
+    }
 
 	/**
 	 * Возвращает ведомости по товарам (Заказы, сгруппированные по товарам)
@@ -302,7 +77,7 @@ public class OrderResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Transactional
 	// TODO: Исправить, запрос некорректно используется
-	public Response sellerBills(OrdersRequest req) {
+	public Response sellerBills(/*OrdersRequest req*/) {
 
 	    throw new IllegalStateException("Implemented with error");
 	    
@@ -409,271 +184,93 @@ public class OrderResource {
 //		}
 	}
 
-	@POST
-	@Path("/seller/bills/entry/confirm")
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	@Transactional
-	//	@RolesAllowed("user")
-	public Response confirmOrderEntry(ConfirmOrderEntryRequest req) {
-		if (session != null){
-
-			SecurityUser user = session.getUser();
-			OrderEntry entry = em.find(OrderEntry.class, req.id);
-
-			if (user.getRole() == SecurityUser.Role.SELLER && user.getId() == entry.getOrder().getSeller().getId()){
-
-				entry.setConfirmed(true);
-
-				boolean allConfirmed = true;
-				for (OrderEntry entr : entry.getOrder().getEntries()){
-					if (!entr.isConfirmed()){
-						allConfirmed = false;
-						break;
-					}
-				}
-
-				em.merge(entry);
-
-				if (allConfirmed){
-					entry.getOrder().setStatus(Order.Status.REQUIRES_PAYMENT);
-					em.merge(entry.getOrder());
-				}
-
-				em.flush();
-			}
-			return Response.status(Response.Status.UNAUTHORIZED).build();
-		}
-		return Response.status(Response.Status.UNAUTHORIZED).build();
-	}
-
 	@DELETE
-	@Path("/seller/bills/entry/{id}")
+	@Path("/i/{id}/entries/i/{entry}")
 	@Produces(MediaType.APPLICATION_JSON)
+	@RolesAllowed({ "res:///orders/i/{id}:admin" })
 	@Transactional
-	public Response deleteOrderEntry(
-			@PathParam("id") long id
-	) {
-		if (session != null){
-			SecurityUser user = session.getUser();
-			OrderEntry entry = em.find(OrderEntry.class, id);
-			Order order = entry.getOrder();
-
-			if (order.getStatus() == Order.Status.NEW){
-				if (user.getRole() == SecurityUser.Role.SELLER && user.getId() == entry.getOrder().getSeller().getId()){
-
-					//TODO отправить автосообщение, привязанное к Order, о том, что продавец удалил товар
-
-					// если в заказе был только этот Entry, то отменяем заказ
-					if (order.getEntries().size() == 1){
-						order.setStatus(Order.Status.CANCELED);
-						em.merge(order);
-					}
-
-					em.remove(entry);
-					em.flush();
-
-					return Response.ok().build();
-				}
-				return Response.status(Response.Status.UNAUTHORIZED).build();
-			}
-			return Response.status(Response.Status.BAD_REQUEST).build();
+	public OrderEntry entriesRemove(@PathParam("id") long id, @PathParam("entry") long entry) {
+	    
+	    OrderEntry e = em.find(OrderEntry.class, entry);
+		Order o = em.find(Order.class, id);
+		
+		if (e.getOrder().getId() != o.getId()) {
+		    throw new WebApplicationException("Entry belongs to another order", Response.Status.CONFLICT);
 		}
-		return Response.status(Response.Status.UNAUTHORIZED).build();
+		
+		if (o.getStatus() != Order.Status.NEW) {
+		    throw new WebApplicationException("Order status doesn't allow modification", Response.Status.CONFLICT);
+		}
+		
+		em.remove(entry);
+        em.flush();
+        
+        em.refresh(o);
+        
+        if (o.getEntries().isEmpty()) {
+            o.setStatus(Order.Status.CANCELED);
+            
+            em.merge(o);
+            em.flush();
+        }
+        
+        return e;
 	}
 
 	@POST
-	@Path("/seller/bills/update")
+	@Path("/i/{id}/entries/quantity")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@RolesAllowed({ "res:///orders/i/{id}:admin" })
+	@Transactional
+	public Response entriesUpdateQuantity(/*UpdateOrderEntryRequest req*/) {
+	    
+	    return Response.ok().build();
+	}
+
+	@PUT
+	@Path("/i/{id}/status")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Transactional
-	//	@RolesAllowed("user")
-	public Response updateOrderEntry(UpdateOrderEntryRequest req) {
+	@RolesAllowed({ "res:///orders/i/{id}:admin" })
+	public Order updateOrderStatus(@PathParam("id") long id, StatusRequest request) {
 
-		if (session != null){
+		Order order = em.find(Order.class, id);
 
-			SecurityUser user = session.getUser();
-
-			OrderEntry entry = em.find(OrderEntry.class, req.entry.getId());
-
-			switch (entry.getOrder().getStatus()){
-				case NEW:
-					if (user.getRole() == SecurityUser.Role.SELLER && user.getId() == entry.getOrder().getSeller().getId()){
-
-						if ((entry.getGood().getQuantity() + entry.getQuantity()) - req.getEntry().getQuantity() > 0){
-							entry.getGood().setQuantity(entry.getGood().getQuantity() + entry.getQuantity() - req.getEntry().getQuantity());
-							entry.setQuantity(req.getEntry().getQuantity());
-						}
-
-						if (req.getEntry().isConfirmed()){
-							entry.setConfirmed(true);
-
-							boolean allConfirmed = true;
-							for (OrderEntry entr : entry.getOrder().getEntries()){
-								if (!entr.isConfirmed()){
-									allConfirmed = false;
-									break;
-								}
-							}
-
-							if (allConfirmed){
-								entry.getOrder().setStatus(Order.Status.REQUIRES_PAYMENT);
-								em.merge(entry.getOrder());
-							}
-						}
-					}
-					else if (user.getRole() == SecurityUser.Role.USER && user.getId() == entry.getOrder().getUser().getId()) {
-
-						if(entry.getGood().getId() != req.getEntry().getGood().getId()){
-
-							Good good = em.find(Good.class, req.getEntry().getGood().getId());
-
-							if (good != null){
-								if (good.getPurchase().getUser().getId() == entry.getOrder().getSeller().getId()
-										&& good.getPurchase().getId() == entry.getGood().getPurchase().getId()
-										&& (good.getPurchase().getStatus() == Purchase.Status.OPEN || good.getPurchase().getStatus() == Purchase.Status.STOPED)){
-
-									if (good.getQuantity() >= req.getEntry().getQuantity()){
-
-										entry.getGood().setQuantity(entry.getGood().getQuantity() + entry.getQuantity());
-										em.merge(entry.getGood());
-										em.flush();
-
-										entry.setGood(good);
-										good.setQuantity(good.getQuantity() - req.getEntry().getQuantity());
-										entry.setQuantity(req.getEntry().getQuantity());
-									}
-								}
-							} else {
-								return Response.status(Response.Status.BAD_REQUEST).build();
-							}
-						} else {
-							if ((entry.getGood().getQuantity() + entry.getQuantity()) - req.getEntry().getQuantity() > 0){
-								entry.getGood().setQuantity(entry.getGood().getQuantity() + entry.getQuantity() - req.getEntry().getQuantity());
-								entry.setQuantity(req.getEntry().getQuantity());
-							}
-						}
-
-						em.merge(entry);
-						em.flush();
-					}
-					break;
-			}
-
-			OrderEntry ordr = em.find(OrderEntry.class, req.entry.getId());
-
-			return Response.ok(new OrderEntry(ordr.getId(), null, ordr.getGood(), ordr.getQuantity(), false)).build();
+		order.setStatus(request.status);
+		
+		switch (request.status) {
+    		case REQUIRES_PAYMENT:
+    		    break;
+    		case PAID:
+    		    order.setPaid(LocalDateTime.now());
+    		    break;
+    		case CONFIRMED:
+    		    order.setConfirmed(LocalDateTime.now());
+    		    break;
+    		case READY:
+    		    order.setReady(LocalDateTime.now());
+    		    break;
+    		case RECEIVED:
+                order.setReceived(LocalDateTime.now());
+                break;
+            default:
+                // ignore
+                break;
 		}
-		return Response.status(Response.Status.UNAUTHORIZED).build();
+		
+		em.merge(order);
+		em.flush();
+		
+		return order;
 	}
-
-	@POST
-	@Path("/update")
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	@Transactional
-	//	@RolesAllowed("user")
-	public Response updateOrder(UpdateRequest req) {
-
-		if (session != null){
-
-			SecurityUser user = session.getUser();
-
-			Order order = em.createNamedQuery("OrderEntity.accessibleId", Order.class)
-					.setParameter("id", session.getUser().getId())
-					.getSingleResult();
-
-			switch (order.getStatus()){
-				case NEW:
-					if (user.getRole() == SecurityUser.Role.SELLER && user.getId() == order.getSeller().getId()){
-						if (req.getStatus() == Order.Status.REQUIRES_PAYMENT || req.getStatus() == Order.Status.CANCELED){
-							order.setStatus(req.getStatus());
-							em.merge(order);
-						}
-					}
-					else if (user.getRole() == SecurityUser.Role.USER && user.getId() == order.getUser().getId()) {
-						if (req.getStatus() == Order.Status.CANCELED) {
-							order.setStatus(req.getStatus());
-							em.merge(order);
-						} else {
-							return Response.status(Response.Status.UNAUTHORIZED).entity("Сurrent user is not unauthorized for this request").build();
-						}
-					}
-					else {
-						return Response.status(Response.Status.UNAUTHORIZED).entity("Сurrent user is not unauthorized for this request").build();
-					}
-					break;
-				case REQUIRES_PAYMENT:
-					if (user.getRole() == SecurityUser.Role.SELLER && user.getId() == order.getSeller().getId()){
-						if (req.getStatus() == Order.Status.CANCELED){
-							order.setStatus(req.getStatus());
-							em.merge(order);
-						} else {
-							return Response.status(Response.Status.UNAUTHORIZED).entity("Сurrent user is not unauthorized for this request").build();
-						}
-					} else if (user.getRole() == SecurityUser.Role.USER && user.getId() == order.getUser().getId()){
-						if (req.getStatus() == Order.Status.PAID ){
-							order.setStatus(req.getStatus());
-							order.setPaidDate(new Date());
-							em.merge(order);
-						} else {
-							return Response.status(Response.Status.UNAUTHORIZED).entity("Сurrent user is not unauthorized for this request").build();
-						}
-					} else {
-						return Response.status(Response.Status.UNAUTHORIZED).entity("Сurrent user is not unauthorized for this request").build();
-					}
-					break;
-				case CANCELED:
-					return Response.status(Response.Status.UNAUTHORIZED).build();
-
-				case PAID:
-					if (user.getRole() == SecurityUser.Role.SELLER && user.getId() == order.getSeller().getId()){
-						if (req.getStatus() == Order.Status.CONFIRMED){
-							order.setStatus(req.getStatus());
-							order.setConfirmDate(new Date());
-							em.merge(order);
-						} else {
-							return Response.status(Response.Status.UNAUTHORIZED).entity("Сurrent user is not unauthorized for this request").build();
-						}
-					} else {
-						return Response.status(Response.Status.UNAUTHORIZED).entity("Сurrent user is not unauthorized for this request").build();
-					}
-					break;
-				case CONFIRMED:
-					if (user.getRole() == SecurityUser.Role.SELLER && user.getId() == order.getSeller().getId() // TODO оставить только DELIVERY (считыватель)
-							|| user.getRole() == SecurityUser.Role.DELIVERY && user.getDeliveryPlaces().stream().filter(d -> d.getId() == order.getDPlace().getId()).findFirst().isPresent()){
-						if (req.getStatus() == Order.Status.READY){
-							order.setStatus(req.getStatus());
-							order.setReadyDate(new Date());
-							em.merge(order);
-						} else {
-							return Response.status(Response.Status.UNAUTHORIZED).entity("Сurrent user is not unauthorized for this request").build();
-						}
-					} else {
-						return Response.status(Response.Status.UNAUTHORIZED).entity("Сurrent user is not unauthorized for this request").build();
-					}
-					break;
-				case READY:
-					if (user.getRole() == SecurityUser.Role.USER && user.getId() == order.getUser().getId() // TODO оставить только DELIVERY (считыватель)
-							|| user.getRole() == SecurityUser.Role.DELIVERY && user.getDeliveryPlaces().stream().filter(d -> d.getId() == order.getDPlace().getId()).findFirst().isPresent()){
-						if (req.getStatus() == Order.Status.RECEIVED){
-							order.setStatus(req.getStatus());
-							order.setReceivedDate(new Date());
-							em.merge(order);
-						} else {
-							return Response.status(Response.Status.UNAUTHORIZED).entity("Сurrent user is not unauthorized for this request").build();
-						}
-					} else {
-						return Response.status(Response.Status.UNAUTHORIZED).entity("Сurrent user is not unauthorized for this request").build();
-					}
-					break;
-				case RECEIVED:
-					return Response.status(Response.Status.UNAUTHORIZED).entity("Сurrent user is not unauthorized for this request").build();
-			}
-
-			em.flush();
-			return Response.ok().build();
-		}
-		return Response.status(Response.Status.UNAUTHORIZED).build();
-	}
+	
+    @XmlRootElement
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class StatusRequest {
+        
+        private Order.Status status;
+    }
 }

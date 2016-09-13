@@ -31,14 +31,17 @@ import org.springframework.stereotype.Component;
 
 import com.ntr1x.treasure.web.converter.AppConverterProvider.LocalDateConverter;
 import com.ntr1x.treasure.web.model.Method;
+import com.ntr1x.treasure.web.model.Order;
 import com.ntr1x.treasure.web.model.Provider;
 import com.ntr1x.treasure.web.model.Purchase;
 import com.ntr1x.treasure.web.model.Session;
 import com.ntr1x.treasure.web.reflection.ResourceUtils;
 import com.ntr1x.treasure.web.repository.PurchaseRepository;
 import com.ntr1x.treasure.web.services.IAttachmentService;
+import com.ntr1x.treasure.web.services.IOrderService;
 import com.ntr1x.treasure.web.services.IParamService;
 import com.ntr1x.treasure.web.services.ISecurityService;
+import com.ntr1x.treasure.web.services.IOrderService.OrdersResponse;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
@@ -49,8 +52,17 @@ import lombok.NoArgsConstructor;
 @Api("Purchases")
 @Component
 @Path("purchases")
-public class PurchasesResource {
+public class PurchaseResource {
 
+    @PersistenceContext
+    private EntityManager em;
+    
+    @Inject
+    private Session session;
+    
+    @Inject
+    private ISecurityService security;
+    
 	@Inject
 	private PurchaseRepository purchases;
 	
@@ -61,13 +73,7 @@ public class PurchasesResource {
     private IAttachmentService attachmentService;
     
     @Inject
-    private ISecurityService security;
-    
-    @Inject
-    private Session session;
-
-    @PersistenceContext
-    private EntityManager em;
+    private IOrderService orderService;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -103,6 +109,21 @@ public class PurchasesResource {
         
         Purchase purchase = em.find(Purchase.class, id);
         return purchase;
+    }
+    
+    @GET
+    @Path("/i/{id}/orders")
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({ "res:///purchases/i/{id}:admin" })
+    @Transactional
+    public OrdersResponse orders(
+        @PathParam("purchase") Long purchase,
+        @QueryParam("page") @ApiParam(example = "0") int page,
+        @QueryParam("size") @ApiParam(example = "10") int size,
+        @QueryParam("user") Long user,
+        @QueryParam("status") Order.Status status
+    ) {
+        return orderService.select(page, size, status, user, purchase);
     }
         
     @POST
