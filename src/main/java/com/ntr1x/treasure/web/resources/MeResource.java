@@ -9,10 +9,13 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.springframework.data.domain.Page;
@@ -28,6 +31,9 @@ import com.ntr1x.treasure.web.repository.OrderRepository;
 import com.ntr1x.treasure.web.repository.PurchaseRepository;
 import com.ntr1x.treasure.web.services.IOrderService;
 import com.ntr1x.treasure.web.services.IOrderService.OrdersResponse;
+import com.ntr1x.treasure.web.services.IPurchaseService;
+import com.ntr1x.treasure.web.services.IPurchaseService.PurchaseCreate;
+import com.ntr1x.treasure.web.services.ISecurityService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
@@ -44,6 +50,9 @@ public class MeResource {
     private Session session;
     
     @Inject
+    private ISecurityService security;
+    
+    @Inject
     private PurchaseRepository purchases;
     
     @Inject
@@ -51,6 +60,9 @@ public class MeResource {
     
     @Inject
     private IOrderService orderService;
+    
+    @Inject
+    private IPurchaseService purchaseService;
     
     @GET
     @Path("/cart")
@@ -142,6 +154,25 @@ public class MeResource {
             size,
             purchases
         );
+    }
+    
+    @POST
+    @Path("/purchases")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({ "auth" })
+    @Transactional
+    public Purchase create(PurchaseCreate create) {
+        
+        if (create.user != session.getUser().getId()) {
+            throw new WebApplicationException("Cannot create purchase for another user", Response.Status.FORBIDDEN);
+        }
+        
+        Purchase purchase = purchaseService.create(create);
+        
+        security.grant(session.getUser(), purchase.getAlias(), "admin");
+        
+        return purchase;
     }
     
     @XmlRootElement

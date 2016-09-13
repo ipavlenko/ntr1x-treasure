@@ -6,12 +6,10 @@ import javax.ws.rs.core.MediaType;
 
 import org.springframework.stereotype.Service;
 
+import com.ntr1x.treasure.web.bootstrap.BootstrapState.Users;
 import com.ntr1x.treasure.web.model.User;
 import com.ntr1x.treasure.web.model.User.Role;
 import com.ntr1x.treasure.web.resources.UsersResource.CreateUser;
-
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 
 @Service
 public class BootstrapUsers {
@@ -67,16 +65,5 @@ public class BootstrapUsers {
         }
         
         return users;
-    }
-    
-    @NoArgsConstructor
-    @AllArgsConstructor
-    class Users {
-        
-        public User admin;
-        public String adminPassword;
-        
-        public User user;
-        public String userPassword;
     }
 }

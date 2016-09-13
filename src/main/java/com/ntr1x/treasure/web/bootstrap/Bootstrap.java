@@ -4,64 +4,59 @@ import javax.inject.Inject;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.ntr1x.treasure.web.bootstrap.BootstrapUsers.Users;
 import com.ntr1x.treasure.web.services.IProfilerService;
 
 @Service
 public class Bootstrap implements IBootstrap {
     
+    @Value("${app.host}")
+    private String host;
+    
     @Inject
     private IProfilerService profiler;
 
     @Inject
-    private BootstrapUsers bootstrapUsers;
+    private BootstrapHolder holder;
+    
+    @Inject
+    private BootstrapUsers users;
 
-    private Users users;
+    @Inject
+    private BootstrapCategories categories;
+    
+    @Inject
+    private BootstrapPurchases purchases;
     
     public BootstrapResults bootstrap() {
         
         WebTarget target = ClientBuilder
             .newClient()
-            .target(String.format("http://localhost:%d", 8080))
+            .target(String.format("http://%s", host))
         ;
+        
+        BootstrapState state = holder.get();
         
         BootstrapResults results = new BootstrapResults();
         
         profiler.withDisabledSecurity(() -> {
-            users = bootstrapUsers.createUsers(target);
+            state.users = users.createUsers(target);
         });
         
-        profiler.withCredentials(target, users.admin.getEmail(), users.adminPassword, (token) -> {
+        profiler.withCredentials(target, state.users.admin.getEmail(), state.users.adminPassword, (token) -> {
             results.adminToken = token;
         });
         
-        profiler.withCredentials(target, users.user.getEmail(), users.userPassword, (token) -> {
+        profiler.withCredentials(target, state.users.user.getEmail(), state.users.userPassword, (token) -> {
             results.userToken = token;
         });
         
-//        results = new BootstrapResults();
-        
-//        profiler.withCredentials(target, accounts.admin.getEmail(), accounts.adminPassword, (token) -> {
-//
-//            results.adminToken = token;
-//            
-//            BootstrapCategories categories = new BootstrapCategories(this);
-//            
-//            directories = categories.createDirectories(target, token);
-//            specializations = categories.createSpecializatons(target, token);
-//            localizations = categories.createLocalizations(target, token);
-//            
-//            BootstrapPublications publications = new BootstrapPublications(this);
-//            
-//            /*this.publications = */publications.createPublications(target, token);
-//        });
-//        
-//        profiler.withCredentials(target, accounts.user.getEmail(), accounts.userPassword, (token) -> {
-//            
-//            results.userToken = token;
-//        });
+        profiler.withCredentials(target, state.users.admin.getEmail(), state.users.adminPassword, (token) -> {
+            state.directories = categories.createDirectories(target, token);
+            state.purchases = purchases.createPurchases(target, token);
+        });
         
         return results;
     }

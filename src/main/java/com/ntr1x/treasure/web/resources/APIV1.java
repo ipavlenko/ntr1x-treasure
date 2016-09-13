@@ -16,10 +16,12 @@ import io.swagger.models.auth.In;
 	),
 	schemes = { SwaggerDefinition.Scheme.HTTP, SwaggerDefinition.Scheme.HTTPS },
 	tags = {
-        @Tag(name = "Setup",        description = "Applciation setup"),
-        @Tag(name = "Resources",    description = "Universal access to the application data"),
-        @Tag(name = "Security",     description = "Registration & Authorization"),
-	    @Tag(name = "Users",     description = "Users & Profiles"),
+        @Tag(name = "Setup",        description = "Преднастройка"),
+        @Tag(name = "Resources",    description = "Универсальный доступ к ресурсам"),
+        @Tag(name = "Security",     description = "Регистрация и авторизация"),
+	    @Tag(name = "Users",        description = "Пользователи и профили"),
+	    @Tag(name = "Purchases",    description = "Поставки"),
+	    @Tag(name = "Goods",        description = "Товары"),
 	    
 //		@Tag(name = "Publications", description = "News, events, blogs, etc."),
 //		@Tag(name = "Categories",   description = "Resource catgories"),

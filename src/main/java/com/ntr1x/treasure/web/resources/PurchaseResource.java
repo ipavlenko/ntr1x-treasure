@@ -1,6 +1,5 @@
 package com.ntr1x.treasure.web.resources;
 
-import java.time.LocalDate;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -21,30 +20,23 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
-import com.ntr1x.treasure.web.converter.AppConverterProvider.LocalDateConverter;
-import com.ntr1x.treasure.web.model.Method;
 import com.ntr1x.treasure.web.model.Order;
-import com.ntr1x.treasure.web.model.Provider;
 import com.ntr1x.treasure.web.model.Purchase;
-import com.ntr1x.treasure.web.model.Session;
-import com.ntr1x.treasure.web.reflection.ResourceUtils;
 import com.ntr1x.treasure.web.repository.PurchaseRepository;
-import com.ntr1x.treasure.web.services.IAttachmentService;
 import com.ntr1x.treasure.web.services.IOrderService;
-import com.ntr1x.treasure.web.services.IAttributeService;
-import com.ntr1x.treasure.web.services.ISecurityService;
 import com.ntr1x.treasure.web.services.IOrderService.OrdersResponse;
+import com.ntr1x.treasure.web.services.IPurchaseService;
+import com.ntr1x.treasure.web.services.IPurchaseService.PurchaseCreate;
+import com.ntr1x.treasure.web.services.IPurchaseService.PurchaseUpdate;
+import com.ntr1x.treasure.web.services.ISecurityService;
 
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiParam;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -57,8 +49,8 @@ public class PurchaseResource {
     @PersistenceContext
     private EntityManager em;
     
-    @Inject
-    private Session session;
+//    @Inject
+//    private Session session;
     
     @Inject
     private ISecurityService security;
@@ -67,11 +59,8 @@ public class PurchaseResource {
 	private PurchaseRepository purchases;
 	
 	@Inject
-    private IAttributeService paramService;
+    private IPurchaseService purchaseService;
 	
-	@Inject
-    private IAttachmentService attachmentService;
-    
     @Inject
     private IOrderService orderService;
 
@@ -133,29 +122,9 @@ public class PurchaseResource {
     @Transactional
     public Purchase create(PurchaseCreate create) {
         
-        Purchase purchase = new Purchase(); {
-            
-            Method method = em.find(Method.class, create.method);
-            Provider provider = em.find(Provider.class, create.provider);
-            
-            purchase.setTitle(create.title);
-            purchase.setStatus(Purchase.Status.NEW);
-            purchase.setMethod(method);
-            purchase.setProvider(provider);
-            purchase.setOpen(create.open);
-            purchase.setStop(create.stop);
-            purchase.setDelivery(create.delivery);
-            purchase.setNextDelivery(create.nextDelivery);
-            
-            em.persist(purchase);
-            em.flush();
-        }
+        Purchase purchase = purchaseService.create(create);
         
-        security.register(purchase, ResourceUtils.alias(null, "purchases/i", purchase));
-        security.grant(session.getUser(), purchase.getAlias(), "admin");
-        
-        paramService.createAttributes(purchase, create.params);
-        attachmentService.createAttachments(purchase, create.attachments);
+        security.grant(purchase.getUser(), purchase.getAlias(), "admin");
         
         return purchase;
     }
@@ -168,25 +137,7 @@ public class PurchaseResource {
     @Transactional
     public Purchase update(@PathParam("id") long id, PurchaseUpdate update) {
         
-        Purchase purchase = em.find(Purchase.class, id); {
-            
-            Method method = em.find(Method.class, update.method);
-            Provider provider = em.find(Provider.class, update.provider);
-            
-            purchase.setTitle(update.title);
-            purchase.setMethod(method);
-            purchase.setProvider(provider);
-            purchase.setOpen(update.open);
-            purchase.setStop(update.stop);
-            purchase.setDelivery(update.delivery);
-            purchase.setNextDelivery(update.nextDelivery);
-            
-            em.merge(purchase);
-            em.flush();
-        }
-        
-        paramService.updateAttributes(purchase, update.params);
-        attachmentService.updateAttachments(purchase, update.attachments);
+        Purchase purchase = purchaseService.update(id, update);
         
         return purchase;
     }
@@ -270,69 +221,7 @@ public class PurchaseResource {
         return purchase;
     }
 
-    @XmlRootElement
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class PurchaseCreate {
-        
-        public String title;
-        public long provider;
-        public long method;
-        
-        @XmlJavaTypeAdapter(LocalDateConverter.class)
-        @ApiModelProperty(example="1970-01-01")
-        private LocalDate open;
-
-        @XmlJavaTypeAdapter(LocalDateConverter.class)
-        @ApiModelProperty(example="1970-01-01")
-        private LocalDate stop;
-
-        @XmlJavaTypeAdapter(LocalDateConverter.class)
-        @ApiModelProperty(example="1970-01-01")
-        private LocalDate delivery;
-        
-        @XmlJavaTypeAdapter(LocalDateConverter.class)
-        @ApiModelProperty(example="1970-01-01")
-        private LocalDate nextDelivery;
-        
-        @XmlElement
-        public IAttributeService.CreateAttribute[] params;
-        
-        @XmlElement
-        public IAttachmentService.CreateAttachment[] attachments;
-    }
     
-    @XmlRootElement
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class PurchaseUpdate {
-        
-        public String title;
-        public long provider;
-        public long method;
-        
-        @XmlJavaTypeAdapter(LocalDateConverter.class)
-        @ApiModelProperty(example="1970-01-01")
-        private LocalDate open;
-
-        @XmlJavaTypeAdapter(LocalDateConverter.class)
-        @ApiModelProperty(example="1970-01-01")
-        private LocalDate stop;
-
-        @XmlJavaTypeAdapter(LocalDateConverter.class)
-        @ApiModelProperty(example="1970-01-01")
-        private LocalDate delivery;
-        
-        @XmlJavaTypeAdapter(LocalDateConverter.class)
-        @ApiModelProperty(example="1970-01-01")
-        private LocalDate nextDelivery;
-        
-        @XmlElement
-        public IAttributeService.UpdateAttribute[] params;
-        
-        @XmlElement
-        public IAttachmentService.UpdateAttachment[] attachments;
-    }
     
     @XmlRootElement
     @NoArgsConstructor
