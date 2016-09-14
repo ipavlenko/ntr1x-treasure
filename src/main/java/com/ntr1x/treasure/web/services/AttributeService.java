@@ -66,16 +66,15 @@ public class AttributeService implements IAttributeService {
                         ResourceAttribute v = em.find(ResourceAttribute.class, p.id); {
                             
                           v.setValue(p.value);
+                          
                           em.merge(v);
                         }
                         
-                        em.merge(v);
                         break;
                     }
                     case REMOVE: {
                         
                         ResourceAttribute v = em.find(ResourceAttribute.class, p.id); {
-                            
                             em.remove(v);
                         }
                         break;

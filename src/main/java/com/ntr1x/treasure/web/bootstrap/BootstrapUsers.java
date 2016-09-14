@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import com.ntr1x.treasure.web.bootstrap.BootstrapState.Users;
 import com.ntr1x.treasure.web.model.User;
 import com.ntr1x.treasure.web.model.User.Role;
-import com.ntr1x.treasure.web.resources.UsersResource.CreateUser;
+import com.ntr1x.treasure.web.services.IUserService;
 
 @Service
 public class BootstrapUsers {
@@ -19,7 +19,7 @@ public class BootstrapUsers {
         Users users = new Users();
         
         {    
-            CreateUser u = new CreateUser(); {
+            IUserService.CreateUser u = new IUserService.CreateUser(); {
                 
                 u.role = Role.ADMIN;
                 u.confirmed = true;
@@ -27,8 +27,8 @@ public class BootstrapUsers {
                 u.password = "admin";
                 u.phone = "00000000000";
                 u.surname = "admin";
-                u.userName = "admin";
-                u.middleName = "admin";
+                u.name = "admin";
+                u.middlename = "admin";
                 u.confirmed = true;
             }
             
@@ -42,7 +42,7 @@ public class BootstrapUsers {
         }
         
         {    
-            CreateUser u = new CreateUser(); {
+            IUserService.CreateUser u = new IUserService.CreateUser(); {
                 
                 u.role = Role.USER;
                 u.confirmed = true;
@@ -50,8 +50,8 @@ public class BootstrapUsers {
                 u.password = "user";
                 u.phone = "11111111111";
                 u.surname = "user";
-                u.userName = "user";
-                u.middleName = "user";
+                u.name = "user";
+                u.middlename = "user";
                 u.confirmed = true;
             }
             

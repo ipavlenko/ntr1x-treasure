@@ -46,7 +46,7 @@ import lombok.NoArgsConstructor;
 
 @Api("Security")
 @Component
-@Path("/ws/security")
+@Path("/security")
 public class SecurityResource {
 
 	@PersistenceContext

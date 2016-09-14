@@ -5,12 +5,14 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 import com.ntr1x.treasure.web.resources.CategoryResourceTest;
+import com.ntr1x.treasure.web.resources.ProviderResourceTest;
 import com.ntr1x.treasure.web.resources.UserResourceTest;
 
 @RunWith(Suite.class)
 @SuiteClasses({
     UserResourceTest.class,
     CategoryResourceTest.class,
+    ProviderResourceTest.class,
 })
 public class ResourcesTestSuite {
     

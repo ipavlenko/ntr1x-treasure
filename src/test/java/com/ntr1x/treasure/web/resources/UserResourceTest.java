@@ -20,9 +20,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.ntr1x.treasure.web.App;
 import com.ntr1x.treasure.web.model.User;
-import com.ntr1x.treasure.web.resources.UsersResource.CreateUser;
-import com.ntr1x.treasure.web.resources.UsersResource.UsersResponse;
 import com.ntr1x.treasure.web.services.IProfilerService;
+import com.ntr1x.treasure.web.services.IUserService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = App.class, webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -53,7 +52,7 @@ public class UserResourceTest {
     
         profiler.withDisabledSecurity(() -> {
             
-            CreateUser s = new CreateUser(); {
+            IUserService.CreateUser s = new IUserService.CreateUser(); {
                 
                 s.role = User.Role.ADMIN;
                 s.confirmed = true;
@@ -61,13 +60,13 @@ public class UserResourceTest {
                 s.password = "admin";
                 s.phone = "00000000000";
                 s.surname = "admin";
-                s.userName = "admin";
-                s.middleName = "admin";
+                s.name = "admin";
+                s.middlename = "admin";
                 s.confirmed = true;
             }
             
             User r = target
-              .path("/ws/users")
+              .path("/users")
               .request(MediaType.APPLICATION_JSON_TYPE)
               .post(Entity.entity(s, MediaType.APPLICATION_JSON_TYPE), User.class)
             ;
@@ -86,7 +85,7 @@ public class UserResourceTest {
             
             {
                 User r = target
-                    .path(String.format("/ws/users/i/%d", 1))
+                    .path(String.format("/users/i/%d", 1))
                     .queryParam("page", 0)
                     .request()
                     .get(User.class)
@@ -105,12 +104,12 @@ public class UserResourceTest {
         profiler.withDisabledSecurity(() -> {
         
             {
-                UsersResponse r = target
-                    .path("/ws/users")
+                IUserService.UsersResponse r = target
+                    .path("/users")
                     .queryParam("page", 0)
                     .queryParam("size", 10)
                     .request()
-                    .get(UsersResponse.class)
+                    .get(IUserService.UsersResponse.class)
                 ;
                   
                 Assert.assertEquals(1, r.count);
@@ -120,13 +119,13 @@ public class UserResourceTest {
             }
             
             {
-                UsersResponse r = target
-                    .path("/ws/users")
+                IUserService.UsersResponse r = target
+                    .path("/users")
                     .queryParam("role", User.Role.ADMIN)
                     .queryParam("page", 0)
                     .queryParam("size", 10)
                     .request()
-                    .get(UsersResponse.class)
+                    .get(IUserService.UsersResponse.class)
                 ;
                   
                 Assert.assertEquals(1, r.count);
@@ -136,13 +135,13 @@ public class UserResourceTest {
             }
             
             {
-                UsersResponse r = target
-                    .path("/ws/users")
+                IUserService.UsersResponse r = target
+                    .path("/users")
                     .queryParam("role", User.Role.DELIVERY)
                     .queryParam("page", 0)
                     .queryParam("size", 10)
                     .request()
-                    .get(UsersResponse.class)
+                    .get(IUserService.UsersResponse.class)
                 ;
                   
                 Assert.assertEquals(0, r.count);
@@ -160,7 +159,7 @@ public class UserResourceTest {
             
             {
                 User r = target
-                    .path(String.format("/ws/users/i/%d", 1))
+                    .path(String.format("/users/i/%d", 1))
                     .queryParam("page", 0)
                     .request()
                     .delete(User.class)

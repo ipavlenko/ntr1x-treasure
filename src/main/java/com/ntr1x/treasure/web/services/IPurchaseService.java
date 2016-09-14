@@ -1,12 +1,14 @@
 package com.ntr1x.treasure.web.services;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import com.ntr1x.treasure.web.converter.AppConverterProvider.LocalDateConverter;
+import com.ntr1x.treasure.web.model.Order;
 import com.ntr1x.treasure.web.model.Purchase;
 
 import io.swagger.annotations.ApiModelProperty;
@@ -82,5 +84,30 @@ public interface IPurchaseService {
         
         @XmlElement
         public IImageService.UpdateImage[] images;
+    }
+    
+    @XmlRootElement
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class PurchasesResponse {
+        
+        public long count;
+        public int page;
+        public int size;
+        public List<Details> purchases;
+        
+        @NoArgsConstructor
+        @AllArgsConstructor
+        public static class Details {
+              
+            public Purchase purchase;
+            public List<Order> orders;
+              
+            public float total;
+            public int paidCnt;
+            public int confirmedCnt;
+            public int canceledCnt;
+            public float goodsCnt;
+        }
     }
 }

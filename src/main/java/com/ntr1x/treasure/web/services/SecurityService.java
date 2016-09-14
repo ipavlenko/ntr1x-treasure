@@ -18,6 +18,7 @@ import com.ntr1x.treasure.web.model.Grant;
 import com.ntr1x.treasure.web.model.Resource;
 import com.ntr1x.treasure.web.model.User;
 import com.ntr1x.treasure.web.reflection.ResourceUtils;
+import com.ntr1x.treasure.web.repository.GrantRepository;
 import com.ntr1x.treasure.web.utils.ConversionUtils;
 import com.ntr1x.treasure.web.utils.CryptoUtils;
 
@@ -29,6 +30,12 @@ public class SecurityService implements ISecurityService {
     
     @Inject
     private EntityManager em;
+    
+//    @Inject
+//    private UserRepository users;
+    
+    @Inject
+    private GrantRepository grants;
     
     private final Random random = new Random();
     
@@ -192,8 +199,7 @@ public class SecurityService implements ISecurityService {
     @Override
     public boolean isUserInRole(User user, String resource, String action) {
         
-        int count = em.createNamedQuery("SecurityPrivilege.check", Integer.class).getSingleResult();
-        return count > 0;
+        return grants.check(user.getId(), resource, action) > 0;
     }
     
     @Override

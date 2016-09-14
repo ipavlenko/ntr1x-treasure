@@ -43,7 +43,7 @@ public class ProfilerService implements IProfilerService {
         Signin s = new Signin(email, password);
         
         SigninResponse r = target
-            .path("/ws/security/signin")
+            .path("/security/signin")
             .request(MediaType.APPLICATION_JSON_TYPE)
             .post(Entity.entity(s, MediaType.APPLICATION_JSON_TYPE), SigninResponse.class)
         ;
@@ -56,7 +56,7 @@ public class ProfilerService implements IProfilerService {
         Signout s = new Signout();
         
         target
-            .path("/ws/security/signout")
+            .path("/security/signout")
             .request(MediaType.APPLICATION_JSON_TYPE)
             .header(HttpHeaders.AUTHORIZATION, token)
             .post(Entity.entity(s, MediaType.APPLICATION_JSON_TYPE), SignoutResponse.class)

@@ -16,7 +16,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.xml.bind.annotation.XmlRootElement;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,24 +24,27 @@ import org.springframework.stereotype.Component;
 import com.ntr1x.treasure.web.model.Cart;
 import com.ntr1x.treasure.web.model.Order;
 import com.ntr1x.treasure.web.model.OrderEntry;
+import com.ntr1x.treasure.web.model.Provider;
 import com.ntr1x.treasure.web.model.Purchase;
 import com.ntr1x.treasure.web.model.Session;
+import com.ntr1x.treasure.web.model.User;
 import com.ntr1x.treasure.web.repository.OrderRepository;
 import com.ntr1x.treasure.web.repository.PurchaseRepository;
 import com.ntr1x.treasure.web.services.IOrderService;
 import com.ntr1x.treasure.web.services.IOrderService.OrdersResponse;
+import com.ntr1x.treasure.web.services.IProviderService;
+import com.ntr1x.treasure.web.services.IProviderService.ProviderCreate;
 import com.ntr1x.treasure.web.services.IPurchaseService;
 import com.ntr1x.treasure.web.services.IPurchaseService.PurchaseCreate;
+import com.ntr1x.treasure.web.services.IPurchaseService.PurchasesResponse;
 import com.ntr1x.treasure.web.services.ISecurityService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 
 @Api("Me")
 @Component
-@Path("me")
+@Path("/me")
 @PermitAll
 public class MeResource {
 
@@ -64,12 +66,23 @@ public class MeResource {
     @Inject
     private IPurchaseService purchaseService;
     
+    @Inject
+    private IProviderService providerService;
+    
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({ "auth" })
+    @Transactional
+    public User select() {
+        return session.getUser();
+    }
+    
     @GET
     @Path("/cart")
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({ "auth" })
     @Transactional
-    public Cart select() {
+    public Cart selectCart() {
         return session.getUser().getCart();
     }
     
@@ -103,7 +116,6 @@ public class MeResource {
     
     @GET
     @Path("/purchases")
-    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({ "auth" })
     @Transactional
@@ -137,9 +149,9 @@ public class MeResource {
 
                     if (order.getStatus() == Order.Status.PAID){
                         details.paidCnt += 1;
-                    } else if (order.getStatus() == Order.Status.CONFIRMED){
+                    } else if (order.getStatus() == Order.Status.CONFIRMED) {
                         details.confirmedCnt += 1;
-                    } else if (order.getStatus() == Order.Status.CANCELED){
+                    } else if (order.getStatus() == Order.Status.CANCELED) {
                         details.canceledCnt += 1;
                     }
                 }
@@ -162,7 +174,7 @@ public class MeResource {
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({ "auth" })
     @Transactional
-    public Purchase create(PurchaseCreate create) {
+    public Purchase purchasesCreate(PurchaseCreate create) {
         
         if (create.user != session.getUser().getId()) {
             throw new WebApplicationException("Cannot create purchase for another user", Response.Status.FORBIDDEN);
@@ -175,28 +187,32 @@ public class MeResource {
         return purchase;
     }
     
-    @XmlRootElement
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class PurchasesResponse {
+    @GET
+    @Path("/providers")
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({ "auth" })
+    @Transactional
+    public List<Provider> providers() {
         
-        public long count;
-        public int page;
-        public int size;
-        public List<Details> purchases;
+        return session.getUser().getProviders();
+    }
+    
+    @POST
+    @Path("/providers")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({ "auth" })
+    @Transactional
+    public Provider providersCreate(ProviderCreate create) {
         
-        @NoArgsConstructor
-        @AllArgsConstructor
-        public static class Details {
-              
-            public Purchase purchase;
-            public List<Order> orders;
-              
-            public float total;
-            public int paidCnt;
-            public int confirmedCnt;
-            public int canceledCnt;
-            public float goodsCnt;
+        if (create.user != session.getUser().getId()) {
+            throw new WebApplicationException("Cannot create provider for another user", Response.Status.FORBIDDEN);
         }
+        
+        Provider provider = providerService.create(create);
+        
+        security.grant(session.getUser(), provider.getAlias(), "admin");
+        
+        return provider;
     }
 }
