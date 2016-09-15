@@ -1,5 +1,6 @@
-package com.ntr1x.treasure.web.model;
+package com.ntr1x.treasure.web.model.p3;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -13,6 +14,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.eclipse.persistence.annotations.CascadeOnDelete;
 import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 
+import com.ntr1x.treasure.web.model.p0.Resource;
+import com.ntr1x.treasure.web.model.p2.Purchase;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,21 +27,22 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "resources_categories")
-@PrimaryKeyJoinColumn(name = "ResourceId", referencedColumnName = "Id")
-@CascadeOnDelete
+@Table(name = "goods")
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class ResourceCategory extends Resource {
+@PrimaryKeyJoinColumn(name = "ResourceId", referencedColumnName = "Id")
+@CascadeOnDelete
+public class Good extends Resource {
 
-	@XmlElement
-	@XmlInverseReference(mappedBy = "categories")
-	@ManyToOne
-	@JoinColumn(name = "RelateId", nullable = false, updatable = false)
-	private Resource relate;
+    @ManyToOne
+    @JoinColumn(name = "PurchaseId", nullable = true, updatable = true)
+    @XmlElement
+    @XmlInverseReference(mappedBy = "goods")
+    private Purchase purchase;
+
+	@Column(name = "Title", nullable = false)
+	private String title;
 	
-	@XmlElement
-	@ManyToOne
-	@JoinColumn(name = "CategoryId", nullable = false, updatable = false)
-	private Category category;
+	@Column(name = "Promo", nullable = false)
+    private String promo;
 }

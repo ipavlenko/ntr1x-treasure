@@ -2,7 +2,7 @@ package com.ntr1x.treasure.web.services;
 
 import org.springframework.stereotype.Service;
 
-import com.ntr1x.treasure.web.model.Resource;
+import com.ntr1x.treasure.web.model.p0.Resource;
 
 @Service
 public class AttachmentService implements IAttachmentService {

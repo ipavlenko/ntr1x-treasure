@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.query.Param;
 
-import com.ntr1x.treasure.web.model.CartEntry;
+import com.ntr1x.treasure.web.model.p5.CartEntry;
 
 public interface CartEntryRepository extends JpaRepository<CartEntry, Long> {
     

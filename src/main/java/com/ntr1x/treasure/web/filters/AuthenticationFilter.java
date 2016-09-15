@@ -19,8 +19,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
-import com.ntr1x.treasure.web.model.Session;
-import com.ntr1x.treasure.web.model.User;
+import com.ntr1x.treasure.web.model.p1.User;
+import com.ntr1x.treasure.web.model.p2.Session;
 import com.ntr1x.treasure.web.services.ISecurityService;
 
 import lombok.Data;

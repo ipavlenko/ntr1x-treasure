@@ -1,4 +1,4 @@
-package com.ntr1x.treasure.web.model;
+package com.ntr1x.treasure.web.model.p2;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,32 +14,38 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.eclipse.persistence.annotations.CascadeOnDelete;
 import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 
+import com.ntr1x.treasure.web.model.p0.Resource;
+import com.ntr1x.treasure.web.model.p1.Attribute;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 @Entity
-@Table(name = "goods")
+@Table(name = "attributes_options")
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 @PrimaryKeyJoinColumn(name = "ResourceId", referencedColumnName = "Id")
 @CascadeOnDelete
-public class Good extends Resource {
+public class AttributeOption extends Resource {
 
-    @ManyToOne
-    @JoinColumn(name = "PurchaseId", nullable = true, updatable = true)
-    @XmlElement
-    @XmlInverseReference(mappedBy = "goods")
-    private Purchase purchase;
+	@XmlElement
+    @XmlInverseReference(mappedBy = "options")
+	@ManyToOne
+	@JoinColumn(name = "AttributeId", nullable = false, updatable = false)
+	private Attribute attribute;
+
+	@Column(name = "Name", nullable = false)
+	private String name;
 
 	@Column(name = "Title", nullable = false)
 	private String title;
-	
-	@Column(name = "Promo", nullable = false)
-    private String promo;
+
+	@Column(name = "Value", nullable = true)
+	private String value;
 }

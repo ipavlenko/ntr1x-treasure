@@ -1,4 +1,4 @@
-package com.ntr1x.treasure.web.model;
+package com.ntr1x.treasure.web.model.p1;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

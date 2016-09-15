@@ -5,9 +5,9 @@ import javax.persistence.EntityManager;
 
 import org.springframework.stereotype.Service;
 
-import com.ntr1x.treasure.web.model.Attribute;
-import com.ntr1x.treasure.web.model.Resource;
-import com.ntr1x.treasure.web.model.ResourceAttribute;
+import com.ntr1x.treasure.web.model.p0.Resource;
+import com.ntr1x.treasure.web.model.p1.Attribute;
+import com.ntr1x.treasure.web.model.p2.ResourceAttribute;
 
 @Service
 public class AttributeService implements IAttributeService {

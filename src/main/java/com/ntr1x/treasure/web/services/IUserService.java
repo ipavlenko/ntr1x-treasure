@@ -7,8 +7,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.ntr1x.treasure.web.model.Aspect;
-import com.ntr1x.treasure.web.model.User;
-import com.ntr1x.treasure.web.model.User.Role;
+import com.ntr1x.treasure.web.model.p1.User;
+import com.ntr1x.treasure.web.model.p1.User.Role;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;

@@ -3,7 +3,7 @@ package com.ntr1x.treasure.web.services;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.ntr1x.treasure.web.model.Action;
-import com.ntr1x.treasure.web.model.Resource;
+import com.ntr1x.treasure.web.model.p0.Resource;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;

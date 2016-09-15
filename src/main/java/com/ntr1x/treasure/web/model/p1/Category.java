@@ -1,8 +1,9 @@
-package com.ntr1x.treasure.web.model;
+package com.ntr1x.treasure.web.model.p1;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
@@ -14,35 +15,31 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.eclipse.persistence.annotations.CascadeOnDelete;
 import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 
-import lombok.AllArgsConstructor;
+import com.ntr1x.treasure.web.model.p0.Resource;
+
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-@Setter
 @Entity
-@Table(name = "attributes_options")
+@Table(name = "categories")
+@PrimaryKeyJoinColumn(name = "ResourceId", referencedColumnName = "Id")
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-@PrimaryKeyJoinColumn(name = "ResourceId", referencedColumnName = "Id")
+@Getter
+@Setter
 @CascadeOnDelete
-public class AttributeOption extends Resource {
+public class Category extends Resource {
 
 	@XmlElement
-    @XmlInverseReference(mappedBy = "options")
+	@XmlInverseReference(mappedBy = "subcategories")
 	@ManyToOne
-	@JoinColumn(name = "AttributeId", nullable = false, updatable = false)
-	private Attribute attribute;
-
-	@Column(name = "Name", nullable = false)
-	private String name;
-
-	@Column(name = "Title", nullable = false)
+	@JoinColumn(name = "RelateId", nullable = true, updatable = false)
+	private Resource relate;
+	
+	@Column(name = "Title")
 	private String title;
-
-	@Column(name = "Value", nullable = true)
-	private String value;
+	
+	@Lob
+	@Column(name = "Description")
+	private String description;
 }

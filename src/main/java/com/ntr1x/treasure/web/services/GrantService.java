@@ -7,8 +7,8 @@ import javax.ws.rs.core.Response;
 
 import org.springframework.stereotype.Service;
 
-import com.ntr1x.treasure.web.model.Grant;
-import com.ntr1x.treasure.web.model.User;
+import com.ntr1x.treasure.web.model.p1.User;
+import com.ntr1x.treasure.web.model.p2.Grant;
 
 @Service
 public class GrantService implements IGrantService {

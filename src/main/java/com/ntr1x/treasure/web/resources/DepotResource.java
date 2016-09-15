@@ -14,7 +14,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.springframework.stereotype.Component;
 
-import com.ntr1x.treasure.web.model.Depot;
+import com.ntr1x.treasure.web.model.p2.Depot;
 import com.ntr1x.treasure.web.repository.DepotRepository;
 
 import io.swagger.annotations.Api;

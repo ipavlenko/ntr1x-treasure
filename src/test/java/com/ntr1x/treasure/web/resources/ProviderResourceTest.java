@@ -23,8 +23,8 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.ntr1x.treasure.web.App;
-import com.ntr1x.treasure.web.model.Provider;
-import com.ntr1x.treasure.web.model.User;
+import com.ntr1x.treasure.web.model.p1.User;
+import com.ntr1x.treasure.web.model.p2.Provider;
 import com.ntr1x.treasure.web.services.IGrantService;
 import com.ntr1x.treasure.web.services.IProfilerService;
 import com.ntr1x.treasure.web.services.IProviderService;
@@ -248,7 +248,7 @@ public class ProviderResourceTest {
                 Provider r = target
                     .path(String.format("/providers/i/%d", providers[0].getId()))
                     .request()
-                    .get(Provider.class)
+                    .delete(Provider.class)
                 ;
                 
                 Assert.assertEquals(providers[0].getId(), r.getId());
@@ -258,7 +258,7 @@ public class ProviderResourceTest {
                 Provider r = target
                     .path(String.format("/providers/i/%d", providers[1].getId()))
                     .request()
-                    .get(Provider.class)
+                    .delete(Provider.class)
                 ;
                 
                 Assert.assertEquals(providers[1].getId(), r.getId());
@@ -268,7 +268,7 @@ public class ProviderResourceTest {
                 User r = target
                     .path(String.format("/users/i/%d", users[0].getId()))
                     .request()
-                    .get(User.class)
+                    .delete(User.class)
                 ;
                 
                 Assert.assertEquals(users[0].getId(), r.getId());
@@ -278,7 +278,7 @@ public class ProviderResourceTest {
                 User r = target
                     .path(String.format("/users/i/%d", users[1].getId()))
                     .request()
-                    .get(User.class)
+                    .delete(User.class)
                 ;
                 
                 Assert.assertEquals(users[1].getId(), r.getId());

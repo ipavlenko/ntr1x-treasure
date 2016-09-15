@@ -1,9 +1,12 @@
-package com.ntr1x.treasure.web.model;
+package com.ntr1x.treasure.web.model.p2;
+
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -14,6 +17,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.eclipse.persistence.annotations.CascadeOnDelete;
 import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 
+import com.ntr1x.treasure.web.model.p0.Resource;
+import com.ntr1x.treasure.web.model.p1.User;
+import com.ntr1x.treasure.web.model.p3.Order;
+
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,25 +32,26 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "modifications")
+@Table(name = "depots")
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 @PrimaryKeyJoinColumn(name = "ResourceId", referencedColumnName = "Id")
 @CascadeOnDelete
-public class Modification extends Resource {
+public class Depot extends Resource {
 
-    @XmlElement
-    @XmlInverseReference(mappedBy = "modifications")
-    @ManyToOne
-    @JoinColumn(name = "GoodId", nullable = false, updatable = false)
-    private Good good;
-        
-    @Column(name = "Price", nullable = false)
-    private float price;
-
-    @Column(name = "Quantity", nullable = false)
-    private float quantity;
-
-    @Column(name = "SizeRange", nullable = false)
-    private float sizeRange;
+	@ManyToOne
+	@JoinColumn(name = "UserId", nullable = false)
+	@XmlElement
+    @XmlInverseReference(mappedBy = "depots")
+	private User user;
+	
+	@Column(name = "DeliveryPrice")
+	private float deliveryPrice;
+	
+	@XmlElement
+    @XmlInverseReference(mappedBy = "depot")
+    @OneToMany(mappedBy = "depot")
+    @CascadeOnDelete
+    @ApiModelProperty(hidden = true)
+	private List<Order> orders;
 }

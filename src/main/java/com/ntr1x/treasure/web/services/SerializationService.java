@@ -20,7 +20,7 @@ import org.glassfish.jersey.message.filtering.spi.ObjectProvider;
 import org.springframework.stereotype.Service;
 
 import com.ntr1x.treasure.web.JerseyConfig.ServiceLocatorProvider;
-import com.ntr1x.treasure.web.model.Resource.ResourceProperty;
+import com.ntr1x.treasure.web.model.p0.Resource.ResourceProperty;
 
 @Service
 public class SerializationService implements ISerializationService {

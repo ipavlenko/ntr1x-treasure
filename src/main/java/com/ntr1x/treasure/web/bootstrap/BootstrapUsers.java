@@ -7,8 +7,8 @@ import javax.ws.rs.core.MediaType;
 import org.springframework.stereotype.Service;
 
 import com.ntr1x.treasure.web.bootstrap.BootstrapState.Users;
-import com.ntr1x.treasure.web.model.User;
-import com.ntr1x.treasure.web.model.User.Role;
+import com.ntr1x.treasure.web.model.p1.User;
+import com.ntr1x.treasure.web.model.p1.User.Role;
 import com.ntr1x.treasure.web.services.IUserService;
 
 @Service

@@ -22,8 +22,8 @@ import javax.ws.rs.core.Response;
 
 import org.springframework.stereotype.Component;
 
-import com.ntr1x.treasure.web.model.Order;
-import com.ntr1x.treasure.web.model.Purchase;
+import com.ntr1x.treasure.web.model.p2.Purchase;
+import com.ntr1x.treasure.web.model.p3.Order;
 import com.ntr1x.treasure.web.services.IOrderService;
 import com.ntr1x.treasure.web.services.IOrderService.OrdersResponse;
 import com.ntr1x.treasure.web.services.IPurchaseService;

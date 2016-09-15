@@ -8,9 +8,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import com.ntr1x.treasure.web.converter.AppConverterProvider.LocalDateConverter;
-import com.ntr1x.treasure.web.model.Order;
-import com.ntr1x.treasure.web.model.Purchase;
-import com.ntr1x.treasure.web.model.Purchase.Status;
+import com.ntr1x.treasure.web.model.p2.Purchase;
+import com.ntr1x.treasure.web.model.p2.Purchase.Status;
+import com.ntr1x.treasure.web.model.p3.Order;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;

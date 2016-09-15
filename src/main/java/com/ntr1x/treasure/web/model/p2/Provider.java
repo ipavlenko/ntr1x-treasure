@@ -1,9 +1,10 @@
-package com.ntr1x.treasure.web.model;
+package com.ntr1x.treasure.web.model.p2;
 
 import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -17,6 +18,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.eclipse.persistence.annotations.CascadeOnDelete;
 import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 
+import com.ntr1x.treasure.web.model.p0.Resource;
+import com.ntr1x.treasure.web.model.p0.Resource.ResourceRelation;
+import com.ntr1x.treasure.web.model.p1.User;
+
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,26 +33,31 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "depots")
-@XmlRootElement
-@XmlAccessorType(XmlAccessType.FIELD)
+@Table(name = "providers")
 @PrimaryKeyJoinColumn(name = "ResourceId", referencedColumnName = "Id")
 @CascadeOnDelete
-public class Depot extends Resource {
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
+public class Provider extends Resource {
 
-	@ManyToOne
+	@Column(name = "Title", nullable = false)
+	private String title;
+
+	@Column(name = "Promo", nullable = false, columnDefinition = "MEDIUMTEXT")
+	private String promo;
+
+	@Column(name = "Description", nullable = false, columnDefinition = "MEDIUMTEXT")
+	private String description;
+
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "UserId", nullable = false)
 	@XmlElement
-    @XmlInverseReference(mappedBy = "depots")
 	private User user;
-	
-	@Column(name = "DeliveryPrice")
-	private float deliveryPrice;
-	
-	@XmlElement
-    @XmlInverseReference(mappedBy = "depot")
-    @OneToMany(mappedBy = "depot")
-    @CascadeOnDelete
-    @ApiModelProperty(hidden = true)
-	private List<Order> orders;
+
+    @XmlElement
+    @XmlInverseReference(mappedBy = "provider")
+    @OneToMany(mappedBy = "provider")
+	@ResourceRelation
+	@ApiModelProperty(hidden = true)
+	private List<Purchase> purchases;
 }

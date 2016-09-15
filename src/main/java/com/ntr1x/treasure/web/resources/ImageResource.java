@@ -33,8 +33,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
 import com.ntr1x.treasure.web.converter.ImageSettingsProvider.ImageSettings;
-import com.ntr1x.treasure.web.model.Image;
-import com.ntr1x.treasure.web.model.Session;
+import com.ntr1x.treasure.web.model.p1.Image;
+import com.ntr1x.treasure.web.model.p2.Session;
 import com.ntr1x.treasure.web.reflection.ResourceUtils;
 import com.ntr1x.treasure.web.repository.ImageRepository;
 import com.ntr1x.treasure.web.services.IFileService;

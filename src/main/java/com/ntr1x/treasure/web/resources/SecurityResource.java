@@ -27,10 +27,10 @@ import org.apache.commons.lang3.Validate;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.stereotype.Component;
 
-import com.ntr1x.treasure.web.model.Cart;
-import com.ntr1x.treasure.web.model.Session;
-import com.ntr1x.treasure.web.model.Token;
-import com.ntr1x.treasure.web.model.User;
+import com.ntr1x.treasure.web.model.p1.User;
+import com.ntr1x.treasure.web.model.p2.Cart;
+import com.ntr1x.treasure.web.model.p2.Session;
+import com.ntr1x.treasure.web.model.p2.Token;
 import com.ntr1x.treasure.web.oauth.IOAuthService;
 import com.ntr1x.treasure.web.oauth.IOAuthService.UserInfo;
 import com.ntr1x.treasure.web.oauth.OAuth;

@@ -23,8 +23,8 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.ntr1x.treasure.web.App;
-import com.ntr1x.treasure.web.model.Method;
-import com.ntr1x.treasure.web.model.User;
+import com.ntr1x.treasure.web.model.p1.User;
+import com.ntr1x.treasure.web.model.p2.Method;
 import com.ntr1x.treasure.web.services.IGrantService;
 import com.ntr1x.treasure.web.services.IMethodService;
 import com.ntr1x.treasure.web.services.IMethodService.MethodsResponse;
@@ -239,7 +239,7 @@ public class MethodResourceTest {
                 Method r = target
                     .path(String.format("/methods/i/%d", methods[0].getId()))
                     .request()
-                    .get(Method.class)
+                    .delete(Method.class)
                 ;
                 
                 Assert.assertEquals(methods[0].getId(), r.getId());
@@ -249,7 +249,7 @@ public class MethodResourceTest {
                 Method r = target
                     .path(String.format("/methods/i/%d", methods[1].getId()))
                     .request()
-                    .get(Method.class)
+                    .delete(Method.class)
                 ;
                 
                 Assert.assertEquals(methods[1].getId(), r.getId());
@@ -259,7 +259,7 @@ public class MethodResourceTest {
                 User r = target
                     .path(String.format("/users/i/%d", users[0].getId()))
                     .request()
-                    .get(User.class)
+                    .delete(User.class)
                 ;
                 
                 Assert.assertEquals(users[0].getId(), r.getId());
@@ -269,7 +269,7 @@ public class MethodResourceTest {
                 User r = target
                     .path(String.format("/users/i/%d", users[1].getId()))
                     .request()
-                    .get(User.class)
+                    .delete(User.class)
                 ;
                 
                 Assert.assertEquals(users[1].getId(), r.getId());

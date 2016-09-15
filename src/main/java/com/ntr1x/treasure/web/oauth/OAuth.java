@@ -7,7 +7,7 @@ import javax.transaction.Transactional;
 
 import org.springframework.stereotype.Service;
 
-import com.ntr1x.treasure.web.model.Authenticator;
+import com.ntr1x.treasure.web.model.p1.Authenticator;
 import com.ntr1x.treasure.web.oauth.IOAuthService.Credentials;
 
 @Service

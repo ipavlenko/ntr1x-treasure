@@ -1,4 +1,4 @@
-package com.ntr1x.treasure.web.model;
+package com.ntr1x.treasure.web.model.p1;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,11 +24,26 @@ import org.eclipse.persistence.annotations.CascadeOnDelete;
 import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 
 import com.ntr1x.treasure.web.converter.AppConverterProvider.LocalDateTimeConverter;
+import com.ntr1x.treasure.web.model.p0.Resource;
+import com.ntr1x.treasure.web.model.p2.Cart;
+import com.ntr1x.treasure.web.model.p2.Depot;
+import com.ntr1x.treasure.web.model.p2.Grant;
+import com.ntr1x.treasure.web.model.p2.Method;
+import com.ntr1x.treasure.web.model.p2.Provider;
+import com.ntr1x.treasure.web.model.p2.Purchase;
+import com.ntr1x.treasure.web.model.p2.Session;
+import com.ntr1x.treasure.web.model.p2.Token;
 
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(
 	name = "users",
@@ -37,10 +52,9 @@ import lombok.Setter;
 	}
 )
 @PrimaryKeyJoinColumn(name = "ResourceId", referencedColumnName = "Id")
+@CascadeOnDelete
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-@Getter
-@Setter
 public class User extends Resource {
 	
     public static enum Role {
@@ -102,9 +116,17 @@ public class User extends Resource {
     @ResourceRelation
     private Cart cart;
 	
+	@ResourceRelation
+    @XmlElement
+    @XmlInverseReference(mappedBy = "user")
+    @OneToMany(mappedBy = "user")
+    @CascadeOnDelete
+    @ApiModelProperty(hidden = true)
+    private List<Grant> grants;
+	
 	@XmlElement
     @XmlInverseReference(mappedBy = "user")
-    @OneToMany(mappedBy = "user", cascade = { CascadeType.REMOVE })
+    @OneToMany(mappedBy = "user")
     @CascadeOnDelete
     @ResourceRelation
     @ApiModelProperty(hidden = true)
@@ -112,7 +134,7 @@ public class User extends Resource {
 
     @XmlElement
     @XmlInverseReference(mappedBy = "user")
-    @OneToMany(mappedBy = "user", cascade = { CascadeType.REMOVE })
+    @OneToMany(mappedBy = "user")
     @CascadeOnDelete
     @ResourceRelation
     @ApiModelProperty(hidden = true)
@@ -120,7 +142,7 @@ public class User extends Resource {
 
     @XmlElement
     @XmlInverseReference(mappedBy = "user")
-    @OneToMany(mappedBy = "user", cascade = { CascadeType.REMOVE })
+    @OneToMany(mappedBy = "user")
     @CascadeOnDelete
     @ResourceRelation
     @ApiModelProperty(hidden = true)
@@ -129,7 +151,7 @@ public class User extends Resource {
     @ResourceRelation
     @XmlElement
     @XmlInverseReference(mappedBy = "user")
-    @OneToMany(mappedBy = "user", cascade = { CascadeType.REMOVE })
+    @OneToMany(mappedBy = "user")
     @CascadeOnDelete
     @ApiModelProperty(hidden = true)
     private List<Depot> depots;
@@ -137,7 +159,7 @@ public class User extends Resource {
 	@ResourceRelation
 	@XmlElement
 	@XmlInverseReference(mappedBy = "user")
-	@OneToMany(mappedBy = "user", cascade = { CascadeType.REMOVE })
+	@OneToMany(mappedBy = "user")
 	@CascadeOnDelete
 	@ApiModelProperty(hidden = true)
 	private List<Session> sessions;
@@ -145,16 +167,16 @@ public class User extends Resource {
 	@ResourceRelation
     @XmlElement
     @XmlInverseReference(mappedBy = "user")
-    @OneToMany(mappedBy = "user", cascade = { CascadeType.REMOVE })
+    @OneToMany(mappedBy = "user")
     @CascadeOnDelete
     @ApiModelProperty(hidden = true)
     private List<Token> tokens;
 	
-	@ResourceRelation
-    @XmlElement
-    @XmlInverseReference(mappedBy = "user")
-    @OneToMany(mappedBy = "user", cascade = { CascadeType.REMOVE })
-    @CascadeOnDelete
-    @ApiModelProperty(hidden = true)
-    private List<Grant> grants;
+//	@ResourceRelation
+//    @XmlElement
+//    @XmlInverseReference(mappedBy = "user")
+//    @OneToMany(mappedBy = "user")
+//    @CascadeOnDelete
+//    @ApiModelProperty(hidden = true)
+//    private List<Grant> grants;
 }

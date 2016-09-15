@@ -1,4 +1,4 @@
-package com.ntr1x.treasure.web.model;
+package com.ntr1x.treasure.web.model.p3;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,6 +22,12 @@ import org.eclipse.persistence.annotations.CascadeOnDelete;
 import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 
 import com.ntr1x.treasure.web.converter.AppConverterProvider.LocalDateTimeConverter;
+import com.ntr1x.treasure.web.model.p0.Resource;
+import com.ntr1x.treasure.web.model.p0.Resource.ResourceRelation;
+import com.ntr1x.treasure.web.model.p1.User;
+import com.ntr1x.treasure.web.model.p2.Depot;
+import com.ntr1x.treasure.web.model.p2.Purchase;
+import com.ntr1x.treasure.web.model.p5.OrderEntry;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;

@@ -5,9 +5,9 @@ import javax.persistence.EntityManager;
 
 import org.springframework.stereotype.Service;
 
-import com.ntr1x.treasure.web.model.Image;
-import com.ntr1x.treasure.web.model.Resource;
-import com.ntr1x.treasure.web.model.ResourceImage;
+import com.ntr1x.treasure.web.model.p0.Resource;
+import com.ntr1x.treasure.web.model.p1.Image;
+import com.ntr1x.treasure.web.model.p2.ResourceImage;
 
 @Service
 public class ImageService implements IImageService {

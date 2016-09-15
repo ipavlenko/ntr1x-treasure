@@ -5,7 +5,7 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import com.ntr1x.treasure.web.model.Provider;
+import com.ntr1x.treasure.web.model.p2.Provider;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;

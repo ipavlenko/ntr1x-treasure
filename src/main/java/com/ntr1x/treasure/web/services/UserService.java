@@ -10,9 +10,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import com.ntr1x.treasure.web.model.Cart;
-import com.ntr1x.treasure.web.model.User;
-import com.ntr1x.treasure.web.model.User.Role;
+import com.ntr1x.treasure.web.model.p1.User;
+import com.ntr1x.treasure.web.model.p1.User.Role;
+import com.ntr1x.treasure.web.model.p2.Cart;
 import com.ntr1x.treasure.web.reflection.ResourceUtils;
 import com.ntr1x.treasure.web.repository.UserRepository;
 

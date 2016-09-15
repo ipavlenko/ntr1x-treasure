@@ -7,6 +7,7 @@ import org.junit.runners.Suite.SuiteClasses;
 import com.ntr1x.treasure.web.resources.CategoryResourceTest;
 import com.ntr1x.treasure.web.resources.MethodResourceTest;
 import com.ntr1x.treasure.web.resources.ProviderResourceTest;
+import com.ntr1x.treasure.web.resources.PurchaseResourceTest;
 import com.ntr1x.treasure.web.resources.UserResourceTest;
 
 @RunWith(Suite.class)
@@ -14,7 +15,8 @@ import com.ntr1x.treasure.web.resources.UserResourceTest;
     UserResourceTest.class,
     CategoryResourceTest.class,
     ProviderResourceTest.class,
-    MethodResourceTest.class
+    MethodResourceTest.class,
+    PurchaseResourceTest.class
 })
 public class ResourcesTestSuite {
     

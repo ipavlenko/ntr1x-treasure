@@ -24,13 +24,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
-import com.ntr1x.treasure.web.model.Attribute;
-import com.ntr1x.treasure.web.model.Comment;
-import com.ntr1x.treasure.web.model.Grant;
-import com.ntr1x.treasure.web.model.Like;
-import com.ntr1x.treasure.web.model.Resource;
-import com.ntr1x.treasure.web.model.Session;
-import com.ntr1x.treasure.web.model.User;
+import com.ntr1x.treasure.web.model.p0.Resource;
+import com.ntr1x.treasure.web.model.p1.Attribute;
+import com.ntr1x.treasure.web.model.p1.User;
+import com.ntr1x.treasure.web.model.p2.Comment;
+import com.ntr1x.treasure.web.model.p2.Grant;
+import com.ntr1x.treasure.web.model.p2.ResourceLike;
+import com.ntr1x.treasure.web.model.p2.Session;
 import com.ntr1x.treasure.web.reflection.ResourceUtils;
 import com.ntr1x.treasure.web.repository.LikeRepository;
 import com.ntr1x.treasure.web.repository.ResourceRepository;
@@ -99,7 +99,7 @@ public class ResourceResource {
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({ "auth" })
     @Transactional
-    public Like like(@PathParam("id") long id, LikeRequest like) {
+    public ResourceLike like(@PathParam("id") long id, LikeRequest like) {
 	    
 	    if (like.value > 1 || like.value < -1) {
 	        throw new WebApplicationException("Wrong rate value", Response.Status.BAD_REQUEST);
@@ -108,7 +108,7 @@ public class ResourceResource {
 	    User u = session.getUser();
 	    Resource r = em.find(Resource.class, id);
 	    
-	    Like l = likes.findByRelateIdAndUserId(id, session.getUser().getId());
+	    ResourceLike l = likes.findByRelateIdAndUserId(id, session.getUser().getId());
 	    
 	    if (l != null) {
 	        
@@ -122,7 +122,7 @@ public class ResourceResource {
 	        
 	    } else {
 	        
-	        l = new Like(); {
+	        l = new ResourceLike(); {
 
 	            l.setValue(like.value);
 	            l.setUser(u);
@@ -169,14 +169,14 @@ public class ResourceResource {
         
         Grant g = new Grant(); {
             
-            g.setAlias(c.getAlias());
+//            g.setAlias(c.getAlias());
             g.setUser(u);
             g.setAction("admin");
             
             em.persist(g);
             em.flush();
             
-            g.setAlias(ResourceUtils.alias(u, "grants/i", g));
+//            g.setAlias(ResourceUtils.alias(u, "grants/i", g));
             
             em.merge(g);
             em.flush();

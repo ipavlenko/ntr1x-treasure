@@ -9,9 +9,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import com.ntr1x.treasure.web.model.Order;
-import com.ntr1x.treasure.web.model.Order.Status;
-import com.ntr1x.treasure.web.model.OrderEntry;
+import com.ntr1x.treasure.web.model.p3.Order;
+import com.ntr1x.treasure.web.model.p3.Order.Status;
+import com.ntr1x.treasure.web.model.p5.OrderEntry;
 import com.ntr1x.treasure.web.repository.OrderRepository;
 
 @Service

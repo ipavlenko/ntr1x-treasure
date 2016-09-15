@@ -1,7 +1,7 @@
 package com.ntr1x.treasure.web.bootstrap;
 
-import com.ntr1x.treasure.web.model.Category;
-import com.ntr1x.treasure.web.model.User;
+import com.ntr1x.treasure.web.model.p1.Category;
+import com.ntr1x.treasure.web.model.p1.User;
 
 public class BootstrapState {
     

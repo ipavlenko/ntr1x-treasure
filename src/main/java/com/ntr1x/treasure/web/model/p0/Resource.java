@@ -1,4 +1,4 @@
-package com.ntr1x.treasure.web.model;
+package com.ntr1x.treasure.web.model.p0;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -31,6 +31,13 @@ import org.eclipse.persistence.annotations.CascadeOnDelete;
 import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 
 import com.ntr1x.treasure.web.filtering.ResourceFiltering;
+import com.ntr1x.treasure.web.model.p1.Category;
+import com.ntr1x.treasure.web.model.p1.Tag;
+import com.ntr1x.treasure.web.model.p2.Comment;
+import com.ntr1x.treasure.web.model.p2.ResourceAttribute;
+import com.ntr1x.treasure.web.model.p2.ResourceCategory;
+import com.ntr1x.treasure.web.model.p2.ResourceImage;
+import com.ntr1x.treasure.web.model.p2.ResourceLike;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AccessLevel;
@@ -87,7 +94,7 @@ public class Resource {
 //	@OneToMany(mappedBy = "relate")
 //	@CascadeOnDelete
 //	@ApiModelProperty(hidden = true)
-//    private List<Attachment> attachments;
+//	private List<Attachment> attachments;
 	
 	@ResourceRelation
 	@XmlElement
@@ -96,6 +103,14 @@ public class Resource {
 	@CascadeOnDelete
 	@ApiModelProperty(hidden = true)
     private List<ResourceCategory> categories;
+	
+	@ResourceRelation
+    @XmlElement
+    @XmlInverseReference(mappedBy = "relate")
+    @OneToMany(mappedBy = "relate")
+    @CascadeOnDelete
+    @ApiModelProperty(hidden = true)
+    private List<ResourceAttribute> attributes;
 	
 	@ResourceRelation
     @XmlElement
@@ -114,12 +129,12 @@ public class Resource {
     private List<Category> subcategories;
 	
 	@ResourceRelation
-	@XmlElement
-	@XmlInverseReference(mappedBy = "relate")
-	@OneToMany(mappedBy = "relate")
-	@CascadeOnDelete
-	@ApiModelProperty(hidden = true)
-    private List<Like> likes;
+    @XmlElement
+    @XmlInverseReference(mappedBy = "relate")
+    @OneToMany(mappedBy = "relate")
+    @CascadeOnDelete
+    @ApiModelProperty(hidden = true)
+    private List<ResourceLike> likes;
 	
 	@Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD})
     @Retention(RetentionPolicy.RUNTIME)

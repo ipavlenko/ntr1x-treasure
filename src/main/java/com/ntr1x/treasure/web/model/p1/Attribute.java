@@ -1,4 +1,4 @@
-package com.ntr1x.treasure.web.model;
+package com.ntr1x.treasure.web.model.p1;
 
 import java.util.List;
 
@@ -19,6 +19,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.eclipse.persistence.annotations.CascadeOnDelete;
 import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
+
+import com.ntr1x.treasure.web.model.p0.Resource;
+import com.ntr1x.treasure.web.model.p0.Resource.ResourceRelation;
+import com.ntr1x.treasure.web.model.p2.AttributeOption;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

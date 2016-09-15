@@ -21,10 +21,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.springframework.stereotype.Component;
 
 import com.ntr1x.treasure.web.model.Action;
-import com.ntr1x.treasure.web.model.Good;
-import com.ntr1x.treasure.web.model.Modification;
-import com.ntr1x.treasure.web.model.Purchase;
-import com.ntr1x.treasure.web.model.Session;
+import com.ntr1x.treasure.web.model.p2.Purchase;
+import com.ntr1x.treasure.web.model.p2.Session;
+import com.ntr1x.treasure.web.model.p3.Good;
+import com.ntr1x.treasure.web.model.p4.Modification;
 import com.ntr1x.treasure.web.reflection.ResourceUtils;
 import com.ntr1x.treasure.web.repository.GoodRepository;
 import com.ntr1x.treasure.web.services.ICategoryService;

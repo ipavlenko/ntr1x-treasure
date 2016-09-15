@@ -1,9 +1,8 @@
-package com.ntr1x.treasure.web.model;
+package com.ntr1x.treasure.web.model.p1;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
@@ -15,29 +14,31 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.eclipse.persistence.annotations.CascadeOnDelete;
 import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 
+import com.ntr1x.treasure.web.model.p0.Resource;
+
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Entity
-@Table(name = "categories")
-@PrimaryKeyJoinColumn(name = "ResourceId", referencedColumnName = "Id")
-@XmlRootElement
-@XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+@Table(name = "tags")
+@PrimaryKeyJoinColumn(name = "ResourceId", referencedColumnName = "Id")
 @CascadeOnDelete
-public class Category extends Resource {
-
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
+public class Tag extends Resource {
+	
 	@XmlElement
-	@XmlInverseReference(mappedBy = "subcategories")
+	@XmlInverseReference(mappedBy = "tags")
 	@ManyToOne
-	@JoinColumn(name = "RelateId", nullable = true, updatable = false)
+	@JoinColumn(name = "RelateId", nullable = false, updatable = false)
 	private Resource relate;
 	
-	@Column(name = "Title")
-	private String title;
-	
-	@Lob
-	@Column(name = "Description")
-	private String description;
+	@Column(name = "Value")
+	private String value;
 }

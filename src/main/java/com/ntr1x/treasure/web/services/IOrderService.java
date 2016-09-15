@@ -4,7 +4,7 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import com.ntr1x.treasure.web.model.Order;
+import com.ntr1x.treasure.web.model.p3.Order;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;

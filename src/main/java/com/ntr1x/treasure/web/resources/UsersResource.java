@@ -19,8 +19,8 @@ import javax.ws.rs.core.MediaType;
 
 import org.springframework.stereotype.Component;
 
-import com.ntr1x.treasure.web.model.User;
-import com.ntr1x.treasure.web.model.User.Role;
+import com.ntr1x.treasure.web.model.p1.User;
+import com.ntr1x.treasure.web.model.p1.User.Role;
 import com.ntr1x.treasure.web.services.IUserService;
 import com.ntr1x.treasure.web.services.IUserService.CreateUser;
 import com.ntr1x.treasure.web.services.IUserService.UpdateUser;

@@ -1,7 +1,7 @@
 package com.ntr1x.treasure.web.services;
 
-import com.ntr1x.treasure.web.model.Resource;
-import com.ntr1x.treasure.web.model.User;
+import com.ntr1x.treasure.web.model.p0.Resource;
+import com.ntr1x.treasure.web.model.p1.User;
 
 import lombok.Data;
 

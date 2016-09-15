@@ -4,7 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.ntr1x.treasure.web.model.Grant;
+import com.ntr1x.treasure.web.model.p2.Grant;
 
 public interface GrantRepository extends JpaRepository<Grant, Long> {
     

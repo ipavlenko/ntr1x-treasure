@@ -19,7 +19,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.springframework.stereotype.Component;
 
-import com.ntr1x.treasure.web.model.Method;
+import com.ntr1x.treasure.web.model.p2.Method;
 import com.ntr1x.treasure.web.services.IMethodService;
 import com.ntr1x.treasure.web.services.ISecurityService;
 import com.ntr1x.treasure.web.services.IMethodService.MethodCreate;

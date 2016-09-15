@@ -1,6 +1,7 @@
 package com.ntr1x.treasure.web;
 
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.jersey.logging.LoggingFeature;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.message.filtering.EntityFilteringFeature;
 import org.glassfish.jersey.moxy.json.MoxyJsonFeature;
@@ -61,6 +62,7 @@ public class JerseyConfig extends ResourceConfig {
 		register(RolesAllowedDynamicFeature.class);
 		register(AuthenticationFilter.class);
 		register(AuthorizationFilter.class);
+		register(LoggingFeature.class);
 		
 		register(new ContainerLifecycleListener() {
 		    

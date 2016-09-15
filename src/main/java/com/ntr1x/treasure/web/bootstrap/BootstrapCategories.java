@@ -8,7 +8,7 @@ import javax.ws.rs.core.MediaType;
 import org.springframework.stereotype.Service;
 
 import com.ntr1x.treasure.web.bootstrap.BootstrapState.Directories;
-import com.ntr1x.treasure.web.model.Category;
+import com.ntr1x.treasure.web.model.p1.Category;
 import com.ntr1x.treasure.web.resources.CategoryResource.CategoryCreate;
 
 @Service

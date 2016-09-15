@@ -4,7 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.ntr1x.treasure.web.model.Resource;
+import com.ntr1x.treasure.web.model.p0.Resource;
 
 
 public interface ResourceRepository extends JpaRepository<Resource, Long> {

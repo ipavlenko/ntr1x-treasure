@@ -1,3 +1,4 @@
+package com.ntr1x.treasure.web.model;
 //package com.ntr1x.treasure.web.model;
 //
 //import java.util.UUID;

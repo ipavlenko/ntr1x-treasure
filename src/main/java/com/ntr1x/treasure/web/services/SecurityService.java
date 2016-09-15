@@ -14,9 +14,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Service;
 
 import com.google.common.hash.Hashing;
-import com.ntr1x.treasure.web.model.Grant;
-import com.ntr1x.treasure.web.model.Resource;
-import com.ntr1x.treasure.web.model.User;
+import com.ntr1x.treasure.web.model.p0.Resource;
+import com.ntr1x.treasure.web.model.p1.User;
+import com.ntr1x.treasure.web.model.p2.Grant;
 import com.ntr1x.treasure.web.reflection.ResourceUtils;
 import com.ntr1x.treasure.web.repository.GrantRepository;
 import com.ntr1x.treasure.web.utils.ConversionUtils;
@@ -224,7 +224,7 @@ public class SecurityService implements ISecurityService {
         em.persist(grant);
         em.flush();
         
-        grant.setAlias(ResourceUtils.alias(user, "grants/i", grant));
+//        grant.setAlias(ResourceUtils.alias(user, "grants/i", grant));
         
         em.merge(grant);
         em.flush();
