@@ -1,6 +1,5 @@
 package com.ntr1x.treasure.web.resources;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -24,19 +23,19 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.ntr1x.treasure.web.App;
-import com.ntr1x.treasure.web.model.Purchase;
+import com.ntr1x.treasure.web.model.Method;
 import com.ntr1x.treasure.web.model.User;
 import com.ntr1x.treasure.web.services.IGrantService;
+import com.ntr1x.treasure.web.services.IMethodService;
+import com.ntr1x.treasure.web.services.IMethodService.MethodsResponse;
 import com.ntr1x.treasure.web.services.IProfilerService;
-import com.ntr1x.treasure.web.services.IPurchaseService;
-import com.ntr1x.treasure.web.services.IPurchaseService.PurchasesResponse;
 import com.ntr1x.treasure.web.services.IUserService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = App.class, webEnvironment = WebEnvironment.RANDOM_PORT)
 @TestPropertySource(locations = { "classpath:application.properties", "classpath:application-test.properties" })
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class PurchaseResourceTest {
+public class MethodResourceTest {
 
     @LocalServerPort
     private int port;
@@ -101,7 +100,7 @@ public class PurchaseResourceTest {
                     s.middlename = "test";
                     s.confirmed = true;
                     s.grants = new IGrantService.CreateGrant[] {
-                        new IGrantService.CreateGrant("/purchases", "admin")
+                        new IGrantService.CreateGrant("/methods", "admin")
                     };
                 }
                 
@@ -117,7 +116,7 @@ public class PurchaseResourceTest {
             }
         });
         
-        Purchase[] purchases = { null, null };
+        Method[] methods = { null, null };
         
         profiler.withCredentials(target, "user0@example.com", "user0", (token) -> {
            
@@ -129,57 +128,50 @@ public class PurchaseResourceTest {
             ;
             
             {
-                IPurchaseService.PurchaseCreate s = new IPurchaseService.PurchaseCreate(); {
+                IMethodService.MethodCreate s = new IMethodService.MethodCreate(); {
+                    s.title = "Demo Method";
                     s.user = user.getId();
-                    s.title = "Demo Purchase";
-                    s.open = LocalDate.now();
-                    s.stop = LocalDate.now().plusWeeks(1);
-                    s.delivery = LocalDate.now().plusWeeks(2);
-                    s.nextDelivery = LocalDate.now().plusWeeks(3);
-                    
                 }
                 
-                Purchase r = target
-                    .path("/me/purchases")
+                Method r = target
+                    .path("/me/methods")
                     .request(MediaType.APPLICATION_JSON_TYPE)
                     .header(HttpHeaders.AUTHORIZATION, token)
-                    .post(Entity.entity(s, MediaType.APPLICATION_JSON_TYPE), Purchase.class)
+                    .post(Entity.entity(s, MediaType.APPLICATION_JSON_TYPE), Method.class)
                 ;
                 
                 Assert.assertNotNull(r.getId());
                 Assert.assertEquals(s.title, r.getTitle());
-                Assert.assertEquals(s.promo, r.getPromo());
-                Assert.assertEquals(s.description, r.getDescription());
                 Assert.assertNull(r.getPurchases());
                 
-                purchases[0] = r;
+                methods[0] = r;
             }
             
             {
-                List<Purchase> r = target
-                    .path("/me/purchases")
+                List<Method> r = target
+                    .path("/me/methods")
                     .request()
                     .header(HttpHeaders.AUTHORIZATION, token)
-                    .get(new GenericType<List<Purchase>>() {})
+                    .get(new GenericType<List<Method>>() {})
                 ;
                 
                 Assert.assertEquals(1, r.size());
             }
             
             {
-                PurchasesResponse r = target
-                    .path("/purchases")
+                MethodsResponse r = target
+                    .path("/methods")
                     .queryParam("page", 0)
                     .queryParam("size", 10)
                     .request()
                     .header(HttpHeaders.AUTHORIZATION, token)
-                    .get(PurchasesResponse.class)
+                    .get(MethodsResponse.class)
                 ;
                 
 
-                Assert.assertNotNull(r.purchases);
+                Assert.assertNotNull(r.methods);
                 Assert.assertEquals(1, r.count);
-                Assert.assertEquals(1, r.purchases.size());
+                Assert.assertEquals(1, r.methods.size());
             }
         });
         
@@ -193,55 +185,50 @@ public class PurchaseResourceTest {
             ;
             
             {
-                IPurchaseService.PurchaseCreate s = new IPurchaseService.PurchaseCreate(); {
-                    s.title = "Demo Purchase";
+                IMethodService.MethodCreate s = new IMethodService.MethodCreate(); {
+                    s.title = "Demo Method";
                     s.user = user.getId();
-                    s.promo = "Demo Purchase Promo";
-                    s.description = "Demo Purchase Decription";
                 }
                 
-                Purchase r = target
-                    .path("/purchases")
+                Method r = target
+                    .path("/methods")
                     .request(MediaType.APPLICATION_JSON_TYPE)
                     .header(HttpHeaders.AUTHORIZATION, token)
-                    .post(Entity.entity(s, MediaType.APPLICATION_JSON_TYPE), Purchase.class)
+                    .post(Entity.entity(s, MediaType.APPLICATION_JSON_TYPE), Method.class)
                 ;
                 
                 Assert.assertNotNull(r.getId());
                 Assert.assertEquals(s.title, r.getTitle());
-                Assert.assertEquals(s.promo, r.getPromo());
-                Assert.assertEquals(s.description, r.getDescription());
                 Assert.assertNull(r.getPurchases());
                 
-                purchases[1] = r;
+                methods[1] = r;
             }
-            
 
             {
-                List<Purchase> r = target
-                    .path("/me/purchases")
+                List<Method> r = target
+                    .path("/me/methods")
                     .request()
                     .header(HttpHeaders.AUTHORIZATION, token)
-                    .get(new GenericType<List<Purchase>>() {})
+                    .get(new GenericType<List<Method>>() {})
                 ;
                 
                 Assert.assertEquals(1, r.size());
             }
             
             {
-                PurchasesResponse r = target
-                    .path("/purchases")
+                MethodsResponse r = target
+                    .path("/methods")
                     .queryParam("page", 0)
                     .queryParam("size", 10)
                     .request()
                     .header(HttpHeaders.AUTHORIZATION, token)
-                    .get(PurchasesResponse.class)
+                    .get(MethodsResponse.class)
                 ;
                 
 
-                Assert.assertNotNull(r.purchases);
+                Assert.assertNotNull(r.methods);
                 Assert.assertEquals(2, r.count);
-                Assert.assertEquals(2, r.purchases.size());
+                Assert.assertEquals(2, r.methods.size());
             }
             
         });
@@ -249,23 +236,23 @@ public class PurchaseResourceTest {
         profiler.withDisabledSecurity(() -> {
             
             {
-                Purchase r = target
-                    .path(String.format("/purchases/i/%d", purchases[0].getId()))
+                Method r = target
+                    .path(String.format("/methods/i/%d", methods[0].getId()))
                     .request()
-                    .get(Purchase.class)
+                    .get(Method.class)
                 ;
                 
-                Assert.assertEquals(purchases[0].getId(), r.getId());
+                Assert.assertEquals(methods[0].getId(), r.getId());
             }
             
             {
-                Purchase r = target
-                    .path(String.format("/purchases/i/%d", purchases[1].getId()))
+                Method r = target
+                    .path(String.format("/methods/i/%d", methods[1].getId()))
                     .request()
-                    .get(Purchase.class)
+                    .get(Method.class)
                 ;
                 
-                Assert.assertEquals(purchases[1].getId(), r.getId());
+                Assert.assertEquals(methods[1].getId(), r.getId());
             }
             
             {

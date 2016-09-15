@@ -22,6 +22,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
 import com.ntr1x.treasure.web.model.Cart;
+import com.ntr1x.treasure.web.model.Method;
 import com.ntr1x.treasure.web.model.Order;
 import com.ntr1x.treasure.web.model.OrderEntry;
 import com.ntr1x.treasure.web.model.Provider;
@@ -30,13 +31,14 @@ import com.ntr1x.treasure.web.model.Session;
 import com.ntr1x.treasure.web.model.User;
 import com.ntr1x.treasure.web.repository.OrderRepository;
 import com.ntr1x.treasure.web.repository.PurchaseRepository;
+import com.ntr1x.treasure.web.services.IMethodService;
+import com.ntr1x.treasure.web.services.IMethodService.MethodCreate;
 import com.ntr1x.treasure.web.services.IOrderService;
 import com.ntr1x.treasure.web.services.IOrderService.OrdersResponse;
 import com.ntr1x.treasure.web.services.IProviderService;
 import com.ntr1x.treasure.web.services.IProviderService.ProviderCreate;
 import com.ntr1x.treasure.web.services.IPurchaseService;
 import com.ntr1x.treasure.web.services.IPurchaseService.PurchaseCreate;
-import com.ntr1x.treasure.web.services.IPurchaseService.PurchasesResponse;
 import com.ntr1x.treasure.web.services.ISecurityService;
 
 import io.swagger.annotations.Api;
@@ -52,13 +54,13 @@ public class MeResource {
     private Session session;
     
     @Inject
-    private ISecurityService security;
-    
-    @Inject
     private PurchaseRepository purchases;
     
     @Inject
     private OrderRepository orders;
+    
+    @Inject
+    private ISecurityService security;
     
     @Inject
     private IOrderService orderService;
@@ -68,6 +70,9 @@ public class MeResource {
     
     @Inject
     private IProviderService providerService;
+    
+    @Inject
+    private IMethodService methodService;
     
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -119,22 +124,19 @@ public class MeResource {
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({ "auth" })
     @Transactional
-    public PurchasesResponse purchases(
+    public IPurchaseService.DetailsResponse purchases(
         @QueryParam("page") @ApiParam(example = "0") int page,
         @QueryParam("size") @ApiParam(example = "10") int size,
         @QueryParam("status") Purchase.Status status
     ) {
                         
-        Page<Purchase> result = status == null
-            ? purchases.findByUserId(session.getUser().getId(), new PageRequest(page, size))
-            : purchases.findByUserIdAndStatus(session.getUser().getId(), status, new PageRequest(page, size))
-        ;
+        Page<Purchase> result = purchases.findByUserIdAndStatus(session.getUser().getId(), status, new PageRequest(page, size));
 
-        List<PurchasesResponse.Details> purchases = new ArrayList<>();
+        List<IPurchaseService.DetailsResponse.Details> purchases = new ArrayList<>();
 
         for (Purchase p : result) {
             
-            PurchasesResponse.Details details = new PurchasesResponse.Details(); {
+            IPurchaseService.DetailsResponse.Details details = new IPurchaseService.DetailsResponse.Details(); {
                 
                 details.orders = orders.findByStatusAndUserIdAndPurchaseId(null, null, p.getId(), null).getContent();
                 details.purchase = p;
@@ -160,7 +162,7 @@ public class MeResource {
             purchases.add(details);
         }
 
-        return new PurchasesResponse(
+        return new IPurchaseService.DetailsResponse(
             result.getTotalElements(),
             page,
             size,
@@ -214,5 +216,34 @@ public class MeResource {
         security.grant(session.getUser(), provider.getAlias(), "admin");
         
         return provider;
+    }
+    
+    @GET
+    @Path("/methods")
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({ "auth" })
+    @Transactional
+    public List<Method> methods() {
+        
+        return session.getUser().getMethods();
+    }
+    
+    @POST
+    @Path("/methods")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({ "auth" })
+    @Transactional
+    public Method methodsCreate(MethodCreate create) {
+        
+        if (create.user != session.getUser().getId()) {
+            throw new WebApplicationException("Cannot create payment method for another user", Response.Status.FORBIDDEN);
+        }
+        
+        Method method = methodService.create(create);
+        
+        security.grant(session.getUser(), method.getAlias(), "admin");
+        
+        return method;
     }
 }

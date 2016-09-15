@@ -1,7 +1,6 @@
 package com.ntr1x.treasure.web.resources;
 
 import java.util.EnumSet;
-import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
@@ -20,26 +19,21 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.xml.bind.annotation.XmlRootElement;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
 import com.ntr1x.treasure.web.model.Order;
 import com.ntr1x.treasure.web.model.Purchase;
-import com.ntr1x.treasure.web.repository.PurchaseRepository;
 import com.ntr1x.treasure.web.services.IOrderService;
 import com.ntr1x.treasure.web.services.IOrderService.OrdersResponse;
 import com.ntr1x.treasure.web.services.IPurchaseService;
 import com.ntr1x.treasure.web.services.IPurchaseService.PurchaseCreate;
 import com.ntr1x.treasure.web.services.IPurchaseService.PurchaseUpdate;
+import com.ntr1x.treasure.web.services.IPurchaseService.PurchasesResponse;
 import com.ntr1x.treasure.web.services.ISecurityService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 
 @Api("Purchases")
 @Component
@@ -56,13 +50,10 @@ public class PurchaseResource {
     private ISecurityService security;
     
 	@Inject
-	private PurchaseRepository purchases;
-	
-	@Inject
-    private IPurchaseService purchaseService;
+    private IPurchaseService purchases;
 	
     @Inject
-    private IOrderService orderService;
+    private IOrderService orders;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -73,21 +64,7 @@ public class PurchaseResource {
         @QueryParam("user") Long user,
         @QueryParam("status") Purchase.Status status
     ) {
-        
-        // TODO Написать крутой запрос чтобы один на все фильтры
-        Page<Purchase> p = null;
-        if (status != null && user != null) {
-            p = purchases.findByUserIdAndStatus(user, status, new PageRequest(page, size));
-        } else if (user != null) {
-            p = purchases.findByUserId(user, new PageRequest(page, size));
-        }
-        
-        return new PurchasesResponse(
-            p.getTotalElements(),
-            page,
-            size,
-            p.getContent()
-        );
+        return purchases.list(page, size, user, status);
     }
     
     @GET
@@ -96,8 +73,7 @@ public class PurchaseResource {
     @Transactional
     public Purchase select(@PathParam("id") long id) {
         
-        Purchase purchase = em.find(Purchase.class, id);
-        return purchase;
+        return purchases.select(id);
     }
     
     @GET
@@ -112,7 +88,7 @@ public class PurchaseResource {
         @QueryParam("user") Long user,
         @QueryParam("status") Order.Status status
     ) {
-        return orderService.select(page, size, status, user, purchase);
+        return orders.select(page, size, status, user, purchase);
     }
         
     @POST
@@ -122,7 +98,7 @@ public class PurchaseResource {
     @Transactional
     public Purchase create(PurchaseCreate create) {
         
-        Purchase purchase = purchaseService.create(create);
+        Purchase purchase = purchases.create(create);
         
         security.grant(purchase.getUser(), purchase.getAlias(), "admin");
         
@@ -137,7 +113,7 @@ public class PurchaseResource {
     @Transactional
     public Purchase update(@PathParam("id") long id, PurchaseUpdate update) {
         
-        Purchase purchase = purchaseService.update(id, update);
+        Purchase purchase = purchases.update(id, update);
         
         return purchase;
     }
@@ -209,29 +185,7 @@ public class PurchaseResource {
     @Transactional
     public Purchase remove(@PathParam("id") long id) {
         
-        Purchase purchase = em.find(Purchase.class, id);
-
-        if (!purchase.getGoods().isEmpty()) {
-            throw new WebApplicationException("Purchase in use", Response.Status.CONFLICT);
-        }
-        
-        em.remove(purchase);
-        em.flush();
-        
-        return purchase;
-    }
-
-    
-    
-    @XmlRootElement
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class PurchasesResponse {
-        
-        public long count;
-        public int page;
-        public int size;
-        public List<Purchase> purchases;
+        return purchases.remove(id);
     }
 	
 //	@Data

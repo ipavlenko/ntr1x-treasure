@@ -10,6 +10,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import com.ntr1x.treasure.web.converter.AppConverterProvider.LocalDateConverter;
 import com.ntr1x.treasure.web.model.Order;
 import com.ntr1x.treasure.web.model.Purchase;
+import com.ntr1x.treasure.web.model.Purchase.Status;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -19,6 +20,11 @@ public interface IPurchaseService {
     
     Purchase create(PurchaseCreate create);
     Purchase update(long id, PurchaseUpdate update);
+    Purchase remove(long id);
+    
+    PurchasesResponse list(int page, int size, Long user, Status status);
+    
+    Purchase select(long id);
     
     @XmlRootElement
     @NoArgsConstructor
@@ -89,7 +95,7 @@ public interface IPurchaseService {
     @XmlRootElement
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class PurchasesResponse {
+    public static class DetailsResponse {
         
         public long count;
         public int page;
@@ -109,5 +115,16 @@ public interface IPurchaseService {
             public int canceledCnt;
             public float goodsCnt;
         }
+    }
+    
+    @XmlRootElement
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class PurchasesResponse {
+        
+        public long count;
+        public int page;
+        public int size;
+        public List<Purchase> purchases;
     }
 }

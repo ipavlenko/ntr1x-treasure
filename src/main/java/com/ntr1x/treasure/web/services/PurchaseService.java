@@ -3,7 +3,11 @@ package com.ntr1x.treasure.web.services;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import com.ntr1x.treasure.web.model.Method;
@@ -11,6 +15,7 @@ import com.ntr1x.treasure.web.model.Provider;
 import com.ntr1x.treasure.web.model.Purchase;
 import com.ntr1x.treasure.web.model.User;
 import com.ntr1x.treasure.web.reflection.ResourceUtils;
+import com.ntr1x.treasure.web.repository.PurchaseRepository;
 
 @Service
 public class PurchaseService implements IPurchaseService {
@@ -18,8 +23,8 @@ public class PurchaseService implements IPurchaseService {
     @PersistenceContext
     private EntityManager em;
     
-//    @Inject
-//    private PurchaseRepository purchases;
+    @Inject
+    private PurchaseRepository purchases;
     
     @Inject
     private IImageService imageService;
@@ -89,5 +94,42 @@ public class PurchaseService implements IPurchaseService {
         return purchase;
     }
     
+    @Override
+    public Purchase remove(long id) {
+        
+        Purchase purchase = em.find(Purchase.class, id);
+
+        if (!purchase.getGoods().isEmpty()) {
+            throw new WebApplicationException("Purchase in use", Response.Status.CONFLICT);
+        }
+        
+        em.remove(purchase);
+        em.flush();
+        
+        return purchase;
+    }
     
+    @Override
+    public Purchase select(long id) {
+        
+        return em.find(Purchase.class, id);
+    }
+    
+    @Override
+    public PurchasesResponse list(
+            int page,
+            int size,
+            Long user,
+            Purchase.Status status
+    ) {
+        
+        Page<Purchase> p = purchases.findByUserIdAndStatus(user, status, new PageRequest(page, size));
+        
+        return new PurchasesResponse(
+            p.getTotalElements(),
+            page,
+            size,
+            p.getContent()
+        );
+    }
 }
