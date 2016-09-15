@@ -35,17 +35,18 @@ public class CartEntry extends Resource {
 		COMPARE
 	}
 
-	@ManyToOne
-	@JoinColumn(name = "CartId", nullable = false, updatable = true)
 	@XmlElement
     @XmlInverseReference(mappedBy = "entries")
+	@ManyToOne
+	@JoinColumn(name = "CartId", nullable = false, updatable = true)
 	private Cart cart;
 
-	@ManyToOne
-	@JoinColumn(name = "ModificationId", nullable = false, updatable = true)
 	@XmlElement
-	private Modification modification;
-
+    @XmlInverseReference(mappedBy = "carted")
+    @ManyToOne
+    @JoinColumn(name = "ModificationId", nullable = false, updatable = true)
+    private Modification modification;
+	
 	@Column(name = "Type", nullable = false)
 	private Type type;
 

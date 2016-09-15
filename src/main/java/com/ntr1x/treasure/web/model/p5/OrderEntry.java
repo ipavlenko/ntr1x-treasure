@@ -12,6 +12,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.eclipse.persistence.annotations.CascadeOnDelete;
+import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 
 import com.ntr1x.treasure.web.model.p0.Resource;
 import com.ntr1x.treasure.web.model.p3.Order;
@@ -34,14 +35,16 @@ import lombok.Setter;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class OrderEntry extends Resource {
 
-	@ManyToOne
-	@JoinColumn(name = "OrderId", nullable = false, updatable = true)
 	@XmlElement
-	private Order order;
+	@XmlInverseReference(mappedBy = "entries")
+	@ManyToOne
+    @JoinColumn(name = "OrderId", nullable = false, updatable = true)
+    private Order order;
 
+	@XmlElement
+	@XmlInverseReference(mappedBy = "ordered")
 	@ManyToOne
 	@JoinColumn(name = "ModificationId", nullable = false, updatable = true)
-	@XmlElement
 	private Modification modification;
 
 	@Column(name = "Quantity")

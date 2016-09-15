@@ -23,7 +23,6 @@ import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 
 import com.ntr1x.treasure.web.converter.AppConverterProvider.LocalDateTimeConverter;
 import com.ntr1x.treasure.web.model.p0.Resource;
-import com.ntr1x.treasure.web.model.p0.Resource.ResourceRelation;
 import com.ntr1x.treasure.web.model.p1.User;
 import com.ntr1x.treasure.web.model.p2.Depot;
 import com.ntr1x.treasure.web.model.p2.Purchase;

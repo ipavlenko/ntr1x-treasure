@@ -1,9 +1,12 @@
 package com.ntr1x.treasure.web.model.p4;
 
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -16,7 +19,10 @@ import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 
 import com.ntr1x.treasure.web.model.p0.Resource;
 import com.ntr1x.treasure.web.model.p3.Good;
+import com.ntr1x.treasure.web.model.p5.CartEntry;
+import com.ntr1x.treasure.web.model.p5.OrderEntry;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -48,4 +54,20 @@ public class Modification extends Resource {
 
     @Column(name = "SizeRange", nullable = false)
     private float sizeRange;
+    
+    @ResourceRelation
+    @XmlElement
+    @XmlInverseReference(mappedBy = "modification")
+    @OneToMany(mappedBy = "modification")
+    @CascadeOnDelete
+    @ApiModelProperty(hidden = true)
+    private List<OrderEntry> ordered;
+    
+    @ResourceRelation
+    @XmlElement
+    @XmlInverseReference(mappedBy = "modification")
+    @OneToMany(mappedBy = "modification")
+    @CascadeOnDelete
+    @ApiModelProperty(hidden = true)
+    private List<CartEntry> carted;
 }
