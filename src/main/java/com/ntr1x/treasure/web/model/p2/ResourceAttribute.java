@@ -7,7 +7,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OrderBy;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -52,8 +51,7 @@ public class ResourceAttribute extends Resource {
     @XmlElement
     @XmlInverseReference(mappedBy = "values")
 	@ManyToOne
-	@JoinColumn(name = "AttributeId")
-    @OrderBy("order ASC")
+	@JoinColumn(name = "AttributeId", nullable = false, updatable = false)
 	private Attribute attribute;
 
 	@Column(name = "Value", nullable = false, columnDefinition = "MEDIUMTEXT")

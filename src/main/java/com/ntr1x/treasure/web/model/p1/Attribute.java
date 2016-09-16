@@ -4,8 +4,7 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
@@ -19,6 +18,7 @@ import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 
 import com.ntr1x.treasure.web.model.p0.Resource;
 import com.ntr1x.treasure.web.model.p2.AttributeOption;
+import com.ntr1x.treasure.web.model.p2.ResourceAttribute;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -37,35 +37,25 @@ import lombok.Setter;
 @CascadeOnDelete
 public class Attribute extends Resource {
 
-	public enum Type {
-		STRING,
-		INTEGER,
-        FLOAT
-	}
+    @Column(name = "Title", nullable = false)
+    private String title;
+    
+	@Column(name = "Filter", nullable = false)
+	private boolean filter;
 
-	@Column(name = "ResourceType", nullable = true)
-	@Enumerated(EnumType.STRING)
-	private Type type;
-
-    @Column(name = "Defining", nullable = false)
-    private boolean defining;
-
-	@Column(name = "Filtering", nullable = false)
-	private boolean filtering;
-
-    @Column(name = "ListOrder")
+    @Column(name = "`Order`")
     private int order;
 
-    @Column(name = "Name", nullable = false, unique = true)
-    private String name;
-
-	@Column(name = "Title", nullable = false)
-	private String title;
-
+    @ResourceRelation
     @XmlElement
     @XmlInverseReference(mappedBy = "attribute")
     @OneToMany(mappedBy = "attribute")
     @CascadeOnDelete
-    @ResourceRelation
+    private List<ResourceAttribute> values;
+    
+    @XmlElement
+    @XmlInverseReference(mappedBy = "attribute")
+    @OneToMany(mappedBy = "attribute", fetch = FetchType.EAGER)
+    @CascadeOnDelete
     private List<AttributeOption> options;
 }

@@ -26,6 +26,9 @@ public class Bootstrap implements IBootstrap {
     private BootstrapCategories categories;
     
     @Inject
+    private BootstrapAttributes attributes;
+    
+    @Inject
     private BootstrapMethods methods;
     
     @Inject
@@ -46,6 +49,7 @@ public class Bootstrap implements IBootstrap {
         state.users = users.createUsers(target);
         state.sessions = sessions.createSessions(target);
         state.directories = categories.createDirectories(target);
+        state.attributes = attributes.createAttributes(target);
         state.methods = methods.createMethods(target);
         state.providers = providers.createProviders(target);
         state.purchases = purchases.createPurchases(target);

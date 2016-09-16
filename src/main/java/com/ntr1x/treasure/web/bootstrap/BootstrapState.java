@@ -13,6 +13,7 @@ public class BootstrapState {
     
     public Users users;
     public Directories directories;
+    public Attributes attributes;
     public Purchases purchases;
     public Sessions sessions;
     public Methods methods;
@@ -21,26 +22,25 @@ public class BootstrapState {
     @XmlRootElement
     public static class Directories {
         
-        Category adult;
+        public Category adult;
         
-        Category adultUnderwearMale;
-        Category adultUnderwearFemale;
-        Category adultOuterwearMale;
-        Category adultOuterwearFemale;
-        Category adultFootwear;
-        Category adultAccessories;
-        Category adultSocks;
-        Category adultHats;
+        public Category adultUnderwearMale;
+        public Category adultUnderwearFemale;
+        public Category adultOuterwearMale;
+        public Category adultOuterwearFemale;
+        public Category adultFootwear;
+        public Category adultAccessories;
+        public Category adultSocks;
+        public Category adultHats;
         
-        Category children;
+        public Category children;
     }
     
     @XmlRootElement
     public static class Attributes {
-       
-       Attribute brand;
-       Attribute size;
-       Attribute color;
+        public Attribute goodBrand;
+        public Attribute modificationSize;
+        public Attribute modificationColor;
     }
     
     @XmlRootElement

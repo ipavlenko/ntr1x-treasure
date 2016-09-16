@@ -17,6 +17,7 @@ import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 import com.ntr1x.treasure.web.model.p0.Resource;
 import com.ntr1x.treasure.web.model.p1.Attribute;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -38,11 +39,9 @@ public class AttributeOption extends Resource {
     @XmlInverseReference(mappedBy = "options")
 	@ManyToOne
 	@JoinColumn(name = "AttributeId", nullable = false, updatable = false)
+    @ApiModelProperty(hidden = true)
 	private Attribute attribute;
-
-	@Column(name = "Name", nullable = false)
-	private String name;
-
+	
 	@Column(name = "Title", nullable = false)
 	private String title;
 
