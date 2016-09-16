@@ -1,12 +1,12 @@
 package com.ntr1x.treasure.web.services;
 
 import java.security.Principal;
-import java.text.MessageFormat;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 
+import org.apache.commons.lang3.text.StrSubstitutor;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
@@ -55,8 +55,11 @@ public class SecurityContextService implements ISecurityContextService {
         
         if (role.startsWith("res://")) {
             
-            String name = MessageFormat.format(role, state.params).substring("res://".length());
-            
+            StrSubstitutor substitutor = new StrSubstitutor(state.params);
+            substitutor.setVariablePrefix('{');
+            substitutor.setVariableSuffix('}');
+            String name = substitutor.replace(role).substring("res://".length());
+
             int pos = name.indexOf(':');
             if (pos >= 0) {
                 

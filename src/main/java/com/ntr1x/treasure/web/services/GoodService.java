@@ -29,6 +29,9 @@ public class GoodService implements IGoodService {
     @Inject
     private ICategoryService categories;
     
+    @Inject
+    private IGoodService goods;
+    
     @Override
     public Good create(CreateRequest request) {
         
@@ -118,5 +121,11 @@ public class GoodService implements IGoodService {
         
         Good good = em.find(Good.class, id);
         return good;
+    }
+    
+    @Override
+    public GoodsResponse list(int page, int size, Long purchase) {
+        
+        return goods.list(page, size, purchase);
     }
 }

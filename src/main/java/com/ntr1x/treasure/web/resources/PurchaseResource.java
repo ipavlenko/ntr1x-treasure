@@ -1,6 +1,7 @@
 package com.ntr1x.treasure.web.resources;
 
 import java.util.EnumSet;
+import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
@@ -23,7 +24,9 @@ import javax.ws.rs.core.Response;
 import org.springframework.stereotype.Component;
 
 import com.ntr1x.treasure.web.model.p2.Purchase;
+import com.ntr1x.treasure.web.model.p3.Good;
 import com.ntr1x.treasure.web.model.p3.Order;
+import com.ntr1x.treasure.web.services.IGoodService;
 import com.ntr1x.treasure.web.services.IOrderService;
 import com.ntr1x.treasure.web.services.IOrderService.OrdersResponse;
 import com.ntr1x.treasure.web.services.IPurchaseService;
@@ -56,6 +59,9 @@ public class PurchaseResource {
     @Inject
     private IOrderService orders;
 
+    @Inject
+    private IGoodService goods;
+    
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Transactional
@@ -187,6 +193,37 @@ public class PurchaseResource {
     public Purchase remove(@PathParam("id") long id) {
         
         return purchases.remove(id);
+    }
+    
+    @GET
+    @Path("/i/{id}/goods")
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({ "res:///purchases/i/{id}:admin" })
+    @Transactional
+    public List<Good> goods(@PathParam("id") Long id) {
+        Purchase purchase = purchases.select(id);
+        return purchase.getGoods();
+    }
+    
+    @POST
+    @Path("/i/{id}/goods")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({ "res:///purchases/i/{id}:admin" })
+    @Transactional
+    public Good goodsCreate(@PathParam("id") long id, IGoodService.CreateRequest create) {
+        
+        Purchase purchase = purchases.select(id);
+        
+        if (create.purchase != purchase.getId()) {
+            throw new WebApplicationException("Cannot add good to another purchase", Response.Status.CONFLICT);
+        }
+        
+        Good good = goods.create(create);
+        
+        security.grant(purchase.getUser(), good.getAlias(), "admin");
+        
+        return good;
     }
 	
 //	@Data

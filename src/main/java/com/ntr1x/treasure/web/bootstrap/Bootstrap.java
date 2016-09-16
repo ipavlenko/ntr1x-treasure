@@ -37,6 +37,9 @@ public class Bootstrap implements IBootstrap {
     @Inject
     private BootstrapPurchases purchases;
     
+    @Inject
+    private BootstrapGoods goods;
+    
     public BootstrapResults bootstrap() {
         
         WebTarget target = ClientBuilder
@@ -53,6 +56,8 @@ public class Bootstrap implements IBootstrap {
         state.methods = methods.createMethods(target);
         state.providers = providers.createProviders(target);
         state.purchases = purchases.createPurchases(target);
+        
+        goods.createGoods(target);
         
         BootstrapResults results = new BootstrapResults(); {
             results.sessions = state.sessions;

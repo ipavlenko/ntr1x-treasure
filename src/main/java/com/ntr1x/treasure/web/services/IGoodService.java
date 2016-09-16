@@ -1,5 +1,7 @@
 package com.ntr1x.treasure.web.services;
 
+import java.util.List;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -15,7 +17,7 @@ public interface IGoodService {
     Good remove(long id);
     Good select(long id);
     
-//    List<Good> list();
+    GoodsResponse list(int page, int size, Long purchase);
     
     @XmlRootElement
     @NoArgsConstructor
@@ -52,5 +54,16 @@ public interface IGoodService {
         
         @XmlElement
         public IModificationService.RelatedModification[] modifications;
+    }
+    
+    @XmlRootElement
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class GoodsResponse {
+        
+        public long count;
+        public int page;
+        public int size;
+        public List<Good> goods;
     }
 }

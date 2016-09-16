@@ -40,7 +40,7 @@ public class BootstrapCategories {
         
         {
             CategoryCreate s = new CategoryCreate(); {
-                s.title = "Белье и одежда  для мужчин";
+                s.title = "Белье и одежда для мужчин";
                 s.relate = directories.adult.getId();
                 s.aspects = new String[] { "directory" };
             }
@@ -55,12 +55,42 @@ public class BootstrapCategories {
         
         {
             CategoryCreate s = new CategoryCreate(); {
-                s.title = "Белье и одежда  для женщин";
+                s.title = "Белье и одежда для женщин";
                 s.relate = directories.adult.getId();
                 s.aspects = new String[] { "directory" };
             }
             
             directories.adultUnderwearFemale = target
+                .path("/categories")
+                .request(MediaType.APPLICATION_JSON_TYPE)
+                .header(HttpHeaders.AUTHORIZATION, state.sessions.admin)
+                .post(Entity.entity(s, MediaType.APPLICATION_JSON_TYPE), Category.class)
+            ;
+        }
+        
+        {
+            CategoryCreate s = new CategoryCreate(); {
+                s.title = "Верхняя одежда для мужчин";
+                s.relate = directories.adult.getId();
+                s.aspects = new String[] { "directory" };
+            }
+            
+            directories.adultOuterwearMale = target
+                .path("/categories")
+                .request(MediaType.APPLICATION_JSON_TYPE)
+                .header(HttpHeaders.AUTHORIZATION, state.sessions.admin)
+                .post(Entity.entity(s, MediaType.APPLICATION_JSON_TYPE), Category.class)
+            ;
+        }
+        
+        {
+            CategoryCreate s = new CategoryCreate(); {
+                s.title = "Верхняя одежда для женщин";
+                s.relate = directories.adult.getId();
+                s.aspects = new String[] { "directory" };
+            }
+            
+            directories.adultOuterwearFemale = target
                 .path("/categories")
                 .request(MediaType.APPLICATION_JSON_TYPE)
                 .header(HttpHeaders.AUTHORIZATION, state.sessions.admin)
