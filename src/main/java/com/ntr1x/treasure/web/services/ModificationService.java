@@ -200,6 +200,23 @@ public class ModificationService implements IModificationService {
                     security.register(v, ResourceUtils.alias(null, "modifications/i", v));
                     
                     attributes.createAttributes(v, p.attributes);
+                    
+                    TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+                        
+                        @Override
+                        public void afterCommit() {
+                      
+                            publisher.publishEvent(
+                                new ResourceEvent(
+                                    new ResourceMessage(
+                                        v.getAlias(),
+                                        ResourceMessage.Type.CREATE,
+                                        v
+                                    )
+                                )
+                            );
+                        }
+                    });
                 }
             }
             
@@ -230,6 +247,23 @@ public class ModificationService implements IModificationService {
                             security.register(v, ResourceUtils.alias(null, "modifications/i", v));
                             
                             attributes.createAttributes(v, p.attributes);
+                            
+                            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+                                
+                                @Override
+                                public void afterCommit() {
+                              
+                                    publisher.publishEvent(
+                                        new ResourceEvent(
+                                            new ResourceMessage(
+                                                v.getAlias(),
+                                                ResourceMessage.Type.CREATE,
+                                                v
+                                            )
+                                        )
+                                    );
+                                }
+                            });
                         }
                         break;
                     }
@@ -248,6 +282,23 @@ public class ModificationService implements IModificationService {
                             em.flush();
                             
                             attributes.updateAttributes(v, p.attributes);
+                            
+                            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+                                
+                                @Override
+                                public void afterCommit() {
+                              
+                                    publisher.publishEvent(
+                                        new ResourceEvent(
+                                            new ResourceMessage(
+                                                v.getAlias(),
+                                                ResourceMessage.Type.CREATE,
+                                                v
+                                            )
+                                        )
+                                    );
+                                }
+                            });
                         }
                         break;
                     }
@@ -255,6 +306,24 @@ public class ModificationService implements IModificationService {
                         
                         Modification v = em.find(Modification.class, p.id);
                         em.remove(v);
+                        
+                        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+                            
+                            @Override
+                            public void afterCommit() {
+                          
+                                publisher.publishEvent(
+                                    new ResourceEvent(
+                                        new ResourceMessage(
+                                            v.getAlias(),
+                                            ResourceMessage.Type.REMOVE,
+                                            v
+                                        )
+                                    )
+                                );
+                            }
+                        });
+                        
                         break;
                     }
                 default:

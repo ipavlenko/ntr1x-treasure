@@ -29,6 +29,7 @@ import com.ntr1x.treasure.web.services.IOrderService.OrdersResponse;
 import com.ntr1x.treasure.web.services.IPurchaseService;
 import com.ntr1x.treasure.web.services.IPurchaseService.PurchaseCreate;
 import com.ntr1x.treasure.web.services.IPurchaseService.PurchaseUpdate;
+import com.ntr1x.treasure.web.services.IPurchaseService.PurchaseUpdateStatus;
 import com.ntr1x.treasure.web.services.IPurchaseService.PurchasesResponse;
 import com.ntr1x.treasure.web.services.ISecurityService;
 
@@ -124,49 +125,49 @@ public class PurchaseResource {
     @Produces(MediaType.APPLICATION_JSON)
     @RolesAllowed({ "res:///purchases/i/{id}:admin" })
     @Transactional
-    public Purchase updateStatus(@PathParam("id") long id, Purchase.Status status) {
+    public Purchase updateStatus(@PathParam("id") long id, PurchaseUpdateStatus update) {
         
         Purchase purchase = em.find(Purchase.class, id);
         
         switch (purchase.getStatus()) {
         case NEW:
-            if (status == Purchase.Status.MODERATION) {
-                purchase.setStatus(status);
+            if (update.status == Purchase.Status.MODERATION) {
+                purchase.setStatus(update.status);
             }
             break;
         case MODERATION:
-            if (status == Purchase.Status.APPROVED) {
-                purchase.setStatus(status);
+            if (update.status == Purchase.Status.APPROVED) {
+                purchase.setStatus(update.status);
             }
             break;
         case APPROVED:
-            if (status == Purchase.Status.OPEN) {
-                purchase.setStatus(status);
+            if (update.status == Purchase.Status.OPEN) {
+                purchase.setStatus(update.status);
             }
             break;
         case OPEN:
-            if (EnumSet.of(Purchase.Status.HIDDEN, Purchase.Status.STOPED).contains(status)) {
-                purchase.setStatus(status);
+            if (EnumSet.of(Purchase.Status.HIDDEN, Purchase.Status.STOPED).contains(update.status)) {
+                purchase.setStatus(update.status);
             }
             break;
         case HIDDEN:
-            if (status == Purchase.Status.OPEN) {
-                purchase.setStatus(status);
+            if (update.status == Purchase.Status.OPEN) {
+                purchase.setStatus(update.status);
             }
             break;
         case STOPED:
-            if (status == Purchase.Status.PAYMENT) {
-                purchase.setStatus(status);
+            if (update.status == Purchase.Status.PAYMENT) {
+                purchase.setStatus(update.status);
             }
             break;
         case PAYMENT:
-            if (status == Purchase.Status.DISTRIBUTION) {
-                purchase.setStatus(status);
+            if (update.status == Purchase.Status.DISTRIBUTION) {
+                purchase.setStatus(update.status);
             }
             break;
         case DISTRIBUTION:
-            if (status == Purchase.Status.FINISHED) {
-                purchase.setStatus(status);
+            if (update.status == Purchase.Status.FINISHED) {
+                purchase.setStatus(update.status);
             }
             break;
         case FINISHED:

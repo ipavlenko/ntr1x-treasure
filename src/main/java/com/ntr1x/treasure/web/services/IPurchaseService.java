@@ -127,4 +127,11 @@ public interface IPurchaseService {
         public int size;
         public List<Purchase> purchases;
     }
+    
+    @XmlRootElement
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class PurchaseUpdateStatus {
+        public Purchase.Status status;
+    }
 }

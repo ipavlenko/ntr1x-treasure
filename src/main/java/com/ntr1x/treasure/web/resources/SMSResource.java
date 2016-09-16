@@ -20,9 +20,9 @@ import io.swagger.annotations.Api;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
-@Api("SMS")
+@Api("Security")
 @Component
-@Path("/ws/sms")
+@Path("/sms")
 public class SMSResource {
 
     @Inject

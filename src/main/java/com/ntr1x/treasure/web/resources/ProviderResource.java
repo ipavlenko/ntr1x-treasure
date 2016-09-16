@@ -29,7 +29,7 @@ import com.ntr1x.treasure.web.services.ISecurityService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
 
-@Api("Providers")
+@Api("Purchases")
 @Component
 @Path("providers")
 @PermitAll

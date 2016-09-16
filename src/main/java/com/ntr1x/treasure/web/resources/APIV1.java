@@ -18,11 +18,14 @@ import io.swagger.models.auth.In;
 	tags = {
         @Tag(name = "Setup",        description = "Преднастройка"),
         @Tag(name = "Resources",    description = "Универсальный доступ к ресурсам"),
+        @Tag(name = "Me",           description = "Данные текущего пользователя"),
         @Tag(name = "Security",     description = "Регистрация и авторизация"),
 	    @Tag(name = "Users",        description = "Пользователи и профили"),
-	    @Tag(name = "Purchases",    description = "Поставки"),
-	    @Tag(name = "Goods",        description = "Товары"),
-	    
+	    @Tag(name = "Purchases",    description = "Поставки и товары"),
+	    @Tag(name = "Orders",       description = "Корзины и заказы"),
+	    @Tag(name = "Depots",       description = "Склады"),
+	    @Tag(name = "Uploads",      description = "Загрузки и картинки"),
+        
 //		@Tag(name = "Publications", description = "News, events, blogs, etc."),
 //		@Tag(name = "Categories",   description = "Resource catgories"),
 //		@Tag(name = "Goods",        description = "Goods, services, offers, etc."),

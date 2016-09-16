@@ -112,7 +112,9 @@ public class UserService implements IUserService {
     public User remove(long id) {
         
         User u = em.find(User.class, id);
+        em.remove(u.getCart());
         em.remove(u);
+        em.flush();
         return u;
     }
     

@@ -29,7 +29,7 @@ import com.ntr1x.treasure.web.services.IMethodService.MethodsResponse;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
 
-@Api("Methods")
+@Api("Purchases")
 @Component
 @Path("methods")
 @PermitAll

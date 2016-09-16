@@ -1,6 +1,9 @@
 package com.ntr1x.treasure.web.bootstrap;
 
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import com.ntr1x.treasure.web.bootstrap.BootstrapState.Sessions;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -14,7 +17,7 @@ public interface IBootstrap {
     @NoArgsConstructor
     public static class BootstrapResults {
         
-        public String userToken;
-        public String adminToken;
+        @XmlElement
+        public Sessions sessions;
     }
 }

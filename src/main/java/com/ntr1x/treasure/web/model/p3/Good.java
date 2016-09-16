@@ -1,9 +1,12 @@
 package com.ntr1x.treasure.web.model.p3;
 
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -16,7 +19,9 @@ import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 
 import com.ntr1x.treasure.web.model.p0.Resource;
 import com.ntr1x.treasure.web.model.p2.Purchase;
+import com.ntr1x.treasure.web.model.p4.Modification;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -45,4 +50,12 @@ public class Good extends Resource {
 	
 	@Column(name = "Promo", nullable = false)
     private String promo;
+	
+	@ResourceRelation
+    @XmlElement
+    @XmlInverseReference(mappedBy = "good")
+    @OneToMany(mappedBy = "good")
+    @CascadeOnDelete
+    @ApiModelProperty(hidden = true)
+    private List<Modification> modifications;
 }

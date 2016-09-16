@@ -27,9 +27,9 @@ import com.ntr1x.treasure.web.services.ISecurityService;
 
 import io.swagger.annotations.Api;
 
-@Api("Goods")
+@Api("Purchases")
 @Component
-@Path("goods")
+@Path("/goods")
 public class GoodResource {
 
     @PersistenceContext

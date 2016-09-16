@@ -7,8 +7,6 @@ import javax.ws.rs.client.WebTarget;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.ntr1x.treasure.web.services.IProfilerService;
-
 @Service
 public class Bootstrap implements IBootstrap {
     
@@ -16,16 +14,22 @@ public class Bootstrap implements IBootstrap {
     private String host;
     
     @Inject
-    private IProfilerService profiler;
-
-    @Inject
     private BootstrapHolder holder;
     
     @Inject
     private BootstrapUsers users;
+    
+    @Inject
+    private BootstrapSessions sessions;
 
     @Inject
     private BootstrapCategories categories;
+    
+    @Inject
+    private BootstrapMethods methods;
+    
+    @Inject
+    private BootstrapProviders providers;
     
     @Inject
     private BootstrapPurchases purchases;
@@ -39,24 +43,16 @@ public class Bootstrap implements IBootstrap {
         
         BootstrapState state = holder.get();
         
-        BootstrapResults results = new BootstrapResults();
+        state.users = users.createUsers(target);
+        state.sessions = sessions.createSessions(target);
+        state.directories = categories.createDirectories(target);
+        state.methods = methods.createMethods(target);
+        state.providers = providers.createProviders(target);
+        state.purchases = purchases.createPurchases(target);
         
-        profiler.withDisabledSecurity(() -> {
-            state.users = users.createUsers(target);
-        });
-        
-        profiler.withCredentials(target, state.users.admin.getEmail(), state.users.adminPassword, (token) -> {
-            results.adminToken = token;
-        });
-        
-        profiler.withCredentials(target, state.users.user.getEmail(), state.users.userPassword, (token) -> {
-            results.userToken = token;
-        });
-        
-        profiler.withCredentials(target, state.users.admin.getEmail(), state.users.adminPassword, (token) -> {
-            state.directories = categories.createDirectories(target, token);
-            state.purchases = purchases.createPurchases(target, token);
-        });
+        BootstrapResults results = new BootstrapResults(); {
+            results.sessions = state.sessions;
+        }
         
         return results;
     }

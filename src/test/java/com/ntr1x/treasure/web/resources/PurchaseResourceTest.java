@@ -26,7 +26,6 @@ import com.ntr1x.treasure.web.model.p1.User;
 import com.ntr1x.treasure.web.model.p2.Method;
 import com.ntr1x.treasure.web.model.p2.Provider;
 import com.ntr1x.treasure.web.model.p2.Purchase;
-import com.ntr1x.treasure.web.services.IGrantService;
 import com.ntr1x.treasure.web.services.IMethodService;
 import com.ntr1x.treasure.web.services.IProfilerService;
 import com.ntr1x.treasure.web.services.IProviderService;
@@ -87,34 +86,6 @@ public class PurchaseResourceTest {
                 Assert.assertNotNull(user.getId());
                 
                 users[0] = user;
-            }
-            
-            {
-                IUserService.CreateUser s = new IUserService.CreateUser(); {
-                    
-                    s.role = User.Role.SELLER;
-                    s.confirmed = true;
-                    s.email = "user1@example.com";
-                    s.password = "user1";
-                    s.phone = "user1phone";
-                    s.surname = "test";
-                    s.name = "test";
-                    s.middlename = "test";
-                    s.confirmed = true;
-                    s.grants = new IGrantService.CreateGrant[] {
-                        new IGrantService.CreateGrant("/purchases", "admin")
-                    };
-                }
-                
-                User user = target
-                    .path("/users")
-                    .request(MediaType.APPLICATION_JSON_TYPE)
-                    .post(Entity.entity(s, MediaType.APPLICATION_JSON_TYPE), User.class)
-                ;
-                
-                Assert.assertNotNull(user.getId());
-                
-                users[1] = user;
             }
         });
         

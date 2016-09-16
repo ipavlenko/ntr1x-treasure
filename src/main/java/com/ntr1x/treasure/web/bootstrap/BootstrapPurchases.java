@@ -1,11 +1,17 @@
 package com.ntr1x.treasure.web.bootstrap;
 
+import java.time.LocalDate;
+
 import javax.inject.Inject;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
 
 import org.springframework.stereotype.Service;
 
-import com.ntr1x.treasure.web.bootstrap.BootstrapState.Purchases;
+import com.ntr1x.treasure.web.model.p2.Purchase;
+import com.ntr1x.treasure.web.services.IPurchaseService;
 
 @Service
 public class BootstrapPurchases {
@@ -13,11 +19,151 @@ public class BootstrapPurchases {
     @Inject
     private BootstrapHolder holder;
     
-    public Purchases createPurchases(WebTarget target, String token) {
+    public BootstrapState.Purchases createPurchases(WebTarget target) {
+     
+        BootstrapState state = holder.get();
         
-        //INSERT INTO `core_purchase` VALUES (1,'2016-01-01 00:00:00','2016-01-01 00:00:00','2016-01-01 00:00:00','NEW','2016-01-01 00:00:00','Новая поставка',0,NULL,3),(6,'2016-11-15 00:15:33','2016-07-11 01:15:33','2016-10-01 01:15:33','OPEN','2016-09-25 01:15:33','Большая поставка обуви Nike',0,NULL,5),(7,NULL,'2016-07-10 01:15:33','2016-10-01 01:15:33','FINISHED','2016-09-18 01:15:33','Поставка верхней одежды Nike',0,NULL,5),(16,'2016-11-25 00:15:33','2016-07-14 01:15:33','2016-10-05 01:15:33','OPEN','2016-09-18 01:15:33','Поставка курток Nike',0,NULL,5),(20,NULL,NULL,NULL,'NEW',NULL,'Новая поставка',0,NULL,5),(41,'2016-11-15 00:15:33','2016-07-11 01:15:33','2016-10-01 01:15:33','OPEN','2016-09-25 01:15:33','Очки Polaroid и Invu',0,NULL,5),(93,'2016-11-14 14:15:34','2016-08-31 23:04:00','2016-11-02 16:00:00','OPEN','2016-10-01 22:51:00','Новая поставка111',0,3197,68),(95,'2016-11-14 14:15:33','2016-07-10 15:15:33','2016-09-30 15:15:33','OPEN','2016-09-24 15:15:33','Поставка толстовок',0,3197,68),(98,'2016-12-15 00:15:33','2016-06-11 01:15:33','2016-08-01 01:15:33','FINISHED','2016-08-01 01:15:33','Поставка сумок',0,3197,68),(540,'2016-11-15 00:15:33','2016-07-11 01:15:33','2016-10-01 01:15:33','NEW','2016-09-25 01:15:33','Шапки и шарфы',0,NULL,102),(1515,'2016-11-25 00:15:33','2016-07-13 01:15:33','2016-10-11 01:15:33','NEW','2016-09-29 01:15:33','Колготки и белье',0,NULL,102),(3208,'2016-01-01 00:00:00','2016-01-01 00:00:00','2016-01-01 00:00:00','NEW','2016-01-01 00:00:00','SL: Бытовая техника',NULL,NULL,102),(3228,'2016-01-01 00:00:00','2016-01-01 00:00:00','2016-01-01 00:00:00','NEW','2016-01-01 00:00:00','Новая закупка',NULL,NULL,68),(3229,'2016-01-01 00:00:00','2016-01-01 00:00:00','2016-01-01 00:00:00','NEW','2016-01-01 00:00:00','Новая закупка',NULL,3222,68);
-
+        BootstrapState.Purchases purchases = new BootstrapState.Purchases();
         
-        return null;
+        {
+            IPurchaseService.PurchaseCreate s = new IPurchaseService.PurchaseCreate(); {
+                
+                s.user = state.users.seller1.getId();
+                s.method = state.methods.seller1MethodCash.getId();
+                s.provider = state.providers.seller1China.getId();
+                
+                s.title = "Первая поставка всякой ерунды из Китая";
+                s.open = LocalDate.now().minusWeeks(1);
+                s.stop = LocalDate.now().plusWeeks(1);
+                s.delivery = LocalDate.now().plusWeeks(2);
+                s.nextDelivery = LocalDate.now().plusWeeks(3);
+            }
+            
+            purchases.seller1Purchase1 = target
+                .path("/me/purchases")
+                .request(MediaType.APPLICATION_JSON_TYPE)
+                .header(HttpHeaders.AUTHORIZATION, state.sessions.seller1)
+                .post(Entity.entity(s, MediaType.APPLICATION_JSON_TYPE), Purchase.class)
+            ;
+            
+//            purchases.seller1Active1 = target
+//                .path(String.format("/purchases/i/%d/status", purchase.getId()))
+//                .request(MediaType.APPLICATION_JSON_TYPE)
+//                .header(HttpHeaders.AUTHORIZATION, state.sessions.seller1)
+//                .post(Entity.entity(new IPurchaseService.PurchaseUpdateStatus(Purchase.Status.OPEN), MediaType.APPLICATION_JSON_TYPE), Purchase.class)
+//            ;
+        }
+        
+        {
+            IPurchaseService.PurchaseCreate s = new IPurchaseService.PurchaseCreate(); {
+                
+                s.user = state.users.seller1.getId();
+                s.method = state.methods.seller1MethodCard.getId();
+                s.provider = state.providers.seller1India.getId();
+                
+                s.title = "Первая поставка всякой ерунды из Индии";
+                s.open = LocalDate.now().minusWeeks(1);
+                s.stop = LocalDate.now().plusWeeks(1);
+                s.delivery = LocalDate.now().plusWeeks(2);
+                s.nextDelivery = LocalDate.now().plusWeeks(3);
+            }
+            
+            purchases.seller1Purchase2 = target
+                .path("/me/purchases")
+                .request(MediaType.APPLICATION_JSON_TYPE)
+                .header(HttpHeaders.AUTHORIZATION, state.sessions.seller1)
+                .post(Entity.entity(s, MediaType.APPLICATION_JSON_TYPE), Purchase.class)
+            ;
+        }
+        
+        {
+            IPurchaseService.PurchaseCreate s = new IPurchaseService.PurchaseCreate(); {
+                
+                s.user = state.users.seller1.getId();
+                s.method = state.methods.seller1MethodCash.getId();
+                s.provider = state.providers.seller1China.getId();
+                
+                s.title = "Вторая поставка всякой ерунды из Китая";
+                s.open = LocalDate.now().minusWeeks(1);
+                s.stop = LocalDate.now().plusWeeks(1);
+                s.delivery = LocalDate.now().plusWeeks(2);
+                s.nextDelivery = LocalDate.now().plusWeeks(3);
+            }
+            
+            purchases.seller1Purchase3 = target
+                .path("/me/purchases")
+                .request(MediaType.APPLICATION_JSON_TYPE)
+                .header(HttpHeaders.AUTHORIZATION, state.sessions.seller1)
+                .post(Entity.entity(s, MediaType.APPLICATION_JSON_TYPE), Purchase.class)
+            ;
+        }
+        
+        {
+            IPurchaseService.PurchaseCreate s = new IPurchaseService.PurchaseCreate(); {
+                
+                s.user = state.users.seller2.getId();
+                s.method = state.methods.seller2MethodCash.getId();
+                s.provider = state.providers.seller2China.getId();
+                
+                s.title = "Третья поставка всякой ерунды из Китая";
+                s.open = LocalDate.now().minusWeeks(1);
+                s.stop = LocalDate.now().plusWeeks(1);
+                s.delivery = LocalDate.now().plusWeeks(2);
+                s.nextDelivery = LocalDate.now().plusWeeks(3);
+            }
+            
+            purchases.seller2Purchase1 = target
+                .path("/me/purchases")
+                .request(MediaType.APPLICATION_JSON_TYPE)
+                .header(HttpHeaders.AUTHORIZATION, state.sessions.seller2)
+                .post(Entity.entity(s, MediaType.APPLICATION_JSON_TYPE), Purchase.class)
+            ;
+        }
+        
+        {
+            IPurchaseService.PurchaseCreate s = new IPurchaseService.PurchaseCreate(); {
+                
+                s.user = state.users.seller2.getId();
+                s.method = state.methods.seller2MethodCard.getId();
+                s.provider = state.providers.seller2Japan.getId();
+                
+                s.title = "Первая поставка всякой ерунды из Японии";
+                s.open = LocalDate.now().minusWeeks(1);
+                s.stop = LocalDate.now().plusWeeks(1);
+                s.delivery = LocalDate.now().plusWeeks(2);
+                s.nextDelivery = LocalDate.now().plusWeeks(3);
+            }
+            
+            purchases.seller2Purchase2 = target
+                .path("/me/purchases")
+                .request(MediaType.APPLICATION_JSON_TYPE)
+                .header(HttpHeaders.AUTHORIZATION, state.sessions.seller2)
+                .post(Entity.entity(s, MediaType.APPLICATION_JSON_TYPE), Purchase.class)
+            ;
+        }
+        
+        {
+            IPurchaseService.PurchaseCreate s = new IPurchaseService.PurchaseCreate(); {
+                
+                s.user = state.users.seller2.getId();
+                s.method = state.methods.seller2MethodCard.getId();
+                s.provider = state.providers.seller2Japan.getId();
+                
+                s.title = "Вторая поставка всякой ерунды из Японии";
+                s.open = LocalDate.now().minusWeeks(1);
+                s.stop = LocalDate.now().plusWeeks(1);
+                s.delivery = LocalDate.now().plusWeeks(2);
+                s.nextDelivery = LocalDate.now().plusWeeks(3);
+            }
+            
+            purchases.seller2Purchase3 = target
+                .path("/me/purchases")
+                .request(MediaType.APPLICATION_JSON_TYPE)
+                .header(HttpHeaders.AUTHORIZATION, state.sessions.seller2)
+                .post(Entity.entity(s, MediaType.APPLICATION_JSON_TYPE), Purchase.class)
+            ;
+        }
+        
+        return purchases;
     }
 }

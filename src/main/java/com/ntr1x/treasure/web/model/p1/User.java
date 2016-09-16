@@ -3,7 +3,6 @@ package com.ntr1x.treasure.web.model.p1;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -112,7 +111,7 @@ public class User extends Resource {
     
 	@XmlElement
     @XmlInverseReference(mappedBy = "user")
-    @OneToOne(mappedBy = "user", cascade = { CascadeType.REMOVE })
+    @OneToOne(mappedBy = "user")
     @ResourceRelation
     private Cart cart;
 	

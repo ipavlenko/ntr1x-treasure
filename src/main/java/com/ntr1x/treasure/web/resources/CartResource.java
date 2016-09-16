@@ -42,7 +42,7 @@ import io.swagger.annotations.Api;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
-@Api("Carts")
+@Api("Orders")
 @Component
 @Path("/carts")
 @PermitAll

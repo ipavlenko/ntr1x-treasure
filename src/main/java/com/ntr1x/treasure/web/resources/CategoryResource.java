@@ -39,7 +39,7 @@ import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 @Path("categories")
-@Api("Categories")
+@Api("Resources")
 @PermitAll
 @Component
 public class CategoryResource {

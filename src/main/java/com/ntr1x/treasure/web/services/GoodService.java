@@ -5,10 +5,13 @@ import javax.persistence.EntityManager;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
+import org.springframework.stereotype.Service;
+
 import com.ntr1x.treasure.web.model.p2.Purchase;
 import com.ntr1x.treasure.web.model.p3.Good;
 import com.ntr1x.treasure.web.reflection.ResourceUtils;
 
+@Service
 public class GoodService implements IGoodService {
 
     @Inject

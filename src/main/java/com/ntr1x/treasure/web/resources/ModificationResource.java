@@ -29,7 +29,7 @@ import com.ntr1x.treasure.web.services.ISecurityService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
 
-@Api("Modifications")
+@Api("Purchases")
 @Component
 @Path("modifications")
 public class ModificationResource {

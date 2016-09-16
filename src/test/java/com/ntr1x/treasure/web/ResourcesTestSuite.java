@@ -5,6 +5,7 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 import com.ntr1x.treasure.web.resources.CategoryResourceTest;
+import com.ntr1x.treasure.web.resources.GoodResourceTest;
 import com.ntr1x.treasure.web.resources.MethodResourceTest;
 import com.ntr1x.treasure.web.resources.ProviderResourceTest;
 import com.ntr1x.treasure.web.resources.PurchaseResourceTest;
@@ -16,7 +17,8 @@ import com.ntr1x.treasure.web.resources.UserResourceTest;
     CategoryResourceTest.class,
     ProviderResourceTest.class,
     MethodResourceTest.class,
-    PurchaseResourceTest.class
+    PurchaseResourceTest.class,
+    GoodResourceTest.class,
 })
 public class ResourcesTestSuite {
     

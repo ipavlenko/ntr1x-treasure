@@ -1,5 +1,6 @@
 package com.ntr1x.treasure.web.bootstrap;
 
+import javax.inject.Inject;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.HttpHeaders;
@@ -14,7 +15,12 @@ import com.ntr1x.treasure.web.resources.CategoryResource.CategoryCreate;
 @Service
 public class BootstrapCategories {
     
-    public Directories createDirectories(WebTarget target, String token) {
+    @Inject
+    private BootstrapHolder holder;
+    
+    public Directories createDirectories(WebTarget target) {
+        
+        BootstrapState state = holder.get();
         
         Directories directories = new Directories();
         
@@ -27,7 +33,7 @@ public class BootstrapCategories {
             directories.adult = target
                 .path("/categories")
                 .request(MediaType.APPLICATION_JSON_TYPE)
-                .header(HttpHeaders.AUTHORIZATION, token)
+                .header(HttpHeaders.AUTHORIZATION, state.sessions.admin)
                 .post(Entity.entity(s, MediaType.APPLICATION_JSON_TYPE), Category.class)
             ;
         }
@@ -42,7 +48,7 @@ public class BootstrapCategories {
             directories.adultUnderwearMale = target
                 .path("/categories")
                 .request(MediaType.APPLICATION_JSON_TYPE)
-                .header(HttpHeaders.AUTHORIZATION, token)
+                .header(HttpHeaders.AUTHORIZATION, state.sessions.admin)
                 .post(Entity.entity(s, MediaType.APPLICATION_JSON_TYPE), Category.class)
             ;
         }
@@ -57,7 +63,7 @@ public class BootstrapCategories {
             directories.adultUnderwearFemale = target
                 .path("/categories")
                 .request(MediaType.APPLICATION_JSON_TYPE)
-                .header(HttpHeaders.AUTHORIZATION, token)
+                .header(HttpHeaders.AUTHORIZATION, state.sessions.admin)
                 .post(Entity.entity(s, MediaType.APPLICATION_JSON_TYPE), Category.class)
             ;
         }
@@ -72,7 +78,7 @@ public class BootstrapCategories {
             directories.adultFootwear = target
                 .path("/categories")
                 .request(MediaType.APPLICATION_JSON_TYPE)
-                .header(HttpHeaders.AUTHORIZATION, token)
+                .header(HttpHeaders.AUTHORIZATION, state.sessions.admin)
                 .post(Entity.entity(s, MediaType.APPLICATION_JSON_TYPE), Category.class)
             ;
         }
@@ -87,7 +93,7 @@ public class BootstrapCategories {
             directories.adultAccessories = target
                 .path("/categories")
                 .request(MediaType.APPLICATION_JSON_TYPE)
-                .header(HttpHeaders.AUTHORIZATION, token)
+                .header(HttpHeaders.AUTHORIZATION, state.sessions.admin)
                 .post(Entity.entity(s, MediaType.APPLICATION_JSON_TYPE), Category.class)
             ;
         }
@@ -102,7 +108,7 @@ public class BootstrapCategories {
             directories.adultSocks = target
                 .path("/categories")
                 .request(MediaType.APPLICATION_JSON_TYPE)
-                .header(HttpHeaders.AUTHORIZATION, token)
+                .header(HttpHeaders.AUTHORIZATION, state.sessions.admin)
                 .post(Entity.entity(s, MediaType.APPLICATION_JSON_TYPE), Category.class)
             ;
         }
@@ -117,7 +123,7 @@ public class BootstrapCategories {
             directories.adultHats = target
                 .path("/categories")
                 .request(MediaType.APPLICATION_JSON_TYPE)
-                .header(HttpHeaders.AUTHORIZATION, token)
+                .header(HttpHeaders.AUTHORIZATION, state.sessions.admin)
                 .post(Entity.entity(s, MediaType.APPLICATION_JSON_TYPE), Category.class)
             ;
         }
@@ -131,7 +137,7 @@ public class BootstrapCategories {
             directories.children = target
                 .path("/categories")
                 .request(MediaType.APPLICATION_JSON_TYPE)
-                .header(HttpHeaders.AUTHORIZATION, token)
+                .header(HttpHeaders.AUTHORIZATION, state.sessions.admin)
                 .post(Entity.entity(s, MediaType.APPLICATION_JSON_TYPE), Category.class)
             ;
         }

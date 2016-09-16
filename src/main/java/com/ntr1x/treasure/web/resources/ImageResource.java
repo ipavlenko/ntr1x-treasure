@@ -45,7 +45,7 @@ import io.swagger.annotations.Api;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
-@Api("Images")
+@Api("Uploads")
 @Component
 @Path("/images")
 public class ImageResource {
