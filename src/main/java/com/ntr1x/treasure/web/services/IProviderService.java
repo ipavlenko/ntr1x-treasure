@@ -30,7 +30,7 @@ public interface IProviderService {
         public long user;
         
         @XmlElement
-        public IAttributeService.CreateAttribute[] attributes;
+        public IAttributeService.RelatedAttribute[] attributes;
     }
     
     @XmlRootElement
@@ -44,7 +44,7 @@ public interface IProviderService {
         public long user;
         
         @XmlElement
-        public IAttributeService.UpdateAttribute[] attributes;
+        public IAttributeService.RelatedAttribute[] attributes;
     }
     
     @XmlRootElement

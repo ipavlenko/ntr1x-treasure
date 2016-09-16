@@ -10,22 +10,14 @@ import lombok.NoArgsConstructor;
 
 public interface ICategoryService {
 
-    void createCategories(Resource resource, CreateCategory[] categories);
+    void createCategories(Resource resource, RelatedCategory[] categories);
 
-    void updateCategories(Resource resource, UpdateCategory[] categories);
+    void updateCategories(Resource resource, RelatedCategory[] categories);
     
     @XmlRootElement
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class CreateCategory {
-        
-        public Long category;
-    }
-    
-    @XmlRootElement
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class UpdateCategory {
+    public static class RelatedCategory {
         
         public Long id;
         public Long category;

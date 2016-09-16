@@ -10,23 +10,14 @@ import lombok.NoArgsConstructor;
 
 public interface IAttributeService {
 
-    void createAttributes(Resource resource, CreateAttribute[] attributes);
+    void createAttributes(Resource resource, RelatedAttribute[] attributes);
 
-    void updateAttributes(Resource resource, UpdateAttribute[] attributes);
+    void updateAttributes(Resource resource, RelatedAttribute[] attributes);
     
     @XmlRootElement
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class CreateAttribute {
-        
-        public Long attribute;
-        public String value;
-    }
-    
-    @XmlRootElement
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class UpdateAttribute {
+    public static class RelatedAttribute {
         
         public Long id;
         public Long attribute;

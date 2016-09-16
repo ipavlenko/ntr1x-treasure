@@ -30,8 +30,6 @@ public class MethodService implements IMethodService {
     @Inject
     private IAttributeService attributes;
     
-    
-    
     @Override
     public Method create(MethodCreate create) {
         

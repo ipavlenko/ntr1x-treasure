@@ -52,7 +52,7 @@ public interface IUserService {
         public boolean confirmed;
         
         @XmlElement
-        public IAttributeService.CreateAttribute[] attributes;
+        public IAttributeService.RelatedAttribute[] attributes;
         
         @XmlElement
         public IGrantService.CreateGrant[] grants;
@@ -74,7 +74,7 @@ public interface IUserService {
         public boolean confirmed;
         
         @XmlElement
-        public IAttributeService.UpdateAttribute[] attributes;
+        public IAttributeService.RelatedAttribute[] attributes;
         
         @XmlElement
         public IGrantService.UpdateGrant[] grants;

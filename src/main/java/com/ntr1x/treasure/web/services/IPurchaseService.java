@@ -53,7 +53,7 @@ public interface IPurchaseService {
         public LocalDate nextDelivery;
         
         @XmlElement
-        public IAttributeService.CreateAttribute[] attributes;
+        public IAttributeService.RelatedAttribute[] attributes;
         
         @XmlElement
         public IImageService.CreateImage[] images;
@@ -86,7 +86,7 @@ public interface IPurchaseService {
         public LocalDate nextDelivery;
         
         @XmlElement
-        public IAttributeService.UpdateAttribute[] attributes;
+        public IAttributeService.RelatedAttribute[] attributes;
         
         @XmlElement
         public IImageService.UpdateImage[] images;

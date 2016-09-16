@@ -17,7 +17,6 @@ import com.google.common.hash.Hashing;
 import com.ntr1x.treasure.web.model.p0.Resource;
 import com.ntr1x.treasure.web.model.p1.User;
 import com.ntr1x.treasure.web.model.p2.Grant;
-import com.ntr1x.treasure.web.reflection.ResourceUtils;
 import com.ntr1x.treasure.web.repository.GrantRepository;
 import com.ntr1x.treasure.web.utils.ConversionUtils;
 import com.ntr1x.treasure.web.utils.CryptoUtils;

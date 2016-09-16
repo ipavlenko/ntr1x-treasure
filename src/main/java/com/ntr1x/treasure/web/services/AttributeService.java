@@ -16,11 +16,11 @@ public class AttributeService implements IAttributeService {
     private EntityManager em;
     
     @Override
-    public void createAttributes(Resource resource, CreateAttribute[] attributes) {
+    public void createAttributes(Resource resource, RelatedAttribute[] attributes) {
         
         if (attributes != null) {
             
-            for (CreateAttribute p : attributes) {
+            for (RelatedAttribute p : attributes) {
                 
                 ResourceAttribute v = new ResourceAttribute(); {
                     
@@ -39,11 +39,11 @@ public class AttributeService implements IAttributeService {
     }
     
     @Override
-    public void updateAttributes(Resource resource, UpdateAttribute[] attributes) {
+    public void updateAttributes(Resource resource, RelatedAttribute[] attributes) {
         
         if (attributes != null) {
             
-            for (UpdateAttribute p : attributes) {
+            for (RelatedAttribute p : attributes) {
                 
                 switch (p.action) {
                 

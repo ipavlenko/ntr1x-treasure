@@ -25,7 +25,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
 import com.ntr1x.treasure.web.model.p0.Resource;
-import com.ntr1x.treasure.web.model.p1.Attribute;
 import com.ntr1x.treasure.web.model.p1.User;
 import com.ntr1x.treasure.web.model.p2.Comment;
 import com.ntr1x.treasure.web.model.p2.Grant;

@@ -16,11 +16,11 @@ public class CategoryService implements ICategoryService {
     private EntityManager em;
     
     @Override
-    public void createCategories(Resource resource, CreateCategory[] categories) {
+    public void createCategories(Resource resource, RelatedCategory[] categories) {
         
         if (categories != null) {
             
-            for (CreateCategory p : categories) {
+            for (RelatedCategory p : categories) {
                 
                 ResourceCategory v = new ResourceCategory(); {
                     
@@ -38,11 +38,11 @@ public class CategoryService implements ICategoryService {
     }
     
     @Override
-    public void updateCategories(Resource resource, UpdateCategory[] categories) {
+    public void updateCategories(Resource resource, RelatedCategory[] categories) {
         
         if (categories != null) {
             
-            for (UpdateCategory p : categories) {
+            for (RelatedCategory p : categories) {
                 
                 switch (p.action) {
                 

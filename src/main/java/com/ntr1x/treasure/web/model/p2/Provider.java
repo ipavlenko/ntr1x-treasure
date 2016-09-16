@@ -19,7 +19,6 @@ import org.eclipse.persistence.annotations.CascadeOnDelete;
 import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 
 import com.ntr1x.treasure.web.model.p0.Resource;
-import com.ntr1x.treasure.web.model.p0.Resource.ResourceRelation;
 import com.ntr1x.treasure.web.model.p1.User;
 
 import io.swagger.annotations.ApiModelProperty;

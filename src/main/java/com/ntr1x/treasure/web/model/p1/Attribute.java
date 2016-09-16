@@ -6,9 +6,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
@@ -21,7 +18,6 @@ import org.eclipse.persistence.annotations.CascadeOnDelete;
 import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 
 import com.ntr1x.treasure.web.model.p0.Resource;
-import com.ntr1x.treasure.web.model.p0.Resource.ResourceRelation;
 import com.ntr1x.treasure.web.model.p2.AttributeOption;
 
 import lombok.AllArgsConstructor;
@@ -46,11 +42,6 @@ public class Attribute extends Resource {
 		INTEGER,
         FLOAT
 	}
-
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "Id")
-	private Long id;
 
 	@Column(name = "ResourceType", nullable = true)
 	@Enumerated(EnumType.STRING)

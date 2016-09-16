@@ -10,7 +10,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.springframework.stereotype.Service;
 
-import com.ntr1x.treasure.web.index.PublicationIndexRepository;
+import com.ntr1x.treasure.web.index.ModificationIndexRepository;
 import com.ntr1x.treasure.web.resources.SecurityResource.Signin;
 import com.ntr1x.treasure.web.resources.SecurityResource.SigninResponse;
 import com.ntr1x.treasure.web.resources.SecurityResource.Signout;
@@ -25,7 +25,7 @@ public class ProfilerService implements IProfilerService {
     private boolean securityDisabled = true;
     
     @Inject
-    private PublicationIndexRepository publications;
+    private ModificationIndexRepository modifications;
 
     @Override
     public void withDisabledSecurity(Runnable runnable) {
@@ -96,6 +96,6 @@ public class ProfilerService implements IProfilerService {
 
     @Override
     public void clearSearchIndex() {
-        publications.deleteAll();
+        modifications.deleteAll();
     }
 }
