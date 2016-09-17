@@ -183,7 +183,7 @@ public class BootstrapGoods {
             }
             
             target
-                .path(String.format("/purchases/i/%d/goods", state.purchases.seller1Purchase1.getId()))
+                .path(String.format("/purchases/i/%d/goods", state.purchases.seller1Purchase2.getId()))
                 .request(MediaType.APPLICATION_JSON_TYPE)
                 .header(HttpHeaders.AUTHORIZATION, state.sessions.seller1)
                 .post(Entity.entity(s, MediaType.APPLICATION_JSON_TYPE), Good.class)

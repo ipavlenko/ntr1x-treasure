@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import com.ntr1x.treasure.web.bootstrap.IBootstrap;
 import com.ntr1x.treasure.web.bootstrap.IBootstrap.BootstrapResults;
 import com.ntr1x.treasure.web.repository.ResourceRepository;
+import com.ntr1x.treasure.web.services.IIndexService;
 
 import io.swagger.annotations.Api;
 
@@ -23,13 +24,18 @@ public class SetupResource {
     private ResourceRepository resources;
     
     @Inject
+    private IIndexService index;
+    
+    @Inject
     private IBootstrap bootsrtap;
     
     @POST
     @Path("/bootstrap")
     public BootstrapResults bootstrap() {
         
+        index.clear();
         resources.deleteAll();
+        
         return bootsrtap.bootstrap();
     }
 }

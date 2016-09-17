@@ -9,8 +9,6 @@ import javax.ws.rs.core.Response;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.support.TransactionSynchronizationAdapter;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import com.ntr1x.treasure.web.events.ResourceEvent;
 import com.ntr1x.treasure.web.model.p2.Purchase;
@@ -31,6 +29,9 @@ public class ModificationService implements IModificationService {
     
     @Inject
     private IPublisherSevice publisher;
+    
+    @Inject
+    private ITransactionService transactions;
     
     @Inject
     private IAttributeService attributes;
@@ -65,21 +66,13 @@ public class ModificationService implements IModificationService {
         
         em.refresh(modification);
         
-        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
-      
-            @Override
-            public void afterCommit() {
-          
-                publisher.publishEvent(
-                    new ResourceEvent(
-                        new ResourceMessage(
-                            modification.getAlias(),
-                            ResourceMessage.Type.CREATE,
-                            modification
-                        )
-                    )
-                );
-            }
+        transactions.afterCommit(() -> {
+            
+            publisher.publishEvent(
+                new ResourceEvent(
+                    new ResourceMessage(modification.getAlias(), ResourceMessage.Type.CREATE, modification)
+                )
+            );
         });
         
         return modification;
@@ -104,21 +97,13 @@ public class ModificationService implements IModificationService {
         
         em.refresh(modification);
         
-        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+        transactions.afterCommit(() -> {
             
-            @Override
-            public void afterCommit() {
-          
-                publisher.publishEvent(
-                    new ResourceEvent(
-                        new ResourceMessage(
-                            modification.getAlias(),
-                            ResourceMessage.Type.UPDATE,
-                            modification
-                        )
-                    )
-                );
-            }
+            publisher.publishEvent(
+                new ResourceEvent(
+                    new ResourceMessage(modification.getAlias(), ResourceMessage.Type.UPDATE, modification)
+                )
+            );
         });
         
         return modification;
@@ -142,21 +127,13 @@ public class ModificationService implements IModificationService {
             em.flush();
         }
         
-        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+        transactions.afterCommit(() -> {
             
-            @Override
-            public void afterCommit() {
-          
-                publisher.publishEvent(
-                    new ResourceEvent(
-                        new ResourceMessage(
-                            modification.getAlias(),
-                            ResourceMessage.Type.REMOVE,
-                            modification
-                        )
-                    )
-                );
-            }
+            publisher.publishEvent(
+                new ResourceEvent(
+                    new ResourceMessage(modification.getAlias(), ResourceMessage.Type.REMOVE, modification)
+                )
+            );
         });
         
         return modification;
@@ -201,21 +178,13 @@ public class ModificationService implements IModificationService {
                     
                     attributes.createAttributes(v, p.attributes);
                     
-                    TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+                    transactions.afterCommit(() -> {
                         
-                        @Override
-                        public void afterCommit() {
-                      
-                            publisher.publishEvent(
-                                new ResourceEvent(
-                                    new ResourceMessage(
-                                        v.getAlias(),
-                                        ResourceMessage.Type.CREATE,
-                                        v
-                                    )
-                                )
-                            );
-                        }
+                        publisher.publishEvent(
+                            new ResourceEvent(
+                                new ResourceMessage(v.getAlias(), ResourceMessage.Type.CREATE, v)
+                            )
+                        );
                     });
                 }
             }
@@ -248,21 +217,13 @@ public class ModificationService implements IModificationService {
                             
                             attributes.createAttributes(v, p.attributes);
                             
-                            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+                            transactions.afterCommit(() -> {
                                 
-                                @Override
-                                public void afterCommit() {
-                              
-                                    publisher.publishEvent(
-                                        new ResourceEvent(
-                                            new ResourceMessage(
-                                                v.getAlias(),
-                                                ResourceMessage.Type.CREATE,
-                                                v
-                                            )
-                                        )
-                                    );
-                                }
+                                publisher.publishEvent(
+                                    new ResourceEvent(
+                                        new ResourceMessage(v.getAlias(), ResourceMessage.Type.CREATE, v)
+                                    )
+                                );
                             });
                         }
                         break;
@@ -283,51 +244,35 @@ public class ModificationService implements IModificationService {
                             
                             attributes.updateAttributes(v, p.attributes);
                             
-                            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+                            transactions.afterCommit(() -> {
                                 
-                                @Override
-                                public void afterCommit() {
-                              
-                                    publisher.publishEvent(
-                                        new ResourceEvent(
-                                            new ResourceMessage(
-                                                v.getAlias(),
-                                                ResourceMessage.Type.CREATE,
-                                                v
-                                            )
-                                        )
-                                    );
-                                }
+                                publisher.publishEvent(
+                                    new ResourceEvent(
+                                        new ResourceMessage(v.getAlias(), ResourceMessage.Type.UPDATE, v)
+                                    )
+                                );
                             });
                         }
                         break;
                     }
                     case REMOVE: {
                         
-                        Modification v = em.find(Modification.class, p.id);
-                        em.remove(v);
-                        
-                        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+                        Modification v = em.find(Modification.class, p.id); {
                             
-                            @Override
-                            public void afterCommit() {
-                          
+                            em.remove(v);
+                            
+                            transactions.afterCommit(() -> {
+                                
                                 publisher.publishEvent(
                                     new ResourceEvent(
-                                        new ResourceMessage(
-                                            v.getAlias(),
-                                            ResourceMessage.Type.REMOVE,
-                                            v
-                                        )
+                                        new ResourceMessage(v.getAlias(), ResourceMessage.Type.REMOVE, v)
                                     )
                                 );
-                            }
-                        });
+                            });
+                        }
                         
                         break;
                     }
-                default:
-                    break;
                 }
             }
             

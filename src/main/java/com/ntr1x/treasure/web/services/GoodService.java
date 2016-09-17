@@ -7,9 +7,11 @@ import javax.ws.rs.core.Response;
 
 import org.springframework.stereotype.Service;
 
+import com.ntr1x.treasure.web.events.ResourceEvent;
 import com.ntr1x.treasure.web.model.p2.Purchase;
 import com.ntr1x.treasure.web.model.p3.Good;
 import com.ntr1x.treasure.web.reflection.ResourceUtils;
+import com.ntr1x.treasure.web.services.ISubscriptionService.ResourceMessage;
 
 @Service
 public class GoodService implements IGoodService {
@@ -19,6 +21,12 @@ public class GoodService implements IGoodService {
     
     @Inject
     private ISecurityService security;
+    
+    @Inject
+    private IPublisherSevice publisher;
+    
+    @Inject
+    private ITransactionService transactions;
     
     @Inject
     private IAttributeService attributes;
@@ -62,6 +70,15 @@ public class GoodService implements IGoodService {
         categories.createCategories(g, request.categories);
         modifications.createModifications(g, request.modifications);
         
+        transactions.afterCommit(() -> {
+            
+            publisher.publishEvent(
+                new ResourceEvent(
+                    new ResourceMessage(g.getAlias(), ResourceMessage.Type.CREATE, g)
+                )
+            );
+        });
+        
         return g;
     }
 
@@ -92,15 +109,24 @@ public class GoodService implements IGoodService {
             modifications.updateModifications(g, request.modifications);
         }
         
+        transactions.afterCommit(() -> {
+            
+            publisher.publishEvent(
+                new ResourceEvent(
+                    new ResourceMessage(g.getAlias(), ResourceMessage.Type.UPDATE, g)
+                )
+            );
+        });
+        
         return g;
     }
     
     @Override
     public Good remove(long id) {
         
-        Good good = em.find(Good.class, id); {
+        Good g = em.find(Good.class, id); {
         
-            Purchase p = good.getPurchase();
+            Purchase p = g.getPurchase();
             switch (p.getStatus()) {
                 case NEW:
                 case MODERATION:
@@ -109,11 +135,20 @@ public class GoodService implements IGoodService {
                     throw new WebApplicationException("Purchase state doesn't allow modification", Response.Status.CONFLICT);
             }
             
-            em.remove(good);
+            em.remove(g);
             em.flush();
         }
         
-        return good;
+        transactions.afterCommit(() -> {
+            
+            publisher.publishEvent(
+                new ResourceEvent(
+                    new ResourceMessage(g.getAlias(), ResourceMessage.Type.CREATE, g)
+                )
+            );
+        });
+        
+        return g;
     }
     
     @Override
