@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 public interface IImageService {
 
     void createImages(Resource resource, CreateImage[] images);
-
     void updateImages(Resource resource, UpdateImage[] images);
     
     @XmlRootElement

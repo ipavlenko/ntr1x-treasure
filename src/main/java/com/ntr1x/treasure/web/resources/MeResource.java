@@ -23,6 +23,7 @@ import org.springframework.stereotype.Component;
 
 import com.ntr1x.treasure.web.model.p1.User;
 import com.ntr1x.treasure.web.model.p2.Cart;
+import com.ntr1x.treasure.web.model.p2.Depot;
 import com.ntr1x.treasure.web.model.p2.Method;
 import com.ntr1x.treasure.web.model.p2.Provider;
 import com.ntr1x.treasure.web.model.p2.Purchase;
@@ -31,6 +32,8 @@ import com.ntr1x.treasure.web.model.p3.Order;
 import com.ntr1x.treasure.web.model.p5.OrderEntry;
 import com.ntr1x.treasure.web.repository.OrderRepository;
 import com.ntr1x.treasure.web.repository.PurchaseRepository;
+import com.ntr1x.treasure.web.services.IDepotService;
+import com.ntr1x.treasure.web.services.IDepotService.DepotCreate;
 import com.ntr1x.treasure.web.services.IMethodService;
 import com.ntr1x.treasure.web.services.IMethodService.MethodCreate;
 import com.ntr1x.treasure.web.services.IOrderService;
@@ -73,6 +76,9 @@ public class MeResource {
     
     @Inject
     private IMethodService methodService;
+    
+    @Inject
+    private IDepotService depotService;
     
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -245,5 +251,34 @@ public class MeResource {
         security.grant(session.getUser(), method.getAlias(), "admin");
         
         return method;
+    }
+    
+    @GET
+    @Path("/depots")
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({ "auth" })
+    @Transactional
+    public List<Depot> depots() {
+        
+        return session.getUser().getDepots();
+    }
+    
+    @POST
+    @Path("/depots")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({ "auth" })
+    @Transactional
+    public Depot depotsCreate(DepotCreate create) {
+        
+        if (create.user != session.getUser().getId()) {
+            throw new WebApplicationException("Cannot create depot for another user", Response.Status.FORBIDDEN);
+        }
+        
+        Depot depot = depotService.create(create);
+        
+        security.grant(session.getUser(), depot.getAlias(), "admin");
+        
+        return depot;
     }
 }

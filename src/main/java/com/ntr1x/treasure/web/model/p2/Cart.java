@@ -20,7 +20,6 @@ import com.ntr1x.treasure.web.model.p0.Resource;
 import com.ntr1x.treasure.web.model.p1.User;
 import com.ntr1x.treasure.web.model.p5.CartEntry;
 
-import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -44,11 +43,10 @@ public class Cart extends Resource {
 	@JoinColumn(name = "UserId")
 	private User user;
 
+	@ResourceRelation
 	@XmlElement
     @XmlInverseReference(mappedBy = "cart")
 	@OneToMany(mappedBy = "cart")
 	@CascadeOnDelete
-	@ResourceRelation
-	@ApiModelProperty(hidden = true)
 	private List<CartEntry> entries;
 }

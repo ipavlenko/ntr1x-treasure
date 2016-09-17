@@ -45,6 +45,9 @@ public class Depot extends Resource {
     @XmlInverseReference(mappedBy = "depots")
 	private User user;
 	
+	@Column(name = "Title", nullable = false)
+    private String title;
+	
 	@Column(name = "DeliveryPrice")
 	private float deliveryPrice;
 	

@@ -5,28 +5,27 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import com.ntr1x.treasure.web.model.p2.Provider;
+import com.ntr1x.treasure.web.model.p2.Depot;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
-public interface IProviderService {
+public interface IDepotService {
 
-    Provider create(ProviderCreate create);
-    Provider update(long id, ProviderUpdate update);
-    Provider remove(long id);
-    Provider select(long id);
+    Depot create(DepotCreate create);
+    Depot update(long id, DepotUpdate update);
+    Depot remove(long id);
+    Depot select(long id);
     
-    ProvidersResponse list(int page, int size);
+    DepotsResponse list(int page, int size);
     
     @XmlRootElement
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class ProviderCreate {
+    public static class DepotCreate {
         
         public String title;
-        public String promo;
-        public String description;
+        public float deliveryPrice;
         public long user;
         
         @XmlElement
@@ -36,12 +35,10 @@ public interface IProviderService {
     @XmlRootElement
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class ProviderUpdate {
+    public static class DepotUpdate {
         
         public String title;
-        public String promo;
-        public String description;
-        public long user;
+        public float deliveryPrice;
         
         @XmlElement
         public IAttributeService.RelatedAttribute[] attributes;
@@ -50,11 +47,11 @@ public interface IProviderService {
     @XmlRootElement
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class ProvidersResponse {
+    public static class DepotsResponse {
         
         public long count;
         public int page;
         public int size;
-        public List<Provider> providers;
+        public List<Depot> depots;
     }
 }
