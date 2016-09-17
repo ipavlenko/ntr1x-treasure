@@ -29,6 +29,9 @@ public interface IGoodService {
         public long purchase;
         
         @XmlElement
+        public IImageService.RelatedImage[] images;
+        
+        @XmlElement
         public IAttributeService.RelatedAttribute[] attributes;
         
         @XmlElement
@@ -45,6 +48,9 @@ public interface IGoodService {
         
         public String title;
         public String promo;
+        
+        @XmlElement
+        public IImageService.RelatedImage[] images;
         
         @XmlElement
         public IAttributeService.RelatedAttribute[] attributes;

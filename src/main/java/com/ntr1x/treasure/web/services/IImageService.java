@@ -10,21 +10,13 @@ import lombok.NoArgsConstructor;
 
 public interface IImageService {
 
-    void createImages(Resource resource, CreateImage[] images);
-    void updateImages(Resource resource, UpdateImage[] images);
+    void createImages(Resource resource, RelatedImage[] images);
+    void updateImages(Resource resource, RelatedImage[] images);
     
     @XmlRootElement
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class CreateImage {
-        
-        public Long image;
-    }
-    
-    @XmlRootElement
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class UpdateImage {
+    public static class RelatedImage {
         
         public Long id;
         public Long image;

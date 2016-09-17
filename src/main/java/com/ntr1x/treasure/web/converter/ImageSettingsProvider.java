@@ -40,7 +40,6 @@ public class ImageSettingsProvider implements ParamConverterProvider {
         return null;
     }
 
-
     private class ImageSettingsConverter implements ParamConverter<ImageSettings> {
 
         @Override

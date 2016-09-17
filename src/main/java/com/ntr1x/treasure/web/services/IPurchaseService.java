@@ -56,7 +56,7 @@ public interface IPurchaseService {
         public IAttributeService.RelatedAttribute[] attributes;
         
         @XmlElement
-        public IImageService.CreateImage[] images;
+        public IImageService.RelatedImage[] images;
     }
     
     @XmlRootElement
@@ -89,7 +89,7 @@ public interface IPurchaseService {
         public IAttributeService.RelatedAttribute[] attributes;
         
         @XmlElement
-        public IImageService.UpdateImage[] images;
+        public IImageService.RelatedImage[] images;
     }
     
     @XmlRootElement

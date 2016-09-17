@@ -16,11 +16,11 @@ public class ImageService implements IImageService {
     private EntityManager em;
     
     @Override
-    public void createImages(Resource resource, CreateImage[] images) {
+    public void createImages(Resource resource, RelatedImage[] images) {
         
         if (images != null) {
             
-            for (CreateImage p : images) {
+            for (RelatedImage p : images) {
                 
                 ResourceImage v = new ResourceImage(); {
                     
@@ -38,11 +38,11 @@ public class ImageService implements IImageService {
     }
     
     @Override
-    public void updateImages(Resource resource, UpdateImage[] images) {
+    public void updateImages(Resource resource, RelatedImage[] images) {
         
         if (images != null) {
             
-            for (UpdateImage p : images) {
+            for (RelatedImage p : images) {
                 
                 switch (p.action) {
                 

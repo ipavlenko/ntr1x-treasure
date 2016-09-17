@@ -29,6 +29,9 @@ public class GoodService implements IGoodService {
     private ITransactionService transactions;
     
     @Inject
+    private IImageService images;
+    
+    @Inject
     private IAttributeService attributes;
     
     @Inject
@@ -66,6 +69,7 @@ public class GoodService implements IGoodService {
         
         security.register(g, ResourceUtils.alias(null, "goods/i", g));
         
+        images.createImages(g, request.images);
         attributes.createAttributes(g, request.attributes);
         categories.createCategories(g, request.categories);
         modifications.createModifications(g, request.modifications);
@@ -106,6 +110,7 @@ public class GoodService implements IGoodService {
             em.merge(g);
             em.flush();
             
+            images.updateImages(g, request.images);
             attributes.updateAttributes(g, request.attributes);
             categories.updateCategories(g, request.categories);
             modifications.updateModifications(g, request.modifications);

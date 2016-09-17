@@ -36,6 +36,9 @@ public interface IModificationService {
         public float sizeRange;
       
         @XmlElement
+        public IImageService.RelatedImage[] images;
+        
+        @XmlElement
         public IAttributeService.RelatedAttribute[] attributes;
     }
     
@@ -49,6 +52,9 @@ public interface IModificationService {
         public float sizeRange;
       
         @XmlElement
+        public IImageService.RelatedImage[] images;
+        
+        @XmlElement
         public IAttributeService.RelatedAttribute[] attributes;
     }
     
@@ -61,6 +67,9 @@ public interface IModificationService {
         public float price;
         public float sizeRange;
         public Action action;
+        
+        @XmlElement
+        public IImageService.RelatedImage[] images;
         
         @XmlElement
         public IAttributeService.RelatedAttribute[] attributes;

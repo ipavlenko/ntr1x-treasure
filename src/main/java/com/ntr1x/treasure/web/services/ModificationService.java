@@ -34,6 +34,9 @@ public class ModificationService implements IModificationService {
     private ITransactionService transactions;
     
     @Inject
+    private IImageService images;
+    
+    @Inject
     private IAttributeService attributes;
     
     @Inject
@@ -60,6 +63,7 @@ public class ModificationService implements IModificationService {
         
         security.register(modification, ResourceUtils.alias(null, "modifications/i", modification));
         
+        images.createImages(modification, create.images);
         attributes.createAttributes(modification, create.attributes);
         
         em.refresh(modification);
@@ -89,6 +93,7 @@ public class ModificationService implements IModificationService {
             em.flush();
         }
         
+        images.updateImages(modification, update.images);
         attributes.updateAttributes(modification, update.attributes);
         
         em.refresh(modification);
@@ -172,6 +177,7 @@ public class ModificationService implements IModificationService {
                     
                     security.register(v, ResourceUtils.alias(null, "modifications/i", v));
                     
+                    images.createImages(v, p.images);
                     attributes.createAttributes(v, p.attributes);
                     
                     em.refresh(v);
@@ -213,6 +219,7 @@ public class ModificationService implements IModificationService {
                             
                             security.register(v, ResourceUtils.alias(null, "modifications/i", v));
                             
+                            images.createImages(v, p.images);
                             attributes.createAttributes(v, p.attributes);
                             
                             em.refresh(v);
@@ -242,6 +249,7 @@ public class ModificationService implements IModificationService {
                             em.merge(v);
                             em.flush();
                             
+                            images.updateImages(v, p.images);
                             attributes.updateAttributes(v, p.attributes);
                             
                             em.refresh(v);
