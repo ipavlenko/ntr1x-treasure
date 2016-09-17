@@ -1,5 +1,8 @@
 package com.ntr1x.treasure.web.resources;
 
+import java.util.Collections;
+import java.util.List;
+
 import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -7,6 +10,7 @@ import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -18,8 +22,14 @@ import javax.ws.rs.core.MediaType;
 
 import org.springframework.stereotype.Component;
 
+import com.ntr1x.treasure.web.index.ModificationIndexRepository;
+import com.ntr1x.treasure.web.index.ModificationIndexRepositoryCustom.SearchRequest;
+import com.ntr1x.treasure.web.index.ModificationIndexRepositoryCustom.SearchRequest.GroupBy;
+import com.ntr1x.treasure.web.index.ModificationIndexRepositoryCustom.SearchResult;
+import com.ntr1x.treasure.web.model.p2.Purchase;
 import com.ntr1x.treasure.web.model.p2.Session;
 import com.ntr1x.treasure.web.model.p4.Modification;
+import com.ntr1x.treasure.web.repository.ModificationRepository;
 import com.ntr1x.treasure.web.services.IModificationService;
 import com.ntr1x.treasure.web.services.IModificationService.ModificationCreate;
 import com.ntr1x.treasure.web.services.IModificationService.ModificationUpdate;
@@ -38,6 +48,9 @@ public class ModificationResource {
     private EntityManager em;
     
     @Inject
+    private ModificationRepository repository;
+    
+    @Inject
     private IModificationService modifications;
     
     @Inject
@@ -45,6 +58,9 @@ public class ModificationResource {
     
     @Inject
     private Session session;
+    
+    @Inject
+    private ModificationIndexRepository search;
 
     @GET
     @Path("/i/{id}")
@@ -53,6 +69,53 @@ public class ModificationResource {
     public Modification select(@PathParam("id") long id) {
         
         return modifications.select(id);
+    }
+    
+    @GET
+    @Path("/grouped")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Transactional
+    public ModificationsResponse modificationsQuery(
+        @QueryParam("page") @ApiParam(example = "0") int page,
+        @QueryParam("size") @ApiParam(example = "10") int size,
+        @QueryParam("groupBy") @ApiParam(example = "PURCHASE") @DefaultValue("PURCHASE") GroupBy groupBy,
+        @QueryParam("query") String query,
+        @QueryParam("purchase") Long purchase,
+        @QueryParam("categories") List<Long> categories,
+        @QueryParam("attributes") List<String> attributes,
+        @QueryParam("good") Long good,
+        @QueryParam("user") Long user,
+        @QueryParam("status") Purchase.Status status
+    ) {
+        
+        SearchResult result =
+            search.search(
+                new SearchRequest(
+                    query,
+                    purchase,
+                    good,
+                    categories,
+                    attributes,
+                    page,
+                    size,
+                    groupBy
+                 )
+            )
+        ;
+        
+        Long[] identifiers = result.items.toArray(new Long[0]);
+
+        List<Modification> list = identifiers.length > 0
+            ? repository.findByIdIn(identifiers)
+            : Collections.emptyList()
+        ;
+        
+        return new ModificationsResponse(
+            result.count,
+            page,
+            size,
+            list
+        );
     }
     
     @GET

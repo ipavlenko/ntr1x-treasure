@@ -1,15 +1,22 @@
 package com.ntr1x.treasure.web.index;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.solr.core.SolrTemplate;
 import org.springframework.data.solr.core.query.FilterQuery;
+import org.springframework.data.solr.core.query.GroupOptions;
 import org.springframework.data.solr.core.query.Query;
+import org.springframework.data.solr.core.query.SimpleField;
 import org.springframework.data.solr.core.query.SimpleFilterQuery;
 import org.springframework.data.solr.core.query.SimpleQuery;
 import org.springframework.data.solr.core.query.SimpleStringCriteria;
+import org.springframework.data.solr.core.query.result.GroupEntry;
+
+import com.ntr1x.treasure.web.index.ModificationIndexRepositoryCustom.SearchRequest.GroupBy;
 
 public class ModificationIndexRepositoryImpl implements ModificationIndexRepositoryCustom {
 
@@ -17,36 +24,41 @@ public class ModificationIndexRepositoryImpl implements ModificationIndexReposit
     private SolrTemplate solr;
     
     @Override
-    public List<ModificationIndex> search(String query, Long purchase, Long good, List<Long> categories, List<String> attributes) {
+    public SearchResult search(SearchRequest request) {
             
         FilterQuery fq = new SimpleFilterQuery(new SimpleStringCriteria("type_s:modification")); {
             
-            if (purchase != null) {
-                fq.addCriteria(new SimpleStringCriteria(String.format("purchase_l:%d", purchase)));
+            if (request.purchase != null) {
+                fq.addCriteria(new SimpleStringCriteria(String.format("purchase_l:%d", request.purchase)));
             }
             
-            if (good != null) {
-                fq.addCriteria(new SimpleStringCriteria(String.format("good_l:%d", good)));
+            if (request.good != null) {
+                fq.addCriteria(new SimpleStringCriteria(String.format("good_l:%d", request.good)));
             }
             
-            if (categories != null) {
+            if (request.categories != null) {
                 
-                for (Long category : categories) {
+                for (Long category : request.categories) {
                     fq.addCriteria(new SimpleStringCriteria(String.format("category_ls:%d", category)));
                 }
             }
             
-            if (attributes != null) {
+            if (request.attributes != null) {
                 
-                for (String attribute : attributes) {
+                for (String attribute : request.attributes) {
                     fq.addCriteria(new SimpleStringCriteria(String.format("attribute_ss:%s", attribute)));
                 }
             }
         }
         
-        String s = query == null ? "" : query.trim();
+        String s = request.query == null ? "" : request.query.trim();
+        
+        GroupOptions groupOptions = new GroupOptions()
+            .addGroupByField(new SimpleField(request.groupBy == GroupBy.GOOD ? "good_l" : "purchase_l"))
+        ;
         
         Query q = new SimpleQuery()
+            .setGroupOptions(groupOptions)
             .addFilterQuery(fq)
             .addCriteria(new SimpleStringCriteria(
                 s.isEmpty() || "*".equals(s)
@@ -55,6 +67,25 @@ public class ModificationIndexRepositoryImpl implements ModificationIndexReposit
             ))
         ;
         
-        return solr.queryForPage(q, ModificationIndex.class).getContent();
+        Page<GroupEntry<ModificationIndex>> p = solr
+            .queryForGroupPage(q, ModificationIndex.class)
+            .getGroupResult(request.groupBy == GroupBy.GOOD ? "good_l" : "purchase_l")
+            .getGroupEntries()
+        ;
+        
+        List<Long> list = p.getContent()
+            .stream()
+            .map((g) -> g.getResult().getContent().get(0).resource)
+            .skip(request.page * request.size)
+            .limit(request.size)
+            .collect(Collectors.toList())
+        ;
+        
+        return new SearchResult(
+            p.getTotalElements(),
+            request.page,
+            request.size,
+            list
+        );
     }
 }

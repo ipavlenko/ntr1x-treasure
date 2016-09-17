@@ -1,5 +1,7 @@
 package com.ntr1x.treasure.web.repository;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -22,4 +24,11 @@ public interface PurchaseRepository extends JpaRepository<Purchase, Long> {
         @Param("status") Purchase.Status status,
         Pageable pageable
     );
+    
+    @Query(
+        " SELECT p"
+      + " FROM Purchase p"
+      + " WHERE p.id IN :ids"
+    )
+    List<Purchase> findByIdIn(@Param("ids") Long[] ids);
 }

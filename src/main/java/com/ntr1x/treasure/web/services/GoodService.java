@@ -70,6 +70,8 @@ public class GoodService implements IGoodService {
         categories.createCategories(g, request.categories);
         modifications.createModifications(g, request.modifications);
         
+        em.refresh(g);
+        
         transactions.afterCommit(() -> {
             
             publisher.publishEvent(
@@ -109,6 +111,8 @@ public class GoodService implements IGoodService {
             modifications.updateModifications(g, request.modifications);
         }
         
+        em.refresh(g);
+        
         transactions.afterCommit(() -> {
             
             publisher.publishEvent(
@@ -139,11 +143,13 @@ public class GoodService implements IGoodService {
             em.flush();
         }
         
+        em.refresh(g);
+        
         transactions.afterCommit(() -> {
             
             publisher.publishEvent(
                 new ResourceEvent(
-                    new ResourceMessage(g.getAlias(), ResourceMessage.Type.CREATE, g)
+                    new ResourceMessage(g.getAlias(), ResourceMessage.Type.REMOVE, g)
                 )
             );
         });

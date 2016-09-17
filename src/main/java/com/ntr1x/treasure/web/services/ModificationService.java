@@ -62,8 +62,6 @@ public class ModificationService implements IModificationService {
         
         attributes.createAttributes(modification, create.attributes);
         
-        em.flush();
-        
         em.refresh(modification);
         
         transactions.afterCommit(() -> {
@@ -92,8 +90,6 @@ public class ModificationService implements IModificationService {
         }
         
         attributes.updateAttributes(modification, update.attributes);
-        
-        em.flush();
         
         em.refresh(modification);
         
@@ -178,6 +174,8 @@ public class ModificationService implements IModificationService {
                     
                     attributes.createAttributes(v, p.attributes);
                     
+                    em.refresh(v);
+                    
                     transactions.afterCommit(() -> {
                         
                         publisher.publishEvent(
@@ -217,6 +215,8 @@ public class ModificationService implements IModificationService {
                             
                             attributes.createAttributes(v, p.attributes);
                             
+                            em.refresh(v);
+                            
                             transactions.afterCommit(() -> {
                                 
                                 publisher.publishEvent(
@@ -243,6 +243,8 @@ public class ModificationService implements IModificationService {
                             em.flush();
                             
                             attributes.updateAttributes(v, p.attributes);
+                            
+                            em.refresh(v);
                             
                             transactions.afterCommit(() -> {
                                 

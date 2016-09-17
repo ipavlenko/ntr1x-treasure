@@ -45,13 +45,6 @@ public class BootstrapPurchases {
                 .header(HttpHeaders.AUTHORIZATION, state.sessions.seller1)
                 .post(Entity.entity(s, MediaType.APPLICATION_JSON_TYPE), Purchase.class)
             ;
-            
-//            purchases.seller1Active1 = target
-//                .path(String.format("/purchases/i/%d/status", purchase.getId()))
-//                .request(MediaType.APPLICATION_JSON_TYPE)
-//                .header(HttpHeaders.AUTHORIZATION, state.sessions.seller1)
-//                .post(Entity.entity(new IPurchaseService.PurchaseUpdateStatus(Purchase.Status.OPEN), MediaType.APPLICATION_JSON_TYPE), Purchase.class)
-//            ;
         }
         
         {
