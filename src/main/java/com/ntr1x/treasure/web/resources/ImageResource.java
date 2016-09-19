@@ -197,7 +197,7 @@ public class ImageResource {
     public Response selectImage(
         @PathParam("uuid") UUID uuid,
         @PathParam("name") String name,
-        @PathParam("name") String format
+        @PathParam("format") String format
     ) {
         
         Image upload = uploads.findByUuid(uuid);
