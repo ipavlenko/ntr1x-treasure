@@ -161,7 +161,10 @@ public class ImageResource {
 		@QueryParam("size") int size
 	) {
 	    
-	    Page<Image> p = uploads.findByAspect(aspect, new PageRequest(page, size));
+	    Page<Image> p = aspect != null && !aspect.isEmpty()
+            ? uploads.findByAspect(aspect, new PageRequest(page, size))
+            : uploads.findAll(new PageRequest(page, size))
+	    ;
 	    
 		return new UploadsResponse(
 		    p.getTotalElements(),

@@ -32,6 +32,7 @@ public interface IPurchaseService {
     public static class PurchaseCreate {
         
         public String title;
+        public String promo;
         public long provider;
         public long method;
         public long user;
@@ -65,6 +66,7 @@ public interface IPurchaseService {
     public static class PurchaseUpdate {
         
         public String title;
+        public String promo;
         public long provider;
         public long method;
         public long user;

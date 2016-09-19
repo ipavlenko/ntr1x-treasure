@@ -4,8 +4,12 @@ import javax.inject.Inject;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 
+import org.glassfish.jersey.media.multipart.MultiPartFeature;
+import org.glassfish.jersey.moxy.json.MoxyJsonFeature;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import com.ntr1x.treasure.web.converter.AppConverterProvider;
 
 @Service
 public class Bootstrap implements IBootstrap {
@@ -44,6 +48,10 @@ public class Bootstrap implements IBootstrap {
         
         WebTarget target = ClientBuilder
             .newClient()
+            .register(AppConverterProvider.class)
+            .register(MoxyJsonFeature.class)
+            .register(MoxyJsonFeature.class)
+            .register(MultiPartFeature.class)
             .target(String.format("http://%s", host))
         ;
         

@@ -45,6 +45,7 @@ public class PurchaseService implements IPurchaseService {
             User user = em.find(User.class, create.user);
             
             purchase.setTitle(create.title);
+            purchase.setPromo(create.promo);
             purchase.setStatus(Purchase.Status.NEW);
             purchase.setMethod(method);
             purchase.setProvider(provider);
@@ -76,6 +77,7 @@ public class PurchaseService implements IPurchaseService {
             User user = em.find(User.class, update.user);
             
             purchase.setTitle(update.title);
+            purchase.setPromo(update.promo);
             purchase.setMethod(method);
             purchase.setProvider(provider);
             purchase.setUser(user);

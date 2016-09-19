@@ -32,7 +32,9 @@ public class BootstrapPurchases {
                 s.method = state.methods.seller1MethodCash.getId();
                 s.provider = state.providers.seller1China.getId();
                 
-                s.title = "Первая поставка всякой ерунды из Китая";
+                s.title = "Шапки и шарфы";
+                s.promo = "Новая поставка шапок и шарфов";
+                
                 s.open = LocalDate.now().minusWeeks(1);
                 s.stop = LocalDate.now().plusWeeks(1);
                 s.delivery = LocalDate.now().plusWeeks(2);

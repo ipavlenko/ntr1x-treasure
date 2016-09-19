@@ -57,6 +57,9 @@ public class Purchase extends Resource {
 	@Column(name = "Title", nullable = false)
 	private String title;
 
+	@Column(name = "Promo")
+    private String promo;
+	
 	@Column(name = "Status", nullable = false)
 	private Status status;
 
