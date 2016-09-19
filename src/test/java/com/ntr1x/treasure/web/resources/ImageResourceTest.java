@@ -1,6 +1,8 @@
 package com.ntr1x.treasure.web.resources;
 
 import java.io.File;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.inject.Inject;
 import javax.ws.rs.client.ClientBuilder;
@@ -14,6 +16,7 @@ import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 import org.glassfish.jersey.media.multipart.MultiPart;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.media.multipart.file.FileDataBodyPart;
+import org.glassfish.jersey.moxy.json.MoxyJsonFeature;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
@@ -27,7 +30,9 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.ntr1x.treasure.web.App;
+import com.ntr1x.treasure.web.converter.AppConverterProvider;
 import com.ntr1x.treasure.web.converter.ImageSettingsProvider.ImageSettings;
+import com.ntr1x.treasure.web.converter.ImageSettingsProvider.ImageSettingsConverter;
 import com.ntr1x.treasure.web.model.p1.Image;
 import com.ntr1x.treasure.web.model.p1.User;
 import com.ntr1x.treasure.web.services.IProfilerService;
@@ -53,8 +58,11 @@ public class ImageResourceTest {
         
         target = ClientBuilder
             .newClient()
+            .register(AppConverterProvider.class)
+            .register(MoxyJsonFeature.class)
+            .register(MoxyJsonFeature.class)
             .register(MultiPartFeature.class)
-            .register(LoggingFeature.class)
+            .register(new LoggingFeature(Logger.getLogger(getClass().getName()), Level.INFO, null, null))
             .target(String.format("http://localhost:%d", this.port))
         ;
     }
@@ -120,6 +128,8 @@ public class ImageResourceTest {
                     };
                 }
                 
+                System.out.println(new ImageSettingsConverter().toString(settings));
+                
                 @SuppressWarnings("resource")
                 MultiPart mp = new FormDataMultiPart()
                     .field("settings", settings, MediaType.APPLICATION_JSON_TYPE)
@@ -131,7 +141,7 @@ public class ImageResourceTest {
                 ;
                 
                 Image image = target
-                    .path("/images")
+                    .path("/images/m2m")
                     .request(MediaType.APPLICATION_JSON_TYPE)
                     .header(HttpHeaders.AUTHORIZATION, token)
                     .post(Entity.entity(mp, mp.getMediaType()), Image.class)

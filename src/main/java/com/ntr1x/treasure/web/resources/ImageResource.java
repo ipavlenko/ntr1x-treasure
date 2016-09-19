@@ -32,6 +32,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
+import com.ntr1x.treasure.web.converter.ImageSettingsProvider;
 import com.ntr1x.treasure.web.converter.ImageSettingsProvider.ImageSettings;
 import com.ntr1x.treasure.web.model.p1.Image;
 import com.ntr1x.treasure.web.model.p2.Session;
@@ -42,6 +43,8 @@ import com.ntr1x.treasure.web.services.IScaleImageService;
 import com.ntr1x.treasure.web.services.ISecurityService;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
@@ -50,19 +53,8 @@ import lombok.NoArgsConstructor;
 @Path("/images")
 public class ImageResource {
     
-    public static final String EXAMPLE =
-        "{"
-      + "   ["
-      + "       {"
-      + "           \"name\": \"logo\","
-      + "           \"format\": \"png\","
-      + "           \"width\": \"320\","
-      + "           \"height\": \"240\","
-      + "           \"type\": \"COVER\""
-      + "       }"
-      + "   ]"
-      + "}"
-    ;
+    private static final String SETTINGS_EXAMPLE =
+        "{ \"items\":[ { \"name\": \"cover-240x100\", \"format\": \"png\", \"width\": 240, \"height\": 100, \"type\": \"COVER\" } ] }";
 
     @Inject
     private IFileService files;
@@ -85,12 +77,34 @@ public class ImageResource {
     @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
+    @RolesAllowed({ "auth" })
+    @Transactional
+    @ApiOperation("Alternative for the POST /images/m2m method. Workaround for: https://github.com/OAI/OpenAPI-Specification/issues/222")
+    public Image upload(
+            @ApiParam(name = "file") @FormDataParam("file") InputStream stream,
+            @FormDataParam("file") FormDataContentDisposition header,
+            @ApiParam(example = SETTINGS_EXAMPLE) @FormDataParam("settings") String settings
+    ) {
+        // 
+        return upload(
+            stream,
+            header,
+            new ImageSettingsProvider.ImageSettingsConverter().fromString(settings)
+        );
+    }
+    
+    @POST
+    @Path("/m2m")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Produces(MediaType.APPLICATION_JSON)
 	@RolesAllowed({ "auth" })
     @Transactional
+    @ApiOperation("Alternative for the POST /images method. Doesn't work from the Swagger-UI. Discussed here: https://github.com/OAI/OpenAPI-Specification/issues/222")
     public Image upload(
-			@FormDataParam("file") InputStream stream,
+			@ApiParam(name = "file") @FormDataParam("file") InputStream stream,
 			@FormDataParam("file") FormDataContentDisposition header,
-			@FormDataParam("settings") ImageSettings settings
+			@ApiParam(example = SETTINGS_EXAMPLE) @FormDataParam("settings") ImageSettings settings
+//			@FormDataParam("settings") String settings // Workaround for https://github.com/OAI/OpenAPI-Specification/issues/222
     ) {
         
         Image image = new Image(); {
