@@ -49,6 +49,20 @@ import lombok.NoArgsConstructor;
 @Component
 @Path("/images")
 public class ImageResource {
+    
+    public static final String EXAMPLE =
+        "{"
+      + "   ["
+      + "       {"
+      + "           \"name\": \"logo\","
+      + "           \"format\": \"png\","
+      + "           \"width\": \"320\","
+      + "           \"height\": \"240\","
+      + "           \"type\": \"COVER\""
+      + "       }"
+      + "   ]"
+      + "}"
+    ;
 
     @Inject
     private IFileService files;
@@ -92,7 +106,7 @@ public class ImageResource {
         
         try {
             
-            File dir = files.resolve(String.format("%s/%s", image.getDir(), image.getUuid())); {
+            File dir = files.resolve(image.getUuid().toString()); {
                 dir.mkdirs();
             }
         
@@ -154,7 +168,7 @@ public class ImageResource {
 	    
 	    Image upload = em.find(Image.class, id);
 	    
-        File file = files.resolve(String.format("%s/%s/%s.%s", upload.getDir(), upload.getUuid(), name, format));
+        File file = files.resolve(String.format("%s/%s.%s", upload.getUuid(), name, format));
         
         return Response
             .ok(file)
@@ -174,7 +188,7 @@ public class ImageResource {
         
         Image upload = uploads.findByUuid(uuid);
         
-        File file = files.resolve(String.format("%s/%s/%s.%s", upload.getDir(), upload.getUuid(), name, format));
+        File file = files.resolve(String.format("%s/%s.%s", upload.getUuid(), name, format));
         
         return Response
             .ok(file)

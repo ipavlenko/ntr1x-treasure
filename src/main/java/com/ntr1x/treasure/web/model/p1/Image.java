@@ -36,7 +36,4 @@ public class Image extends Resource {
     
     @Column(name = "Original")
     private String original;
-    
-    @Column(name = "Dir")
-    private String dir;
 }

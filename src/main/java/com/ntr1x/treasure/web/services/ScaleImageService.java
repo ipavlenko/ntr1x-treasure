@@ -40,12 +40,19 @@ public class ScaleImageService implements IScaleImageService {
         );
 
         BufferedImage target = new BufferedImage(
-            scaled.getWidth(null),
-            scaled.getHeight(null),
+            width < 0 ? scaled.getWidth(null) : width,
+            height < 0 ? scaled.getHeight(null) : height,
             BufferedImage.SCALE_DEFAULT
         );
 
-        target.getGraphics().drawImage(scaled, bounds.x, bounds.y, bounds.width, bounds.height, null);
+        target.getGraphics().drawImage(
+            scaled,
+            bounds.x,
+            bounds.y,
+            bounds.width < 0 ? target.getWidth() : bounds.width,
+            bounds.height < 0 ? target.getHeight() : bounds.height,
+            null
+        );
         
         return target;
     }
@@ -55,30 +62,30 @@ public class ScaleImageService implements IScaleImageService {
         if (target.width < 0 && target.height < 0)
             return new Rectangle(0, 0, source.width, source.height); 
         if (target.width < 0)
-            return new Rectangle(0, 0, -1, target.width);
+            return new Rectangle(0, 0, -1, target.height);
         if (target.height < 0)
-            return new Rectangle(0, 0, target.height, -1);
+            return new Rectangle(0, 0, target.width, -1);
         
         switch (type) {
         
             case CONTAIN: {
                 
                 float kw = target.width / (float) source.width;
-                float kh = target.height / (float) source.width;
+                float kh = target.height / (float) source.height;
                 
                 return kw < kh
-                    ? new Rectangle(0, (int) ((target.height - kw * source.height) / 2.f), target.width, (int) (kw * target.height))
-                    : new Rectangle((int) ((target.width - kh * source.width) / 2.f), 0, (int) (kh * target.width), target.height)
+                    ? new Rectangle(0, (int) ((target.height - kw * source.height) / 2.f), target.width, (int) (kw * source.height))
+                    : new Rectangle((int) ((target.width - kh * source.width) / 2.f), 0, (int) (kh * source.width), target.height)
                 ;
             }
             case COVER: {
                 
                 float kw = target.width / (float) source.width;
-                float kh = target.height / (float) source.width;
+                float kh = target.height / (float) source.height;
                 
                 return kw > kh
-                    ? new Rectangle(0, (int) ((target.height - kw * source.height) / 2.f), target.width, (int) (kw * target.height))
-                    : new Rectangle((int) ((target.width - kh * source.width) / 2.f), 0, (int) (kh * target.width), target.height)
+                    ? new Rectangle(0, (int) ((target.height - kw * source.height) / 2.f), target.width, (int) (kw * source.height))
+                    : new Rectangle((int) ((target.width - kh * source.width) / 2.f), 0, (int) (kh * source.width), target.height)
                 ;
             }
             case SCALE:
