@@ -59,6 +59,7 @@ public class ModificationIndexRepositoryImpl implements ModificationIndexReposit
         
         Query q = new SimpleQuery()
             .setGroupOptions(groupOptions)
+            .setRows(1000000)
             .addFilterQuery(fq)
             .addCriteria(new SimpleStringCriteria(
                 s.isEmpty() || "*".equals(s)

@@ -56,7 +56,9 @@ public class BootstrapPurchases {
                 s.method = state.methods.seller1MethodCard.getId();
                 s.provider = state.providers.seller1India.getId();
                 
-                s.title = "Первая поставка всякой ерунды из Индии";
+                s.title = "Очки Polaroid и Invu";
+                s.promo = "Большая поставка солнцезащитных очков";
+                
                 s.open = LocalDate.now().minusWeeks(1);
                 s.stop = LocalDate.now().plusWeeks(1);
                 s.delivery = LocalDate.now().plusWeeks(2);
