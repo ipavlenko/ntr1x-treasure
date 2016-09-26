@@ -17,10 +17,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.springframework.stereotype.Component;
 
-import com.ntr1x.treasure.web.model.Account;
-import com.ntr1x.treasure.web.model.Session;
+import com.ntr1x.treasure.web.model.p1.User;
+import com.ntr1x.treasure.web.model.p2.Session;
 import com.ntr1x.treasure.web.reflection.ResourceUtils;
-import com.ntr1x.treasure.web.repository.AccountRepository;
+import com.ntr1x.treasure.web.repository.UserRepository;
 import com.ntr1x.treasure.web.services.ISecurityService;
 import com.ntr1x.treasure.web.utils.ConversionUtils;
 
@@ -40,7 +40,7 @@ public class SecurityResource {
     private EntityManager em;
     
     @Inject
-    private AccountRepository accounts;
+    private UserRepository users;
     
     @Inject
     private ISecurityService security;
@@ -59,7 +59,7 @@ public class SecurityResource {
     @Transactional
     public SigninResponse signin(SigninRequest signin) {
     
-        Account account = accounts.findByEmail(signin.email); {
+        User account = users.findByEmail(signin.email); {
             
             if (account == null) {
                 throw new WebApplicationException(Response.Status.UNAUTHORIZED);
@@ -72,7 +72,7 @@ public class SecurityResource {
         
         Session session = new Session(); {
             
-            session.setAccount(account);
+            session.setUser(account);
             session.setSignature(security.randomInt());
             
             em.persist(session);
@@ -122,7 +122,7 @@ public class SecurityResource {
     @Transactional
     public SignupResponse signup(SignupRequest signup) {
     
-        Account persisted = new Account(); {
+        User persisted = new User(); {
             
             int random = security.randomInt();
             persisted.setEmail(signup.email);

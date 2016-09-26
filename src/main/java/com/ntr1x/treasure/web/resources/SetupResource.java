@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import com.ntr1x.treasure.web.bootstrap.IBootstrap;
 import com.ntr1x.treasure.web.bootstrap.IBootstrap.BootstrapResults;
+import com.ntr1x.treasure.web.index.PublicationIndexRepository;
 import com.ntr1x.treasure.web.repository.ResourceRepository;
 
 import io.swagger.annotations.Api;
@@ -23,13 +24,18 @@ public class SetupResource {
     private ResourceRepository resources;
     
     @Inject
+    private PublicationIndexRepository publications;
+    
+    @Inject
     private IBootstrap bootsrtap;
     
     @POST
     @Path("/bootstrap")
     public BootstrapResults bootstrap() {
         
+        publications.deleteAll();
         resources.deleteAll();
+        
         return bootsrtap.bootstrap();
     }
 }

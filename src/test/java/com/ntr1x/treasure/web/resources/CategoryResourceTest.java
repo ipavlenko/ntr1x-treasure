@@ -22,7 +22,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.ntr1x.treasure.web.App;
-import com.ntr1x.treasure.web.model.Category;
+import com.ntr1x.treasure.web.model.p1.Category;
 import com.ntr1x.treasure.web.resources.CategoryResource.CategoryCreate;
 import com.ntr1x.treasure.web.services.IProfilerService;
 

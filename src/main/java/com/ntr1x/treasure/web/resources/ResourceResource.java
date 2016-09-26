@@ -14,7 +14,7 @@ import javax.ws.rs.core.MediaType;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
-import com.ntr1x.treasure.web.model.Resource;
+import com.ntr1x.treasure.web.model.p0.Resource;
 import com.ntr1x.treasure.web.repository.ResourceRepository;
 
 import io.swagger.annotations.Api;

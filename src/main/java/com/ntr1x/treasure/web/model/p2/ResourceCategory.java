@@ -1,4 +1,4 @@
-package com.ntr1x.treasure.web.model;
+package com.ntr1x.treasure.web.model.p2;
 
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -11,6 +11,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
+
+import com.ntr1x.treasure.web.model.p0.Resource;
 
 import lombok.Getter;
 import lombok.Setter;

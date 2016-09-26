@@ -24,11 +24,13 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.ntr1x.treasure.web.App;
-import com.ntr1x.treasure.web.model.Category;
-import com.ntr1x.treasure.web.model.Publication;
+import com.ntr1x.treasure.web.model.p1.Category;
+import com.ntr1x.treasure.web.model.p3.Publication;
 import com.ntr1x.treasure.web.resources.CategoryResource.CategoryCreate;
-import com.ntr1x.treasure.web.resources.PublicationResource.PublicationCreate;
+import com.ntr1x.treasure.web.services.ICategoryService;
 import com.ntr1x.treasure.web.services.IProfilerService;
+import com.ntr1x.treasure.web.services.IPublicationService;
+import com.ntr1x.treasure.web.services.IPublicationService.PublicationCreate;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = App.class, webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -85,19 +87,19 @@ public class PublicationResourceTest {
 	        Category c1 = categories.get(1);
 	        Category c2 = categories.get(2);
 	        
-	        List<PublicationCreate> publications = new ArrayList<>(); {
+	        List<IPublicationService.PublicationCreate> publications = new ArrayList<>(); {
     		    
 	            {
 	                
-        	        PublicationCreate p = new PublicationCreate(); {
+        	        IPublicationService.PublicationCreate p = new IPublicationService.PublicationCreate(); {
         	            
             	        p.title = "Первый пример";
             	        p.promo = "Короткий текст примера";
             	        p.content = "Полный текст примера";
             	        p.published = LocalDateTime.now();
-            	        p.categories = new PublicationCreate.Category[] {
-        	                new PublicationCreate.Category(c0.getId()),
-        	                new PublicationCreate.Category(c1.getId()),
+            	        p.categories = new ICategoryService.RelatedCategory[] {
+        	                new ICategoryService.RelatedCategory(null, c0.getId(), null),
+        	                new ICategoryService.RelatedCategory(null, c1.getId(), null),
             	        };
         	        }
         	        
@@ -105,15 +107,15 @@ public class PublicationResourceTest {
 	            }
 	            
 	            {
-                    PublicationCreate p = new PublicationCreate(); {
+                    IPublicationService.PublicationCreate p = new IPublicationService.PublicationCreate(); {
                         
                         p.title = "Второй пример новости";
                         p.promo = "Короткий текст второго примера новости";
                         p.content = "Полный текст второго примера";
                         p.published = LocalDateTime.now();
-                        p.categories = new PublicationCreate.Category[] {
-                            new PublicationCreate.Category(c1.getId()),
-                            new PublicationCreate.Category(c2.getId()),
+                        p.categories = new ICategoryService.RelatedCategory[] {
+                            new ICategoryService.RelatedCategory(null, c1.getId(), null),
+                            new ICategoryService.RelatedCategory(null, c2.getId(), null),
                         };
                     }
                     
@@ -121,15 +123,15 @@ public class PublicationResourceTest {
                 }
 	            
 	            {
-                    PublicationCreate p = new PublicationCreate(); {
+                    IPublicationService.PublicationCreate p = new IPublicationService.PublicationCreate(); {
                         
                         p.title = "Третий пример новости";
                         p.promo = "Короткий текст третьего примера новости";
                         p.content = "Полный текст третьего примера новости";
                         p.published = LocalDateTime.now();
-                        p.categories = new PublicationCreate.Category[] {
-                            new PublicationCreate.Category(c0.getId()),
-                            new PublicationCreate.Category(c2.getId()),
+                        p.categories = new ICategoryService.RelatedCategory[] {
+                            new ICategoryService.RelatedCategory(null, c0.getId(), null),
+                            new ICategoryService.RelatedCategory(null, c2.getId(), null),
                         };
                     }
                     
@@ -138,7 +140,7 @@ public class PublicationResourceTest {
     		}
 	        
 	        
-	        for (PublicationCreate p : publications) {
+	        for (IPublicationService.PublicationCreate p : publications) {
     		    
     		    Publication r = target
                     .path("/publications")

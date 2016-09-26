@@ -1,17 +1,17 @@
 package com.ntr1x.treasure.web.services;
 
 import java.security.Principal;
-import java.text.MessageFormat;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 
+import org.apache.commons.lang3.text.StrSubstitutor;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
 
-import com.ntr1x.treasure.web.filters.AuthenticationFilter.AccountPrincipal;
+import com.ntr1x.treasure.web.filters.AuthenticationFilter.UserPrincipal;
 
 import lombok.RequiredArgsConstructor;
 
@@ -31,7 +31,7 @@ public class SecurityContextService implements ISecurityContextService {
     
     @Override
     public Principal getUserPrincipal() {
-        return (AccountPrincipal) request.getAttribute(AccountPrincipal.class.getName());
+        return (UserPrincipal) request.getAttribute(UserPrincipal.class.getName());
     }
     
     @Override
@@ -40,11 +40,13 @@ public class SecurityContextService implements ISecurityContextService {
         
         if (profiler.isSecurityDisabled()) return true;
         
-        AccountPrincipal principal = (AccountPrincipal) request.getAttribute(AccountPrincipal.class.getName());
+        UserPrincipal principal = (UserPrincipal) request.getAttribute(UserPrincipal.class.getName());
         
         if (principal == null
             || principal.session == null
-            || principal.session.getAccount() == null
+            || principal.session.getUser() == null
+            || principal.session.getUser().isLocked()
+            || !principal.session.getUser().isConfirmed()
         ) return false;
             
         switch (role) {
@@ -53,15 +55,18 @@ public class SecurityContextService implements ISecurityContextService {
         
         if (role.startsWith("res://")) {
             
-            String name = MessageFormat.format(role, state.params).substring("res://".length());
-            
+            StrSubstitutor substitutor = new StrSubstitutor(state.params);
+            substitutor.setVariablePrefix('{');
+            substitutor.setVariableSuffix('}');
+            String name = substitutor.replace(role).substring("res://".length());
+
             int pos = name.indexOf(':');
             if (pos >= 0) {
                 
                 String resource = name.substring(0, pos);
                 String action = name.substring(pos + 1);
 
-                return security.isUserInRole(principal.getSession().getAccount(), resource, action);
+                return security.isUserInRole(principal.getSession().getUser(), resource, action);
             }
             
             return false;

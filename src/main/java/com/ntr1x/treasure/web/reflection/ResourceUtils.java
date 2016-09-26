@@ -8,7 +8,7 @@ import java.util.Collection;
 
 import org.springframework.beans.BeanUtils;
 
-import com.ntr1x.treasure.web.model.Resource;
+import com.ntr1x.treasure.web.model.p0.Resource;
 
 public class ResourceUtils {
     

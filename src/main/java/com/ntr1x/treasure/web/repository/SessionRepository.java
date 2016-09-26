@@ -2,7 +2,7 @@ package com.ntr1x.treasure.web.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.ntr1x.treasure.web.model.Session;
+import com.ntr1x.treasure.web.model.p2.Session;
 
 public interface SessionRepository extends JpaRepository<Session, Long> {
     

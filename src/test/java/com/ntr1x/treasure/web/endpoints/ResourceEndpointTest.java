@@ -29,9 +29,10 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ntr1x.treasure.web.App;
-import com.ntr1x.treasure.web.model.Publication;
-import com.ntr1x.treasure.web.resources.PublicationResource.PublicationCreate;
+import com.ntr1x.treasure.web.model.p3.Publication;
 import com.ntr1x.treasure.web.services.IProfilerService;
+import com.ntr1x.treasure.web.services.IPublicationService;
+import com.ntr1x.treasure.web.services.IPublicationService.PublicationCreate;
 import com.ntr1x.treasure.web.services.ISubscriptionService.SubscriptionMessage;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -82,7 +83,7 @@ public class ResourceEndpointTest {
                 profiler.withDisabledSecurity(() -> {
                     
                     {
-                        PublicationCreate s = new PublicationCreate(); {
+                        IPublicationService.PublicationCreate s = new IPublicationService.PublicationCreate(); {
                             s.title = "Demo Publication";
                             s.promo = "Demo Publication Promo";
                             s.content = "Demo Publication Promo";
@@ -96,7 +97,7 @@ public class ResourceEndpointTest {
                     }
                     
                     {
-                        PublicationCreate s = new PublicationCreate(); {
+                        IPublicationService.PublicationCreate s = new IPublicationService.PublicationCreate(); {
                             s.title = "Demo Publication";
                             s.promo = "Demo Publication Promo";
                             s.content = "Demo Publication Promo";

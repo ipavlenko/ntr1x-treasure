@@ -31,6 +31,9 @@ public class PublicationIndex {
     @Indexed(boost = 1.0f)
     private String content;
     
+    @Field("published_dt")
+    public String published;
+    
     @Field("tags_txts_ru")
     @Indexed(boost = 2.0f)
     private String[] tags;

@@ -1,4 +1,4 @@
-package com.ntr1x.treasure.web.model;
+package com.ntr1x.treasure.web.model.p1;
 
 import java.util.List;
 
@@ -17,23 +17,33 @@ import javax.xml.bind.annotation.XmlTransient;
 import org.eclipse.persistence.annotations.CascadeOnDelete;
 import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 
+import com.ntr1x.treasure.web.model.p0.Resource;
+import com.ntr1x.treasure.web.model.p2.Grant;
+import com.ntr1x.treasure.web.model.p2.Session;
+import com.ntr1x.treasure.web.model.p2.Token;
+
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(
-	name = "accounts",
+	name = "users",
 	indexes= {
 		@Index(columnList = "Email", unique = true),
 	}
 )
 @PrimaryKeyJoinColumn(name = "ResourceId", referencedColumnName = "Id")
+@CascadeOnDelete
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-@Getter
-@Setter
-public class Account extends Resource {
+public class User extends Resource {
 	
 	@Column(name = "Email")
 	private String email;
@@ -41,26 +51,40 @@ public class Account extends Resource {
 	@XmlTransient
 	@Column(name = "Random")
 	@ApiModelProperty(hidden = true)
-	private int random;
+	private Integer random;
 	
 	@XmlTransient
 	@Column(name = "Pwdhash")
 	@ApiModelProperty(hidden = true)
 	private String pwdhash;
 	
+	@Column(name = "Confirmed")
+    private boolean confirmed;
+    
+    @Column(name = "Locked")
+    private boolean locked;
+	    
+	@ResourceRelation
+    @XmlElement
+    @XmlInverseReference(mappedBy = "user")
+    @OneToMany(mappedBy = "user")
+    @CascadeOnDelete
+    @ApiModelProperty(hidden = true)
+    private List<Grant> grants;
+		
 	@ResourceRelation
 	@XmlElement
-	@XmlInverseReference(mappedBy = "account")
-	@OneToMany(mappedBy = "account")
+	@XmlInverseReference(mappedBy = "user")
+	@OneToMany(mappedBy = "user")
 	@CascadeOnDelete
 	@ApiModelProperty(hidden = true)
 	private List<Session> sessions;
 	
 	@ResourceRelation
     @XmlElement
-    @XmlInverseReference(mappedBy = "account")
-    @OneToMany(mappedBy = "account")
+    @XmlInverseReference(mappedBy = "user")
+    @OneToMany(mappedBy = "user")
     @CascadeOnDelete
     @ApiModelProperty(hidden = true)
-    private List<Grant> grants;
+    private List<Token> tokens;
 }

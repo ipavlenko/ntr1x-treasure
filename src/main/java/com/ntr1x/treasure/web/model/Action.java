@@ -5,7 +5,6 @@ public enum Action {
 	CREATE,
 	REMOVE,
 	UPDATE,
-	IGNORE,
 	
 	;
 }

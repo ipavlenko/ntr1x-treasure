@@ -3,7 +3,7 @@ package com.ntr1x.treasure.web.reflection;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
-import com.ntr1x.treasure.web.model.Resource;
+import com.ntr1x.treasure.web.model.p0.Resource;
 import com.ntr1x.treasure.web.reflection.ResourceProperty.Type;
 
 import lombok.RequiredArgsConstructor;

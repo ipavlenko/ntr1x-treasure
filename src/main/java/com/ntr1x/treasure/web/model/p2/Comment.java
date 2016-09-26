@@ -1,4 +1,4 @@
-package com.ntr1x.treasure.web.model;
+package com.ntr1x.treasure.web.model.p2;
 
 import java.time.LocalDateTime;
 
@@ -15,9 +15,12 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.eclipse.persistence.annotations.CascadeOnDelete;
 import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 
 import com.ntr1x.treasure.web.converter.AppConverterProvider.LocalDateTimeConverter;
+import com.ntr1x.treasure.web.model.p0.Resource;
+import com.ntr1x.treasure.web.model.p1.User;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -30,25 +33,32 @@ import lombok.Setter;
 @XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
+@CascadeOnDelete
 public class Comment extends Resource {
 
-	@XmlElement
-	@XmlInverseReference(mappedBy = "comments")
-	@ManyToOne
-	@JoinColumn(name = "RelateId", nullable = false, updatable = false)
-	private Resource relate;
-	
-	@XmlElement
-	@ManyToOne
-	@JoinColumn(name = "AccountId", nullable = false, updatable = false)
-	private Account account;
-	
-	@Lob
-	@Column(name = "Message")
-	private String message;
-		
-	@Column(name = "Published")
-	@XmlJavaTypeAdapter(LocalDateTimeConverter.class)
-	@ApiModelProperty(example="1970-01-01T00:00:00")
-	private LocalDateTime published;
+    @XmlElement
+    @XmlInverseReference(mappedBy = "comments")
+    @ManyToOne
+    @JoinColumn(name = "RelateId", nullable = false, updatable = false)
+    private Resource relate;
+    
+    @XmlElement
+    @ManyToOne
+    @JoinColumn(name = "UserId", nullable = false, updatable = false)
+    private User user;
+    
+    @Column(name = "Confidential")
+    private boolean confidential;
+
+    @Column(name = "Approved")
+    private boolean approved;
+    
+    @Lob
+    @Column(name = "Message")
+    private String message;
+        
+    @Column(name = "Published")
+    @XmlJavaTypeAdapter(LocalDateTimeConverter.class)
+    @ApiModelProperty(example="1970-01-01T00:00:00")
+    private LocalDateTime published;
 }

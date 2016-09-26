@@ -4,7 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.ntr1x.treasure.web.model.Grant;
+import com.ntr1x.treasure.web.model.p2.Grant;
 
 public interface GrantRepository extends JpaRepository<Grant, Long> {
     
@@ -13,11 +13,11 @@ public interface GrantRepository extends JpaRepository<Grant, Long> {
       + " FROM"
       + "     Grant g"
       + " WHERE g.action = :action"
-      + "   AND g.account.id = :account"
+      + "   AND g.user.id = :user"
       + "   AND LOCATE(g.pattern, :resource) = 1"
     )
     int check(
-        @Param("account") long account,
+        @Param("user") long user,
         @Param("resource") String resource,
         @Param("action") String action
     );

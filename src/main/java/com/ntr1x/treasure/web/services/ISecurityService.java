@@ -1,12 +1,15 @@
 package com.ntr1x.treasure.web.services;
 
-import com.ntr1x.treasure.web.model.Account;
+import com.ntr1x.treasure.web.model.p0.Resource;
+import com.ntr1x.treasure.web.model.p1.User;
 
 import lombok.Data;
 
 public interface ISecurityService {
     
     int randomInt();
+    int randomInt(int min, int max);
+    
     String hashPassword(int random, String password);
     
     byte[] encrypt(byte[] bytes);
@@ -22,7 +25,9 @@ public interface ISecurityService {
     SecuritySession parseSession(byte[] bytes);
     SecuritySession parseSession(String session);
     
-    boolean isUserInRole(Account account, String resource, String action);
+    boolean isUserInRole(User user, String resource, String action);
+    void grant(User user, String pattern, String action);
+    void register(Resource resource, String alias);
     
     @Data
     class SecurityToken {

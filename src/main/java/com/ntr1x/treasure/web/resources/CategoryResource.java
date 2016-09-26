@@ -28,7 +28,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
 import com.ntr1x.treasure.web.model.Action;
-import com.ntr1x.treasure.web.model.Category;
+import com.ntr1x.treasure.web.model.p1.Category;
 import com.ntr1x.treasure.web.reflection.ResourceUtils;
 import com.ntr1x.treasure.web.repository.CategoryRepository;
 
@@ -227,7 +227,6 @@ public class CategoryResource {
                             }
                             break;
                         }
-                        case IGNORE:
                         default:
                             break;
                     }

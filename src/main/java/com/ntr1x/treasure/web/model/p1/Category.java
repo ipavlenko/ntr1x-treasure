@@ -1,8 +1,9 @@
-package com.ntr1x.treasure.web.model;
+package com.ntr1x.treasure.web.model.p1;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
@@ -13,29 +14,30 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 
+import com.ntr1x.treasure.web.model.p0.Resource;
+
 import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name = "likes")
+@Table(name = "categories")
 @PrimaryKeyJoinColumn(name = "ResourceId", referencedColumnName = "Id")
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
-public class Like extends Resource {
-	
+public class Category extends Resource {
+
 	@XmlElement
-	@XmlInverseReference(mappedBy = "likes")
+	@XmlInverseReference(mappedBy = "subcategories")
 	@ManyToOne
-	@JoinColumn(name = "RelateId", nullable = false, updatable = false)
+	@JoinColumn(name = "RelateId", nullable = true, updatable = false)
 	private Resource relate;
 	
-	@XmlElement
-	@ManyToOne
-	@JoinColumn(name = "AccountId", nullable = false, updatable = false)
-	private Account account;
+	@Column(name = "Title")
+	private String title;
 	
-	@Column(name = "Value")
-	private int value;
+	@Lob
+	@Column(name = "Description")
+	private String description;
 }

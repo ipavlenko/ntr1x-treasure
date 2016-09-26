@@ -24,16 +24,16 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.ntr1x.treasure.web.App;
-import com.ntr1x.treasure.web.model.Account;
-import com.ntr1x.treasure.web.resources.AccountResource.AccountCreate;
-import com.ntr1x.treasure.web.resources.AccountResource.AccountUpdate;
+import com.ntr1x.treasure.web.model.p1.User;
+import com.ntr1x.treasure.web.services.IGrantService;
 import com.ntr1x.treasure.web.services.IProfilerService;
+import com.ntr1x.treasure.web.services.IUserService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = App.class, webEnvironment = WebEnvironment.RANDOM_PORT)
 @TestPropertySource(locations = { "classpath:application.properties", "classpath:application-test.properties" })
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class AccountResourceTest {
+public class UserResourceTest {
 
 	@LocalServerPort
 	private int port;
@@ -57,16 +57,17 @@ public class AccountResourceTest {
 	    
 	    profiler.withDisabledSecurity(() -> {
 	        
-	        AccountCreate s = new AccountCreate(); {
+	        IUserService.CreateUser s = new IUserService.CreateUser(); {
 	            s.email = "user@example.com";
 	            s.password = "123";
+	            s.confirmed = true;
 	        }
 	        
-	        Account r = target
-	            .path("/accounts")
+	        User r = target
+	            .path("/users")
 	            .request(MediaType.APPLICATION_JSON_TYPE)
 	            //.header("Authorization", context.getRootToken())
-	            .post(Entity.entity(s, MediaType.APPLICATION_JSON_TYPE), Account.class)
+	            .post(Entity.entity(s, MediaType.APPLICATION_JSON_TYPE), User.class)
 	        ;
 	        
 	        Assert.assertNotNull(r.getId());
@@ -80,12 +81,12 @@ public class AccountResourceTest {
 	    
 	    profiler.withDisabledSecurity(() -> {
 	    
-    	    List<Account> response = target
-                .path("/accounts")
+    	    List<User> response = target
+                .path("/users")
                 .queryParam("page", 0)
                 .queryParam("size", 10)
                 .request()
-                .get(new GenericType<List<Account>>() {})
+                .get(new GenericType<List<User>>() {})
             ;
             
             Assert.assertEquals(response.size(), 1);
@@ -97,10 +98,10 @@ public class AccountResourceTest {
 	    
 	    profiler.withDisabledSecurity(() -> {
 	    
-            Account r = target
-                .path(String.format("/accounts/%d", 1))
+            User r = target
+                .path(String.format("/users/i/%d", 1))
                 .request()
-                .get(Account.class)
+                .get(User.class)
             ;
             
             Assert.assertTrue(r.getId() == 1);
@@ -113,15 +114,16 @@ public class AccountResourceTest {
 	    
 	    profiler.withDisabledSecurity(() -> {
 	    
-    	    AccountUpdate s = new AccountUpdate(); {
+	        IUserService.UpdateUser s = new IUserService.UpdateUser(); {
     	        s.email = "user@example.com";
     	        s.password = "1234";
+    	        s.confirmed = true;
     	    }
     	    
-            Account r = target
-                .path(String.format("/accounts/%d", 1))
+            User r = target
+                .path(String.format("/users/i/%d", 1))
                 .request()
-                .put(Entity.entity(s, MediaType.APPLICATION_JSON_TYPE), Account.class)
+                .put(Entity.entity(s, MediaType.APPLICATION_JSON_TYPE), User.class)
             ;
             
             Assert.assertTrue(r.getId() == 1);
@@ -134,10 +136,10 @@ public class AccountResourceTest {
 	    
 	    profiler.withDisabledSecurity(() -> {
 	    
-            Account r = target
-                .path(String.format("/accounts/%d", 1))
+            User r = target
+                .path(String.format("/users/i/%d", 1))
                 .request()
-                .delete(Account.class)
+                .delete(User.class)
             ;
             
             Assert.assertTrue(r.getId() == 1);
@@ -151,19 +153,20 @@ public class AccountResourceTest {
 	    profiler.withDisabledSecurity(() -> {
 	    
 	        {
-                AccountCreate s = new AccountCreate(); {
+	            IUserService.CreateUser s = new IUserService.CreateUser(); {
                     s.email = "admin@example.com";
                     s.password = "9876";
-                    s.grants = new AccountCreate.Grant[] {
-                        new AccountCreate.Grant("/", "admin"),
+                    s.confirmed = true;
+                    s.grants = new IGrantService.CreateGrant[] {
+                        new IGrantService.CreateGrant("/", "admin"),
                     };
                 }
                 
-                Account r = target
-                    .path("/accounts")
+                User r = target
+                    .path("/users")
                     .request(MediaType.APPLICATION_JSON_TYPE)
                     //.header("Authorization", context.getRootToken())
-                    .post(Entity.entity(s, MediaType.APPLICATION_JSON_TYPE), Account.class)
+                    .post(Entity.entity(s, MediaType.APPLICATION_JSON_TYPE), User.class)
                 ;
                 
                 Assert.assertNotNull(r.getId());
@@ -172,16 +175,17 @@ public class AccountResourceTest {
 	        }
 	        
 	        {
-	            AccountCreate s = new AccountCreate(); {
+	            IUserService.CreateUser s = new IUserService.CreateUser(); {
                     s.email = "user@example.com";
                     s.password = "1234";
+                    s.confirmed = true;
                 }
                 
-                Account r = target
-                    .path("/accounts")
+                User r = target
+                    .path("/users")
                     .request(MediaType.APPLICATION_JSON_TYPE)
                     //.header("Authorization", context.getRootToken())
-                    .post(Entity.entity(s, MediaType.APPLICATION_JSON_TYPE), Account.class)
+                    .post(Entity.entity(s, MediaType.APPLICATION_JSON_TYPE), User.class)
                 ;
                 
                 Assert.assertNotNull(r.getId());
@@ -250,13 +254,14 @@ public class AccountResourceTest {
         
         profiler.withCredentials(target, "admin@example.com", "9876", (token) -> {
             
-            AccountCreate s = new AccountCreate(); {
+            IUserService.CreateUser s = new IUserService.CreateUser(); {
                 s.email = "another-user@example.com";
                 s.password = "4567";
+                s.confirmed = true;
             }
             
             Response response = target
-                .path("/accounts")
+                .path("/users")
                 .request(MediaType.APPLICATION_JSON_TYPE)
                 .header("Authorization", token)
                 .post(Entity.entity(s, MediaType.APPLICATION_JSON_TYPE))
@@ -271,13 +276,14 @@ public class AccountResourceTest {
         
         profiler.withCredentials(target, "user@example.com", "1234", (token) -> {
             
-            AccountCreate s = new AccountCreate(); {
+            IUserService.CreateUser s = new IUserService.CreateUser(); {
                 s.email = "another-user@example.com";
                 s.password = "4567";
+                s.confirmed = true;
             }
             
             Response response = target
-                .path("/accounts")
+                .path("/users")
                 .request(MediaType.APPLICATION_JSON_TYPE)
                 .header("Authorization", token)
                 .post(Entity.entity(s, MediaType.APPLICATION_JSON_TYPE))
@@ -292,13 +298,14 @@ public class AccountResourceTest {
         
         profiler.withCredentials(target, "nobody@example.com", "0000", (token) -> {
             
-            AccountCreate s = new AccountCreate(); {
+            IUserService.CreateUser s = new IUserService.CreateUser(); {
                 s.email = "another-user@example.com";
                 s.password = "4567";
+                s.confirmed = true;
             }
             
             Response response = target
-                .path("/accounts")
+                .path("/users")
                 .request(MediaType.APPLICATION_JSON_TYPE)
                 .header("Authorization", token)
                 .post(Entity.entity(s, MediaType.APPLICATION_JSON_TYPE))

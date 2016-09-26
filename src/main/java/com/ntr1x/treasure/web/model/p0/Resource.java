@@ -1,4 +1,4 @@
-package com.ntr1x.treasure.web.model;
+package com.ntr1x.treasure.web.model.p0;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -31,6 +31,12 @@ import org.eclipse.persistence.annotations.CascadeOnDelete;
 import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 
 import com.ntr1x.treasure.web.filtering.ResourceFiltering;
+import com.ntr1x.treasure.web.model.p1.Category;
+import com.ntr1x.treasure.web.model.p1.Tag;
+import com.ntr1x.treasure.web.model.p2.Comment;
+import com.ntr1x.treasure.web.model.p2.ResourceCategory;
+import com.ntr1x.treasure.web.model.p2.ResourceImage;
+import com.ntr1x.treasure.web.model.p2.ResourceLike;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AccessLevel;
@@ -82,20 +88,12 @@ public class Resource {
     private List<Comment> comments;
 	
 	@ResourceRelation
-	@XmlElement
-	@XmlInverseReference(mappedBy = "relate")
-	@OneToMany(mappedBy = "relate")
-	@CascadeOnDelete
-	@ApiModelProperty(hidden = true)
-    private List<Good> goods;
-	
-	@ResourceRelation
-	@XmlElement
-	@XmlInverseReference(mappedBy = "relate")
-	@OneToMany(mappedBy = "relate")
-	@CascadeOnDelete
-	@ApiModelProperty(hidden = true)
-    private List<Attachment> attachments;
+    @XmlElement
+    @XmlInverseReference(mappedBy = "relate")
+    @OneToMany(mappedBy = "relate")
+    @CascadeOnDelete
+    @ApiModelProperty(hidden = true)
+    private List<ResourceImage> images;
 	
 	@ResourceRelation
 	@XmlElement
@@ -119,7 +117,7 @@ public class Resource {
 	@OneToMany(mappedBy = "relate")
 	@CascadeOnDelete
 	@ApiModelProperty(hidden = true)
-    private List<Like> likes;
+    private List<ResourceLike> likes;
 	
 	@Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD})
     @Retention(RetentionPolicy.RUNTIME)

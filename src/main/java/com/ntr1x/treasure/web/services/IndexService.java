@@ -1,6 +1,7 @@
 package com.ntr1x.treasure.web.services;
 
-import javax.annotation.PostConstruct;
+import java.time.format.DateTimeFormatter;
+
 import javax.inject.Inject;
 
 import org.springframework.context.annotation.Scope;
@@ -10,7 +11,7 @@ import org.springframework.stereotype.Component;
 import com.ntr1x.treasure.web.events.ResourceEvent;
 import com.ntr1x.treasure.web.index.PublicationIndex;
 import com.ntr1x.treasure.web.index.PublicationIndexRepository;
-import com.ntr1x.treasure.web.model.Publication;
+import com.ntr1x.treasure.web.model.p3.Publication;
 import com.ntr1x.treasure.web.services.ISubscriptionService.ResourceMessage;
 
 @Component
@@ -19,11 +20,6 @@ public class IndexService implements IIndexService {
     
     @Inject
     private PublicationIndexRepository publications;
-    
-    @PostConstruct
-    public void init() {
-        System.out.println(this);
-    }
     
     @EventListener
     public void handle(ResourceEvent event) {
@@ -64,6 +60,7 @@ public class IndexService implements IIndexService {
                 p.getTitle(),
                 p.getPromo(),
                 p.getContent(),
+                p.getPublished().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
                 p.getTags() == null ? null : p.getTags().stream().map(t -> t.getValue()).toArray(String[]::new),
                 p.getCategories() == null ? null : p.getCategories().stream().map(c -> c.getCategory().getId()).toArray(Long[]::new)
             )
