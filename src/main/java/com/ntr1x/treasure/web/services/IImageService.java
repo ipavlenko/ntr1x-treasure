@@ -20,6 +20,7 @@ public interface IImageService {
         
         public Long id;
         public Long image;
+        public String[] aspects;
         public Action action;
     }
 }

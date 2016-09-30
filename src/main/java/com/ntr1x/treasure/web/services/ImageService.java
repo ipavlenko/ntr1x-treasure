@@ -1,5 +1,7 @@
 package com.ntr1x.treasure.web.services;
 
+import java.util.Arrays;
+
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
@@ -28,6 +30,7 @@ public class ImageService implements IImageService {
                     
                     v.setRelate(resource);
                     v.setImage(e);
+                    v.setAspects(p.aspects != null ? Arrays.asList(p.aspects) : null);
                     
                     em.persist(v);
                 }
@@ -54,6 +57,7 @@ public class ImageService implements IImageService {
                             
                             v.setRelate(resource);
                             v.setImage(e);
+                            v.setAspects(p.aspects != null ? Arrays.asList(p.aspects) : null);
                             
                             em.persist(v);
                         }
