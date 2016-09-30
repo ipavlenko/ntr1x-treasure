@@ -53,7 +53,7 @@ public class BootstrapPublications {
                         new ICategoryService.RelatedCategory(null, bootstrap.directories.globe.getId(), null)
                 };
                 p.images = new IImageService.RelatedImage[] {
-                        new IImageService.RelatedImage(null, image.getId(), null)
+                        new IImageService.RelatedImage(null, image.getId(), null, null)
                 };
             }
     
@@ -78,7 +78,7 @@ public class BootstrapPublications {
                         new ICategoryService.RelatedCategory(null, bootstrap.specializations.endoprosthesis.getId(), null)
                 };
                 p.images = new IImageService.RelatedImage[] {
-                        new IImageService.RelatedImage(null, image.getId(), null)
+                        new IImageService.RelatedImage(null, image.getId(), null, null)
                 };
             }
     
