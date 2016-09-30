@@ -2,7 +2,9 @@ package com.ntr1x.treasure.web.bootstrap;
 
 import javax.inject.Inject;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
 
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.moxy.json.MoxyJsonFeature;
@@ -15,6 +17,8 @@ import com.ntr1x.treasure.web.bootstrap.BootstrapCategories.Localizations;
 import com.ntr1x.treasure.web.bootstrap.BootstrapCategories.Specialiations;
 import com.ntr1x.treasure.web.bootstrap.BootstrapUsers.Users;
 import com.ntr1x.treasure.web.converter.AppConverterProvider;
+import com.ntr1x.treasure.web.resources.SecurityResource.SigninRequest;
+import com.ntr1x.treasure.web.resources.SecurityResource.SigninResponse;
 import com.ntr1x.treasure.web.services.IProfilerService;
 
 @Service
@@ -57,8 +61,6 @@ public class Bootstrap implements IBootstrap {
         
         profiler.withCredentials(target, accounts.admin.getEmail(), accounts.adminPassword, (token) -> {
 
-            results.adminToken = token;
-            
             BootstrapCategories categories = new BootstrapCategories(this);
             
             directories = categories.createDirectories(target, token);
@@ -70,10 +72,29 @@ public class Bootstrap implements IBootstrap {
             /*this.publications = */publications.createPublications(target, token);
         });
         
-        profiler.withCredentials(target, accounts.user.getEmail(), accounts.userPassword, (token) -> {
+        {
+            SigninRequest s = new SigninRequest(accounts.admin.getEmail(), accounts.adminPassword);
             
-            results.userToken = token;
-        });
+            SigninResponse r = target
+                .path("/security/signin")
+                .request(MediaType.APPLICATION_JSON_TYPE)
+                .post(Entity.entity(s, MediaType.APPLICATION_JSON_TYPE), SigninResponse.class)
+            ;
+            
+            results.adminToken = r == null ? null : r.token;
+        }
+        
+        {
+            SigninRequest s = new SigninRequest(accounts.user.getEmail(), accounts.userPassword);
+            
+            SigninResponse r = target
+                .path("/security/signin")
+                .request(MediaType.APPLICATION_JSON_TYPE)
+                .post(Entity.entity(s, MediaType.APPLICATION_JSON_TYPE), SigninResponse.class)
+            ;
+            
+            results.userToken = r == null ? null : r.token;
+        }
         
         return results;
     }

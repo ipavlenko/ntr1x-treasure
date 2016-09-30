@@ -30,7 +30,6 @@ import com.ntr1x.treasure.web.resources.CategoryResource.CategoryCreate;
 import com.ntr1x.treasure.web.services.ICategoryService;
 import com.ntr1x.treasure.web.services.IProfilerService;
 import com.ntr1x.treasure.web.services.IPublicationService;
-import com.ntr1x.treasure.web.services.IPublicationService.PublicationCreate;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = App.class, webEnvironment = WebEnvironment.RANDOM_PORT)

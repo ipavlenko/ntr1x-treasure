@@ -32,7 +32,6 @@ import com.ntr1x.treasure.web.App;
 import com.ntr1x.treasure.web.model.p3.Publication;
 import com.ntr1x.treasure.web.services.IProfilerService;
 import com.ntr1x.treasure.web.services.IPublicationService;
-import com.ntr1x.treasure.web.services.IPublicationService.PublicationCreate;
 import com.ntr1x.treasure.web.services.ISubscriptionService.SubscriptionMessage;
 
 @RunWith(SpringJUnit4ClassRunner.class)
