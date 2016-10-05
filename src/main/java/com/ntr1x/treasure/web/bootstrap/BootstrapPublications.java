@@ -37,7 +37,13 @@ public class BootstrapPublications {
         List<IPublicationService.PublicationCreate> create = new ArrayList<>();
         
         {
-            Image image = bootstrapImage(target, token, "bootstrap/publications/1.jpg");
+            Image image = bootstrapImage(target, token, "bootstrap/publications/01.jpg");
+            Image image1 = bootstrapImage(target, token, "bootstrap/publications/10.jpg");
+            Image image2 = bootstrapImage(target, token, "bootstrap/publications/11.jpg");
+            Image image3 = bootstrapImage(target, token, "bootstrap/publications/12.jpg");
+            Image image4 = bootstrapImage(target, token, "bootstrap/publications/13.jpg");
+            Image image5 = bootstrapImage(target, token, "bootstrap/publications/14.jpg");
+            Image image6 = bootstrapImage(target, token, "bootstrap/publications/15.jpg");
             
             IPublicationService.PublicationCreate p = new IPublicationService.PublicationCreate(); {
 
@@ -53,7 +59,13 @@ public class BootstrapPublications {
                         new ICategoryService.RelatedCategory(null, bootstrap.directories.globe.getId(), null)
                 };
                 p.images = new IImageService.RelatedImage[] {
-                        new IImageService.RelatedImage(null, image.getId(), null, null)
+                        new IImageService.RelatedImage(null, image.getId(), new String[] { "primary" }, null),
+                        new IImageService.RelatedImage(null, image1.getId(), new String[] { "thumbnail" }, null),
+                        new IImageService.RelatedImage(null, image2.getId(), new String[] { "thumbnail" }, null),
+                        new IImageService.RelatedImage(null, image3.getId(), new String[] { "thumbnail" }, null),
+                        new IImageService.RelatedImage(null, image4.getId(), new String[] { "thumbnail" }, null),
+                        new IImageService.RelatedImage(null, image5.getId(), new String[] { "thumbnail" }, null),
+                        new IImageService.RelatedImage(null, image6.getId(), new String[] { "thumbnail" }, null),
                 };
             }
     
@@ -61,7 +73,7 @@ public class BootstrapPublications {
         }
     
         {
-            Image image = bootstrapImage(target, token, "bootstrap/publications/2.jpg");
+            Image image = bootstrapImage(target, token, "bootstrap/publications/02.jpg");
             
             IPublicationService.PublicationCreate p = new IPublicationService.PublicationCreate(); {
     
@@ -78,7 +90,7 @@ public class BootstrapPublications {
                         new ICategoryService.RelatedCategory(null, bootstrap.specializations.endoprosthesis.getId(), null)
                 };
                 p.images = new IImageService.RelatedImage[] {
-                        new IImageService.RelatedImage(null, image.getId(), null, null)
+                        new IImageService.RelatedImage(null, image.getId(), new String[] { "primary" }, null)
                 };
             }
     
@@ -86,6 +98,8 @@ public class BootstrapPublications {
         }
     
         {
+            Image image = bootstrapImage(target, token, "bootstrap/publications/03.jpg");
+            
             IPublicationService.PublicationCreate p = new IPublicationService.PublicationCreate(); {
     
                 p.title = "России предсказали позднюю и умеренную эпидению гриппа";
@@ -98,6 +112,9 @@ public class BootstrapPublications {
                         new ICategoryService.RelatedCategory(null, bootstrap.directories.research.getId(), null),
                         new ICategoryService.RelatedCategory(null, bootstrap.specializations.specialization.getId(), null)
                 };
+                p.images = new IImageService.RelatedImage[] {
+                        new IImageService.RelatedImage(null, image.getId(), new String[] { "primary" }, null)
+                };
             }
     
             create.add(p);
@@ -105,6 +122,8 @@ public class BootstrapPublications {
     
     
         {
+            Image image = bootstrapImage(target, token, "bootstrap/publications/04.jpg");
+            
             IPublicationService.PublicationCreate p = new IPublicationService.PublicationCreate(); {
     
                 p.title = "России предсказали позднюю и умеренную эпидению гриппа";
@@ -117,12 +136,17 @@ public class BootstrapPublications {
                         new ICategoryService.RelatedCategory(null, bootstrap.directories.research.getId(), null),
                         new ICategoryService.RelatedCategory(null, bootstrap.specializations.trauma.getId(), null)
                 };
+                p.images = new IImageService.RelatedImage[] {
+                        new IImageService.RelatedImage(null, image.getId(), new String[] { "primary" }, null)
+                };
             }
     
             create.add(p);
         }
     
         {
+            Image image = bootstrapImage(target, token, "bootstrap/publications/05.jpg");
+        
             IPublicationService.PublicationCreate p = new IPublicationService.PublicationCreate(); {
     
                 p.title = "Японских хирургов будут обучать с помощью российских роботов";
@@ -137,6 +161,9 @@ public class BootstrapPublications {
                         new ICategoryService.RelatedCategory(null, bootstrap.directories.medicine.getId(), null),
                         new ICategoryService.RelatedCategory(null, bootstrap.specializations.arthroscopy.getId(), null)
                 };
+                p.images = new IImageService.RelatedImage[] {
+                        new IImageService.RelatedImage(null, image.getId(), new String[] { "primary" }, null)
+                };
             }
     
             create.add(p);
@@ -144,6 +171,8 @@ public class BootstrapPublications {
     
     
         {
+            Image image = bootstrapImage(target, token, "bootstrap/publications/06.jpg");
+            
             IPublicationService.PublicationCreate p = new IPublicationService.PublicationCreate(); {
     
                 p.title = "В Канаде разрешили медицинское применение героина";
@@ -156,12 +185,17 @@ public class BootstrapPublications {
                         new ICategoryService.RelatedCategory(null, bootstrap.directories.medicine.getId(), null),
                         new ICategoryService.RelatedCategory(null, bootstrap.specializations.specialization.getId(), null)
                 };
+                p.images = new IImageService.RelatedImage[] {
+                        new IImageService.RelatedImage(null, image.getId(), new String[] { "primary" }, null)
+                };
             }
     
             create.add(p);
         }
     
         {
+            Image image = bootstrapImage(target, token, "bootstrap/publications/07.jpg");
+            
             IPublicationService.PublicationCreate p = new IPublicationService.PublicationCreate(); {
     
                 p.title = "«Фармимэкс» завершила модернизацию завода в Скопине";
@@ -174,12 +208,17 @@ public class BootstrapPublications {
                         new ICategoryService.RelatedCategory(null, bootstrap.directories.conference.getId(), null),
                         new ICategoryService.RelatedCategory(null, bootstrap.specializations.endoprosthesis.getId(), null)
                 };
+                p.images = new IImageService.RelatedImage[] {
+                        new IImageService.RelatedImage(null, image.getId(), new String[] { "primary" }, null)
+                };
             }
     
             create.add(p);
         }
     
         {
+            Image image = bootstrapImage(target, token, "bootstrap/publications/08.jpg");
+            
             IPublicationService.PublicationCreate p = new IPublicationService.PublicationCreate(); {
     
                 p.title = "Ограничение импорта соли и морской воды может иметь негативные последствия для фармпроизводителей";
@@ -193,6 +232,9 @@ public class BootstrapPublications {
                         new ICategoryService.RelatedCategory(null, bootstrap.directories.expose.getId(), null),
                         new ICategoryService.RelatedCategory(null, bootstrap.specializations.arthroscopy.getId(), null)
                 };
+                p.images = new IImageService.RelatedImage[] {
+                        new IImageService.RelatedImage(null, image.getId(), new String[] { "primary" }, null)
+                };
             }
     
             create.add(p);
@@ -200,6 +242,8 @@ public class BootstrapPublications {
     
     
         {
+            Image image = bootstrapImage(target, token, "bootstrap/publications/09.jpg");
+            
             IPublicationService.PublicationCreate p = new IPublicationService.PublicationCreate(); {
     
                 p.title = "Takeda намерена укрепить позиции на американском рынке";
@@ -214,12 +258,17 @@ public class BootstrapPublications {
                         new ICategoryService.RelatedCategory(null, bootstrap.specializations.trauma.getId(), null),
                         new ICategoryService.RelatedCategory(null, bootstrap.localizations.interphalangeal.getId(), null)
                 };
+                p.images = new IImageService.RelatedImage[] {
+                        new IImageService.RelatedImage(null, image.getId(), new String[] { "primary" }, null)
+                };
             }
     
             create.add(p);
         }
     
         {
+            Image image = bootstrapImage(target, token, "bootstrap/publications/10.jpg");
+            
             IPublicationService.PublicationCreate p = new IPublicationService.PublicationCreate(); {
     
                 p.title = "Allergan заплатит за Vitae Pharmaceuticals 639 млн долларов";
@@ -232,6 +281,9 @@ public class BootstrapPublications {
                         new ICategoryService.RelatedCategory(null, bootstrap.directories.globe.getId(), null),
                         new ICategoryService.RelatedCategory(null, bootstrap.specializations.endoprosthesis.getId(), null)
                 };
+                p.images = new IImageService.RelatedImage[] {
+                        new IImageService.RelatedImage(null, image.getId(), new String[] { "primary" }, null)
+                };
             }
     
             create.add(p);
@@ -239,6 +291,8 @@ public class BootstrapPublications {
     
     
         {
+            Image image = bootstrapImage(target, token, "bootstrap/publications/11.jpg");
+            
             IPublicationService.PublicationCreate p = new IPublicationService.PublicationCreate(); {
     
                 p.title = "ФАС готова дать возможность реальным аптекам торговать в интернете";
@@ -252,6 +306,9 @@ public class BootstrapPublications {
                         new ICategoryService.RelatedCategory(null, bootstrap.directories.expose.getId(), null),
                         new ICategoryService.RelatedCategory(null, bootstrap.specializations.specialization.getId(), null)
                 };
+                p.images = new IImageService.RelatedImage[] {
+                        new IImageService.RelatedImage(null, image.getId(), new String[] { "primary" }, null)
+                };
             }
     
             create.add(p);
@@ -259,6 +316,8 @@ public class BootstrapPublications {
     
     
         {
+            Image image = bootstrapImage(target, token, "bootstrap/publications/12.jpg");
+            
             IPublicationService.PublicationCreate p = new IPublicationService.PublicationCreate(); {
     
                 p.title = "Шесть российских лабораторий по диагностике полиомиелита получили сертификаты ВОЗ";
@@ -271,6 +330,9 @@ public class BootstrapPublications {
                         new ICategoryService.RelatedCategory(null, bootstrap.directories.medicine.getId(), null),
                         new ICategoryService.RelatedCategory(null, bootstrap.specializations.trauma.getId(), null)
                 };
+                p.images = new IImageService.RelatedImage[] {
+                        new IImageService.RelatedImage(null, image.getId(), new String[] { "primary" }, null)
+                };
             }
     
             create.add(p);
@@ -278,6 +340,8 @@ public class BootstrapPublications {
     
     
         {
+            Image image = bootstrapImage(target, token, "bootstrap/publications/13.jpg");
+            
             IPublicationService.PublicationCreate p = new IPublicationService.PublicationCreate(); {
     
                 p.title = "Для иммунизации детей против гриппа в этом эпидсезоне будут использоваться три российские вакцины";
@@ -290,6 +354,9 @@ public class BootstrapPublications {
                         new ICategoryService.RelatedCategory(null, bootstrap.directories.expose.getId(), null),
                         new ICategoryService.RelatedCategory(null, bootstrap.specializations.endoprosthesis.getId(), null)
                 };
+                p.images = new IImageService.RelatedImage[] {
+                        new IImageService.RelatedImage(null, image.getId(), new String[] { "primary" }, null)
+                };
             }
     
             create.add(p);
@@ -297,6 +364,8 @@ public class BootstrapPublications {
     
     
         {
+            Image image = bootstrapImage(target, token, "bootstrap/publications/14.jpg");
+            
             IPublicationService.PublicationCreate p = new IPublicationService.PublicationCreate(); {
     
                 p.title = "Распространение электронных сигарет оказалось связано с ростом показателя успешного отказа от табака в Великобритании";
@@ -310,12 +379,17 @@ public class BootstrapPublications {
                         new ICategoryService.RelatedCategory(null, bootstrap.directories.medicine.getId(), null),
                         new ICategoryService.RelatedCategory(null, bootstrap.specializations.specialization.getId(), null)
                 };
+                p.images = new IImageService.RelatedImage[] {
+                        new IImageService.RelatedImage(null, image.getId(), new String[] { "primary" }, null)
+                };
             }
     
             create.add(p);
         }
     
         {
+            Image image = bootstrapImage(target, token, "bootstrap/publications/15.jpg");
+            
             IPublicationService.PublicationCreate p = new IPublicationService.PublicationCreate(); {
     
                 p.title = "Roche успешно испытала лекарственное средство против рассеянного склероза";
@@ -329,6 +403,9 @@ public class BootstrapPublications {
                         new ICategoryService.RelatedCategory(null, bootstrap.directories.research.getId(), null),
                         new ICategoryService.RelatedCategory(null, bootstrap.specializations.arthroscopy.getId(), null)
                 };
+                p.images = new IImageService.RelatedImage[] {
+                        new IImageService.RelatedImage(null, image.getId(), new String[] { "primary" }, null)
+                };
             }
     
             create.add(p);
@@ -336,6 +413,8 @@ public class BootstrapPublications {
     
     
         {
+            Image image = bootstrapImage(target, token, "bootstrap/publications/16.jpg");
+            
             IPublicationService.PublicationCreate p = new IPublicationService.PublicationCreate(); {
     
                 p.title = "В Москве снизилось количество пациентов с инфарктом";
@@ -348,12 +427,17 @@ public class BootstrapPublications {
                         new ICategoryService.RelatedCategory(null, bootstrap.directories.expose.getId(), null),
                         new ICategoryService.RelatedCategory(null, bootstrap.specializations.specialization.getId(), null)
                 };
+                p.images = new IImageService.RelatedImage[] {
+                        new IImageService.RelatedImage(null, image.getId(), new String[] { "primary" }, null)
+                };
             }
     
             create.add(p);
         }
     
         {
+            Image image = bootstrapImage(target, token, "bootstrap/publications/17.jpg");
+            
             IPublicationService.PublicationCreate p = new IPublicationService.PublicationCreate(); {
     
                 p.title = "В Госдуму внесен законопроект о введении системы видеофиксации операций";
@@ -367,12 +451,17 @@ public class BootstrapPublications {
                         new ICategoryService.RelatedCategory(null, bootstrap.directories.conference.getId(), null),
                         new ICategoryService.RelatedCategory(null, bootstrap.specializations.endoprosthesis.getId(), null)
                 };
+                p.images = new IImageService.RelatedImage[] {
+                        new IImageService.RelatedImage(null, image.getId(), new String[] { "primary" }, null)
+                };
             }
     
             create.add(p);
         }
     
         {
+            Image image = bootstrapImage(target, token, "bootstrap/publications/18.jpg");
+            
             IPublicationService.PublicationCreate p = new IPublicationService.PublicationCreate(); {
     
                 p.title = "Foamix успешно испытала топическое средство против розацеа";
@@ -386,12 +475,17 @@ public class BootstrapPublications {
                         new ICategoryService.RelatedCategory(null, bootstrap.directories.medicine.getId(), null),
                         new ICategoryService.RelatedCategory(null, bootstrap.specializations.trauma.getId(), null)
                 };
+                p.images = new IImageService.RelatedImage[] {
+                        new IImageService.RelatedImage(null, image.getId(), new String[] { "primary" }, null)
+                };
             }
     
             create.add(p);
         }
     
         {
+            Image image = bootstrapImage(target, token, "bootstrap/publications/19.jpg");
+            
             IPublicationService.PublicationCreate p = new IPublicationService.PublicationCreate(); {
     
                 p.title = "Гормональная внутриматочная система экономически эффективна в предупреждении развития рака эндометрия у женщин с ожирением";
@@ -405,12 +499,17 @@ public class BootstrapPublications {
                         new ICategoryService.RelatedCategory(null, bootstrap.directories.globe.getId(), null),
                         new ICategoryService.RelatedCategory(null, bootstrap.specializations.specialization.getId(), null)
                 };
+                p.images = new IImageService.RelatedImage[] {
+                        new IImageService.RelatedImage(null, image.getId(), new String[] { "primary" }, null)
+                };
             }
     
             create.add(p);
         }
     
         {
+            Image image = bootstrapImage(target, token, "bootstrap/publications/20.jpg");
+            
             IPublicationService.PublicationCreate p = new IPublicationService.PublicationCreate(); {
     
                 p.title = "«Катрен» вложит около 1 млрд рублей в строительство новой штаб-квартиры";
@@ -424,6 +523,9 @@ public class BootstrapPublications {
                 p.categories = new ICategoryService.RelatedCategory[] {
                         new ICategoryService.RelatedCategory(null, bootstrap.directories.medicine.getId(), null),
                         new ICategoryService.RelatedCategory(null, bootstrap.specializations.arthroscopy.getId(), null)
+                };
+                p.images = new IImageService.RelatedImage[] {
+                        new IImageService.RelatedImage(null, image.getId(), new String[] { "primary" }, null)
                 };
             }
     
@@ -451,9 +553,9 @@ public class BootstrapPublications {
         
         ImageSettings settings = new ImageSettings(); {
             settings.items = new ImageSettings.Item[] {
-                new ImageSettings.Item("contain-800x800", "jpg", 800, 800, IScaleImageService.Type.CONTAIN),
-                new ImageSettings.Item("cover-160x120", "png", 160, 120, IScaleImageService.Type.COVER),
-                new ImageSettings.Item("cover-110x110", "png", 110, 110, IScaleImageService.Type.COVER),
+                new ImageSettings.Item("image", "jpg", 800, 800, IScaleImageService.Type.CONTAIN),
+                new ImageSettings.Item("gallery", "png", 200, 120, IScaleImageService.Type.COVER),
+                new ImageSettings.Item("news-avatar", "png", 110, 110, IScaleImageService.Type.COVER),
             };
         }
         
