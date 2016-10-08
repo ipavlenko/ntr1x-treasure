@@ -13,6 +13,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 
 import com.ntr1x.treasure.web.model.p0.Resource;
+import com.ntr1x.treasure.web.model.p1.Category;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -35,5 +36,5 @@ public class ResourceCategory extends Resource {
 	@XmlElement
 	@ManyToOne
 	@JoinColumn(name = "CategoryId", nullable = false, updatable = false)
-	private Resource category;
+	private Category category;
 }
