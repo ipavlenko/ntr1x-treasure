@@ -209,7 +209,14 @@ public class PublicationService implements IPublicationService {
 
     @Override
     public PublicationItem select(long id) {
-        // TODO Auto-generated method stub
-        return null;
+        
+        Publication p = em.find(Publication.class, id);
+        
+        return new PublicationItem(
+            p,
+            p.getTags(),
+            p.getImages(),
+            p.getCategories()
+        );
     }
 }
