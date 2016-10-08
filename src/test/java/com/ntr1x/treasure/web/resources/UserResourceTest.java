@@ -1,12 +1,9 @@
 package com.ntr1x.treasure.web.resources;
 
-import java.util.List;
-
 import javax.inject.Inject;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -28,6 +25,7 @@ import com.ntr1x.treasure.web.model.p1.User;
 import com.ntr1x.treasure.web.services.IGrantService;
 import com.ntr1x.treasure.web.services.IProfilerService;
 import com.ntr1x.treasure.web.services.IUserService;
+import com.ntr1x.treasure.web.services.IUserService.UsersResponse;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = App.class, webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -81,15 +79,15 @@ public class UserResourceTest {
 	    
 	    profiler.withDisabledSecurity(() -> {
 	    
-    	    List<User> response = target
+    	    UsersResponse response = target
                 .path("/users")
                 .queryParam("page", 0)
                 .queryParam("size", 10)
                 .request()
-                .get(new GenericType<List<User>>() {})
+                .get(UsersResponse.class)
             ;
             
-            Assert.assertEquals(response.size(), 1);
+            Assert.assertEquals(response.users.size(), 1);
 	    });
 	}
 	
@@ -201,7 +199,7 @@ public class UserResourceTest {
         profiler.withCredentials(target, "admin@example.com", "9876", (token) -> {
             
             Response response = target
-                .path("/accounts")
+                .path("/users")
                 .queryParam("page", 0)
                 .queryParam("size", 10)
                 .request()

@@ -1,6 +1,5 @@
 package com.ntr1x.treasure.web.services;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -105,7 +104,7 @@ public class SubscriptionService implements ISubscriptionService {
                         
                         session.getBasicRemote().sendText(serialization.stringify(message.object, message.object.getClass()));
                     
-                    } catch (IOException e) {
+                    } catch (Exception e) {
                         // TODO Auto-generated catch block
                         e.printStackTrace();
                     }

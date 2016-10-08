@@ -6,6 +6,7 @@ import org.glassfish.jersey.message.filtering.EntityFilteringFeature;
 import org.glassfish.jersey.moxy.json.MoxyJsonFeature;
 import org.glassfish.jersey.moxy.xml.MoxyXmlFeature;
 import org.glassfish.jersey.server.ResourceConfig;
+import org.glassfish.jersey.server.ServerProperties;
 import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
 import org.glassfish.jersey.server.spi.Container;
 import org.glassfish.jersey.server.spi.ContainerLifecycleListener;
@@ -47,6 +48,8 @@ public class JerseyConfig extends ResourceConfig {
     public JerseyConfig() {
 		
 		packages("com.ntr1x.treasure.web.resources");
+		
+		property(ServerProperties.RESPONSE_SET_STATUS_OVER_SEND_ERROR, true);
 		
 		register(ApiListingResource.class);
 		register(SwaggerSerializers.class);

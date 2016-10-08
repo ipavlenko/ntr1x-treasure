@@ -27,12 +27,9 @@ public class ResourceEndpoint {
     @Inject
     private ISerializationService serialization;
     
-//    @Inject
-//    private ObjectProvider<ObjectGraph> provider;
-    
     @PostConstruct
     private void init() {
-//        System.out.println(provider);
+        
     }
     
     @OnOpen

@@ -8,7 +8,6 @@ import javax.inject.Inject;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 
 import org.junit.Assert;
@@ -30,6 +29,7 @@ import com.ntr1x.treasure.web.resources.CategoryResource.CategoryCreate;
 import com.ntr1x.treasure.web.services.ICategoryService;
 import com.ntr1x.treasure.web.services.IProfilerService;
 import com.ntr1x.treasure.web.services.IPublicationService;
+import com.ntr1x.treasure.web.services.IPublicationService.PublicationsResponse;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = App.class, webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -155,149 +155,149 @@ public class PublicationResourceTest {
 	        }
 	        
 	        {
-	            List<Publication> response = target
+	            PublicationsResponse response = target
 	                .path("/publications")
 	                .queryParam("page", 0)
 	                .queryParam("size", 10)
 	                .request()
-	                .get(new GenericType<List<Publication>>() {})
+	                .get(PublicationsResponse.class)
 	            ;
 	            
-	            Assert.assertEquals(response.size(), 3);
+	            Assert.assertEquals(response.publications.size(), 3);
 	        }
 
 	        
 	        {
-	            List<Publication> response = target
+	            PublicationsResponse response = target
 	                .path("/publications/query")
 	                .queryParam("query", "Первый")
 	                .queryParam("page", 0)
 	                .queryParam("size", 10)
 	                .request()
-	                .get(new GenericType<List<Publication>>() {})
+	                .get(PublicationsResponse.class)
 	            ;
 	            
-	            Assert.assertEquals(1, response.size());
+	            Assert.assertEquals(1, response.publications.size());
 	        }
 	        
 	        {
-	            List<Publication> response = target
+	            PublicationsResponse response = target
 	                .path("/publications/query")
 	                .queryParam("query", "Новость")
 	                .queryParam("page", 0)
 	                .queryParam("size", 10)
 	                .request()
-	                .get(new GenericType<List<Publication>>() {})
+	                .get(PublicationsResponse.class)
 	            ;
 	            
-	            Assert.assertEquals(2, response.size());
+	            Assert.assertEquals(2, response.publications.size());
 	        }
 	        
 	        {
-	            List<Publication> response = target
+	            PublicationsResponse response = target
 	                .path("/publications/query")
 	                .queryParam("query", "новости")
 	                .queryParam("page", 0)
 	                .queryParam("size", 10)
 	                .request()
-	                .get(new GenericType<List<Publication>>() {})
+	                .get(PublicationsResponse.class)
 	            ;
 	            
-	            Assert.assertEquals(2, response.size());
+	            Assert.assertEquals(2, response.publications.size());
 	        }
 	        
 	        {
-	            List<Publication> response = target
+	            PublicationsResponse response = target
 	                .path("/publications/query")
 	                .queryParam("query", "Пример")
 	                .queryParam("page", 0)
 	                .queryParam("size", 10)
 	                .request()
-	                .get(new GenericType<List<Publication>>() {})
+	                .get(PublicationsResponse.class)
 	            ;
 	            
-	            Assert.assertEquals(3, response.size());
+	            Assert.assertEquals(3, response.publications.size());
 	        }
 	        
 	        {
-	            List<Publication> response = target
+	            PublicationsResponse response = target
 	                .path("/publications/query")
 	                .queryParam("query", "Blablabla")
 	                .queryParam("page", 0)
 	                .queryParam("size", 10)
 	                .request()
-	                .get(new GenericType<List<Publication>>() {})
+	                .get(PublicationsResponse.class)
 	            ;
 	            
-	            Assert.assertEquals(0, response.size());
+	            Assert.assertEquals(0, response.publications.size());
 	        }
 	        
 	        {
-	            List<Publication> response = target
+	            PublicationsResponse response = target
 	                .path("/publications/query")
 	                .queryParam("query", "пример")
 	                .queryParam("category", c0.getId())
 	                .queryParam("page", 0)
 	                .queryParam("size", 10)
 	                .request()
-	                .get(new GenericType<List<Publication>>() {})
+	                .get(PublicationsResponse.class)
 	            ;
 	            
-	            Assert.assertEquals(2, response.size());
+	            Assert.assertEquals(2, response.publications.size());
 	        }
 	        
 	        {
-                List<Publication> response = target
+	            PublicationsResponse response = target
                     .path("/publications/query")
                     .queryParam("category", c0.getId(), c1.getId(), c2.getId())
                     .queryParam("page", 0)
                     .queryParam("size", 10)
                     .request()
-                    .get(new GenericType<List<Publication>>() {})
+                    .get(PublicationsResponse.class)
                 ;
                 
-                Assert.assertEquals(0, response.size());
+                Assert.assertEquals(0, response.publications.size());
             }
 	        
 	        {
-                List<Publication> response = target
+	            PublicationsResponse response = target
                     .path("/publications/query")
                     .queryParam("category", c1.getId(), c2.getId())
                     .queryParam("page", 0)
                     .queryParam("size", 10)
                     .request()
-                    .get(new GenericType<List<Publication>>() {})
+                    .get(PublicationsResponse.class)
                 ;
                 
-                Assert.assertEquals(1, response.size());
+                Assert.assertEquals(1, response.publications.size());
             }
 	        
 	        {
-                List<Publication> response = target
+	            PublicationsResponse response = target
                     .path("/publications/query")
                     .queryParam("query", "")
                     .queryParam("category", c2.getId())
                     .queryParam("page", 0)
                     .queryParam("size", 10)
                     .request()
-                    .get(new GenericType<List<Publication>>() {})
+                    .get(PublicationsResponse.class)
                 ;
                 
-                Assert.assertEquals(2, response.size());
+                Assert.assertEquals(2, response.publications.size());
             }
 	        
 	        {
-                List<Publication> response = target
+	            PublicationsResponse response = target
                     .path("/publications/query")
                     .queryParam("query", "*")
                     .queryParam("category", c2.getId())
                     .queryParam("page", 0)
                     .queryParam("size", 10)
                     .request()
-                    .get(new GenericType<List<Publication>>() {})
+                    .get(PublicationsResponse.class)
                 ;
                 
-                Assert.assertEquals(2, response.size());
+                Assert.assertEquals(2, response.publications.size());
             }
 	    });
     }

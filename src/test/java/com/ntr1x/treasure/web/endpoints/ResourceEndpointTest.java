@@ -1,5 +1,6 @@
 package com.ntr1x.treasure.web.endpoints;
 
+import java.time.LocalDateTime;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -86,6 +87,7 @@ public class ResourceEndpointTest {
                             s.title = "Demo Publication";
                             s.promo = "Demo Publication Promo";
                             s.content = "Demo Publication Promo";
+                            s.published = LocalDateTime.now();
                         }
                         
                         /*Publication r = */target
@@ -100,6 +102,7 @@ public class ResourceEndpointTest {
                             s.title = "Demo Publication";
                             s.promo = "Demo Publication Promo";
                             s.content = "Demo Publication Promo";
+                            s.published = LocalDateTime.now();
                         }
                         
                         /*Publication r = */target
