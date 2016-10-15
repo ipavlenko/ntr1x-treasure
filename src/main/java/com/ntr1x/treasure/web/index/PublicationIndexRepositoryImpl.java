@@ -6,9 +6,10 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.solr.core.SolrTemplate;
 import org.springframework.data.solr.core.query.FilterQuery;
-import org.springframework.data.solr.core.query.Query;
 import org.springframework.data.solr.core.query.SimpleFilterQuery;
 import org.springframework.data.solr.core.query.SimpleQuery;
 import org.springframework.data.solr.core.query.SimpleStringCriteria;
@@ -58,9 +59,9 @@ public class PublicationIndexRepositoryImpl implements PublicationIndexRepositor
         
         String s = request.query == null ? "" : request.query.trim();
         
-        Query q = new SimpleQuery()
+        SimpleQuery q = new SimpleQuery()
             .addFilterQuery(fq)
-            .setPageRequest(new PageRequest(request.page, request.size))
+            .setPageRequest(new PageRequest(request.page, request.size, new Sort(Direction.DESC, "published_dt")))
             .addCriteria(new SimpleStringCriteria(
                 s.isEmpty() || "*".equals(s)
                     ? "*:*"

@@ -82,21 +82,6 @@ public class BootstrapCategories {
         {
             
             CategoryCreate s = new CategoryCreate(); {
-                s.title = "Лекарства";
-                s.aspects = new String[] { "directory" };
-            }
-            
-            directories.medicine = target
-                .path("/categories")
-                .request(MediaType.APPLICATION_JSON_TYPE)
-                .header(HttpHeaders.AUTHORIZATION, token)
-                .post(Entity.entity(s, MediaType.APPLICATION_JSON_TYPE), Category.class)
-            ;
-        }
-        
-        {
-            
-            CategoryCreate s = new CategoryCreate(); {
                 s.title = "В мире";
                 s.aspects = new String[] { "directory" };
             }
@@ -160,11 +145,11 @@ public class BootstrapCategories {
         
         {
             CategoryCreate s = new CategoryCreate(); {
-                s.title = "Специализация";
+                s.title = "Нейрохирургия";
                 s.aspects = new String[] { "specialization" };
             }
             
-            specializations.specialization = target
+            specializations.neurosurgery = target
                 .path("/categories")
                 .request(MediaType.APPLICATION_JSON_TYPE)
                 .header(HttpHeaders.AUTHORIZATION, token)
@@ -182,7 +167,6 @@ public class BootstrapCategories {
         {
             CategoryCreate s = new CategoryCreate(); {
                 s.title = "Голеностоп";
-                s.relate = bootstrap.specializations.specialization.getId();
                 s.aspects = new String[] { "localization" };
             }
             
@@ -197,7 +181,6 @@ public class BootstrapCategories {
         {
             CategoryCreate s = new CategoryCreate(); {
                 s.title = "Коленный сустав";
-                s.relate = bootstrap.specializations.specialization.getId();
                 s.aspects = new String[] { "localization" };
             }
             
@@ -212,7 +195,6 @@ public class BootstrapCategories {
         {
             CategoryCreate s = new CategoryCreate(); {
                 s.title = "Тазобедренный сустав";
-                s.relate = bootstrap.specializations.specialization.getId();
                 s.aspects = new String[] { "localization" };
             }
             
@@ -227,7 +209,6 @@ public class BootstrapCategories {
         {
             CategoryCreate s = new CategoryCreate(); {
                 s.title = "Плечевой сустав";
-                s.relate = bootstrap.specializations.specialization.getId();
                 s.aspects = new String[] { "localization" };
             }
             
@@ -242,7 +223,6 @@ public class BootstrapCategories {
         {
             CategoryCreate s = new CategoryCreate(); {
                 s.title = "Межфаланговый сустав";
-                s.relate = bootstrap.specializations.specialization.getId();
                 s.aspects = new String[] { "localization" };
             }
             
@@ -271,7 +251,7 @@ public class BootstrapCategories {
         Category arthroscopy;
         Category endoprosthesis;
         Category trauma;
-        Category specialization;
+        Category neurosurgery;
     }
     
     class Localizations {

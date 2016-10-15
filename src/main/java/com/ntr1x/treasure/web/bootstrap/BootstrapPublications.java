@@ -110,7 +110,7 @@ public class BootstrapPublications {
                 p.published = LocalDateTime.now().minusDays(28);
                 p.categories = new ICategoryService.RelatedCategory[] {
                         new ICategoryService.RelatedCategory(null, bootstrap.directories.research.getId(), null),
-                        new ICategoryService.RelatedCategory(null, bootstrap.specializations.specialization.getId(), null)
+                        new ICategoryService.RelatedCategory(null, bootstrap.localizations.ankle.getId(), null)
                 };
                 p.images = new IImageService.RelatedImage[] {
                         new IImageService.RelatedImage(null, image.getId(), new String[] { "primary" }, null)
@@ -183,7 +183,7 @@ public class BootstrapPublications {
                 p.published = LocalDateTime.now().minusDays(25);
                 p.categories = new ICategoryService.RelatedCategory[] {
                         new ICategoryService.RelatedCategory(null, bootstrap.directories.medicine.getId(), null),
-                        new ICategoryService.RelatedCategory(null, bootstrap.specializations.specialization.getId(), null)
+                        new ICategoryService.RelatedCategory(null, bootstrap.localizations.knee.getId(), null)
                 };
                 p.images = new IImageService.RelatedImage[] {
                         new IImageService.RelatedImage(null, image.getId(), new String[] { "primary" }, null)
@@ -304,7 +304,7 @@ public class BootstrapPublications {
                 p.published = LocalDateTime.now().minusDays(20);
                 p.categories = new ICategoryService.RelatedCategory[] {
                         new ICategoryService.RelatedCategory(null, bootstrap.directories.expose.getId(), null),
-                        new ICategoryService.RelatedCategory(null, bootstrap.specializations.specialization.getId(), null)
+                        new ICategoryService.RelatedCategory(null, bootstrap.localizations.ankle.getId(), null)
                 };
                 p.images = new IImageService.RelatedImage[] {
                         new IImageService.RelatedImage(null, image.getId(), new String[] { "primary" }, null)
@@ -377,7 +377,8 @@ public class BootstrapPublications {
                 p.published = LocalDateTime.now().minusDays(17);
                 p.categories = new ICategoryService.RelatedCategory[] {
                         new ICategoryService.RelatedCategory(null, bootstrap.directories.medicine.getId(), null),
-                        new ICategoryService.RelatedCategory(null, bootstrap.specializations.specialization.getId(), null)
+                        new ICategoryService.RelatedCategory(null, bootstrap.specializations.arthroscopy.getId(), null),
+                        new ICategoryService.RelatedCategory(null, bootstrap.localizations.interphalangeal.getId(), null)
                 };
                 p.images = new IImageService.RelatedImage[] {
                         new IImageService.RelatedImage(null, image.getId(), new String[] { "primary" }, null)
@@ -425,7 +426,7 @@ public class BootstrapPublications {
                 p.published = LocalDateTime.now().minusDays(15);
                 p.categories = new ICategoryService.RelatedCategory[] {
                         new ICategoryService.RelatedCategory(null, bootstrap.directories.expose.getId(), null),
-                        new ICategoryService.RelatedCategory(null, bootstrap.specializations.specialization.getId(), null)
+                        new ICategoryService.RelatedCategory(null, bootstrap.specializations.endoprosthesis.getId(), null)
                 };
                 p.images = new IImageService.RelatedImage[] {
                         new IImageService.RelatedImage(null, image.getId(), new String[] { "primary" }, null)
@@ -473,7 +474,8 @@ public class BootstrapPublications {
                 p.published = LocalDateTime.now().minusDays(13);
                 p.categories = new ICategoryService.RelatedCategory[] {
                         new ICategoryService.RelatedCategory(null, bootstrap.directories.medicine.getId(), null),
-                        new ICategoryService.RelatedCategory(null, bootstrap.specializations.trauma.getId(), null)
+                        new ICategoryService.RelatedCategory(null, bootstrap.specializations.trauma.getId(), null),
+                        new ICategoryService.RelatedCategory(null, bootstrap.localizations.hip.getId(), null)
                 };
                 p.images = new IImageService.RelatedImage[] {
                         new IImageService.RelatedImage(null, image.getId(), new String[] { "primary" }, null)
@@ -497,7 +499,8 @@ public class BootstrapPublications {
                 p.published = LocalDateTime.now().minusDays(12);
                 p.categories = new ICategoryService.RelatedCategory[] {
                         new ICategoryService.RelatedCategory(null, bootstrap.directories.globe.getId(), null),
-                        new ICategoryService.RelatedCategory(null, bootstrap.specializations.specialization.getId(), null)
+                        new ICategoryService.RelatedCategory(null, bootstrap.specializations.neurosurgery.getId(), null),
+                        new ICategoryService.RelatedCategory(null, bootstrap.localizations.hip.getId(), null)
                 };
                 p.images = new IImageService.RelatedImage[] {
                         new IImageService.RelatedImage(null, image.getId(), new String[] { "primary" }, null)

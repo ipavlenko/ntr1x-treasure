@@ -2,7 +2,9 @@ package com.ntr1x.treasure.web.services;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -86,16 +88,26 @@ public class PublicationService implements IPublicationService {
             )
         );
         
+        Map<Long, Publication> ordered = new LinkedHashMap<>();
+        
+        for (Long id : result.items) {
+            ordered.put(id, null);
+        }
+        
         List<Publication> publications = result.items.size() > 0
             ? this.publications.findByIdIn(result.items.toArray(new Long[0]))
             : Collections.emptyList()
         ;
         
+        publications.forEach(p -> {
+            ordered.put(p.getId(), p);
+        });
+        
         return new PublicationsResponse(
             result.count,
             page,
             size,
-            publications.stream().map((p) ->
+            ordered.values().stream().filter(p -> p != null).map((p) ->
                 new PublicationItem(
                     p,
                     p.getTags(),
