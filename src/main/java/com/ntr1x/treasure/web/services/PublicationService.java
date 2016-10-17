@@ -200,8 +200,6 @@ public class PublicationService implements IPublicationService {
             em.remove(persisted);
             em.flush();
         }
-        
-        em.refresh(persisted);
 
         transactions.afterCommit(() -> {
 
