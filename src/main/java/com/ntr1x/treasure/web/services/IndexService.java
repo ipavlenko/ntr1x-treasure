@@ -69,6 +69,6 @@ public class IndexService implements IIndexService {
     
     private void handleRemovePublication(Publication p) {
         
-        publications.delete(p.getId());
+        publications.delete(p.getAlias());
     }
 }
